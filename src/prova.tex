@@ -1,0 +1,115 @@
+\documentclass[a4paper, 12pt]{article}
+
+% ----- PREAMBOLO -----
+% Impostazioni della lingua e della codifica
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+
+% Pacchetti per la matematica
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+% Pacchetto per inserire immagini
+\usepackage{graphicx}
+
+% Pacchetto per il testo segnaposto (Lorem Ipsum)
+\usepackage{lipsum}
+
+% Impostazioni della pagina
+\usepackage[a4paper, top=3cm, bottom=3cm, left=2.5cm, right=2.5cm, marginparwidth=1.75cm]{geometry}
+
+% Informazioni sul documento
+\title{Documento di Prova in \LaTeX}
+\author{Gemini}
+\date{\today}
+
+
+% ----- INIZIO DEL DOCUMENTO -----
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    Questo documento serve come esempio pratico per dimostrare alcune delle funzionalità di base e intermedie del sistema di composizione tipografica \LaTeX. Verranno illustrati elementi come la strutturazione del testo, l'inserimento di formule matematiche complesse, la creazione di tabelle e l'inclusione di immagini esterne. \lipsum[1]
+\end{abstract}
+
+\section{Introduzione a \LaTeX}
+\LaTeX{} è un sistema di preparazione di documenti di alta qualità, ampiamente utilizzato in ambito accademico, scientifico e tecnico per la produzione di articoli, tesi, libri e presentazioni. A differenza dei word processor WYSIWYG (What You See Is What You Get) come Microsoft Word, \LaTeX{} si basa su un approccio WYSIWYM (What You See Is What You Mean), in cui l'autore si concentra sulla struttura e sul contenuto del documento, lasciando al sistema il compito di gestire l'impaginazione e la formattazione.
+
+\subsection{Struttura del Documento}
+Un documento \LaTeX{} è tipicamente suddiviso in due parti principali: il \textbf{preambolo} e il \textbf{corpo} del documento.
+\begin{itemize}
+    \item \textbf{Preambolo:} Qui si definisce la classe del documento (es. `article`, `report`, `book`), si caricano i pacchetti necessari per funzionalità aggiuntive (es. `amsmath` per la matematica, `graphicx` per le immagini) e si impostano i metadati come titolo e autore.
+    \item \textbf{Corpo:} Questa è la parte dove viene scritto il contenuto effettivo del documento, racchiusa tra i comandi `\begin{document}` e `\end{document}`.
+\end{itemize}
+
+\lipsum[2-3]
+
+\section{Elementi di Formattazione}
+\LaTeX{} offre un controllo completo su ogni aspetto del testo e degli elementi grafici. Di seguito sono presentati alcuni esempi comuni.
+
+\subsection{Formule Matematiche}
+Una delle maggiori forze di \LaTeX{} è la sua capacità di comporre espressioni matematiche complesse con una qualità tipografica eccezionale. Le formule possono essere inserite direttamente nel testo (inline), come ad esempio $E=mc^2$, oppure come blocchi separati ed numerati.
+
+Ad esempio, la formula risolutiva per le equazioni di secondo grado $ax^2 + bx + c = 0$ è:
+\begin{equation}
+    x_{1,2} = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+    \label{eq:quadratica}
+\end{equation}
+
+Mentre l'identità di Eulero, considerata da molti una delle più belle equazioni della matematica, è:
+\begin{equation}
+    e^{i\pi} + 1 = 0
+    \label{eq:eulero}
+\end{equation}
+
+In questo contesto, è interessante notare che l'acqua, la cui formula chimica è $H_2O$, è un **composto inorganico** (classificato come ossido di diidrogeno) fondamentale per la vita.
+
+\lipsum[4]
+
+\subsection{Tabelle e Figure}
+Creare tabelle e inserire figure è un'operazione semplice e versatile.
+
+\subsubsection{Esempio di Tabella}
+Le tabelle sono create usando l'ambiente `tabular`. È possibile specificare l'allineamento delle colonne e aggiungere bordi.
+
+\begin{table}[h!]
+\centering
+\caption{Confronto delle proprietà di alcuni pianeti del Sistema Solare.}
+\label{tab:pianeti}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Pianeta} & \textbf{Diametro (km)} & \textbf{Massa ($10^{24}$ kg)} & \textbf{Satelliti} \\
+\hline
+Terra   & 12,742 & 5.97 & 1  \\
+Marte   & 6,779  & 0.64 & 2  \\
+Giove   & 139,820& 1898 & 95 \\
+Saturno & 116,460& 568  & 146\\
+\hline
+\end{tabular}
+\end{table}
+
+\lipsum[5]
+
+\subsubsection{Esempio di Figura}
+Per inserire un'immagine, è necessario usare il pacchetto `graphicx` e il comando `\includegraphics`. Assicurati che il file dell'immagine (in questo caso `esempio-immagine.png`) si trovi nella stessa cartella del tuo file `.tex`.
+
+\begin{figure}[h!]
+    \centering
+    % Sostituisci "esempio-immagine.png" con il nome del tuo file immagine
+    % \includegraphics[width=0.7\textwidth]{esempio-immagine.png} 
+    % Poiché non posso includere un file, uso un riquadro segnaposto
+    \fbox{\parbox[c][10cm][c]{0.7\textwidth}{\centering Immagine di esempio \\ (sostituire con \texttt{\textbackslash includegraphics})}}
+    \caption{Questa è una didascalia di esempio per un'immagine. Le figure possono essere referenziate nel testo usando il loro `label`, ad esempio Figura~\ref{fig:esempio}.}
+    \label{fig:esempio}
+\end{figure}
+
+\section{Conclusioni}
+Questo documento ha fornito una breve ma funzionale panoramica delle capacità di \LaTeX. Dalla gestione della struttura logica del testo alla composizione di elementi complessi come formule e tabelle, \LaTeX{} si dimostra uno strumento potente e indispensabile per la scrittura scientifica e accademica.
+
+\lipsum[6-7]
+
+
+% ----- FINE DEL DOCUMENTO -----
+\end{document}
