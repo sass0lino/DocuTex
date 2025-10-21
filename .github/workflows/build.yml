@@ -33,14 +33,16 @@ jobs:
           while IFS= read -r file; do
             if [[ "$file" == *"/contenuti/"* ]]; then
               parent_dir=$(echo "$file" | sed 's|/contenuti/.*||')
-              target_file=$(find "$parent_dir" -maxdepth 1 -type f -name "*.tex" | head -n 1)
-              echo "Change detected in child file '$file'. Found parent: '$target_file'"
+              target_files=$(find "$parent_dir" -maxdepth 1 -type f -name "*.tex")
+              echo "Change in child '$file'. Adding all potential parents to compile list:"
+              echo "$target_files"
+              
+              if [ -n "$target_files" ]; then
+                compile_list="$compile_list\n$target_files"
+              fi
             else
               target_file="$file"
               echo "Change detected in main file: '$target_file'"
-            fi
-            
-            if [ -n "$target_file" ]; then
               compile_list="$compile_list\n$target_file"
             fi
           done < <(echo "$changed_files")
@@ -63,11 +65,15 @@ jobs:
               ROOT_DIR=\$(pwd)
               filepath=\$(dirname \"\$final_file\")
               filename=\$(basename \"\$final_file\" .tex)
-              output_dir=\"\$ROOT_DIR/docs/\$(echo \"\$filepath\" | sed 's|^src/||')\"
+              
+              output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src$||')
+              output_dir=\"\$ROOT_DIR/docs/\$output_subpath\"
               mkdir -p \"\$output_dir\"
               
               latexmk -pdf -cd -output-directory=\"\$output_dir\" -jobname=\"\$filename\" \"\$ROOT_DIR/\$final_file\"
               latexmk -c -cd -output-directory=\"\$output_dir\" -jobname=\"\$filename\" \"\$ROOT_DIR/\$final_file\"
+
+              rm -f \"\$output_dir\"/*.bbl
             done
           "
 
