@@ -1,0 +1,24 @@
+\begin{thebibliography}{1}
+
+\bibitem{einstein1905}
+Albert Einstein.
+\newblock Zur elektrodynamik bewegter körper.
+\newblock {\em Annalen der Physik}, 322(10):891--921, 1905.
+
+\bibitem{knuth1984}
+Donald~E. Knuth.
+\newblock {\em The TeXbook}.
+\newblock Addison-Wesley Professional, 1984.
+
+\bibitem{lamport1994}
+Leslie Lamport.
+\newblock {\em LaTeX: A Document Preparation System}.
+\newblock Addison-Wesley Professional, 2nd edition, 1994.
+
+\bibitem{dataset2023}
+Data Repository.
+\newblock Benchmark dataset for time series analysis.
+\newblock \url{http://example.com/data}, 2023.
+\newblock Accesso: 21-10-2025.
+
+\end{thebibliography}
