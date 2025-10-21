@@ -1,0 +1,84 @@
+name: Build LaTeX documents
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**/*.tex'
+
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find and Compile changed .tex files
+        run: |
+          changed_files=$(git diff --name-only --diff-filter=AM HEAD~1 HEAD | grep '\.tex$' || true)
+
+          if [ -z "$changed_files" ]; then
+            echo "No .tex files changed. Skipping compilation."
+            exit 0
+          fi
+
+          compile_list=""
+          while IFS= read -r file; do
+            if [[ "$file" == *"/contenuti/"* ]]; then
+              parent_dir=$(echo "$file" | sed 's|/contenuti/.*||')
+              target_file=$(find "$parent_dir" -maxdepth 1 -type f -name "*.tex" | head -n 1)
+              echo "Change detected in child file '$file'. Found parent: '$target_file'"
+            else
+              target_file="$file"
+              echo "Change detected in main file: '$target_file'"
+            fi
+            
+            if [ -n "$target_file" ]; then
+              compile_list="$compile_list\n$target_file"
+            fi
+          done < <(echo "$changed_files")
+
+          unique_compile_list=$(echo -e "$compile_list" | sed '/^$/d' | sort -u)
+
+          if [ -z "$unique_compile_list" ]; then
+            echo "Could not determine any main .tex files to compile. Exiting."
+            exit 1
+          fi
+          
+          echo -e "\nFinal list of files to compile:\n$unique_compile_list\n"
+
+          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
+            echo 'Starting compilation loop...'
+            
+            echo \"$unique_compile_list\" | while IFS= read -r final_file; do
+              echo \"--- Compiling: '$final_file' ---\"
+
+              ROOT_DIR=\$(pwd)
+              filepath=\$(dirname \"\$final_file\")
+              filename=\$(basename \"\$final_file\" .tex)
+              output_dir=\"\$ROOT_DIR/docs/\$(echo \"\$filepath\" | sed 's|^src/||')\"
+              mkdir -p \"\$output_dir\"
+              
+              latexmk -pdf -cd -output-directory=\"\$output_dir\" -jobname=\"\$filename\" \"\$ROOT_DIR/\$final_file\"
+              latexmk -c -cd -output-directory=\"\$output_dir\" -jobname=\"\$filename\" \"\$ROOT_DIR/\$final_file\"
+            done
+          "
+
+      - name: Commit & Push PDF files
+        run: |
+          if [ -z "$(git status --porcelain docs)" ]; then
+            echo "No changes in PDF output. Nothing to commit."
+          else
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git add docs
+            git commit -m "Automated LaTeX compilation"
+            git push
+          fi
