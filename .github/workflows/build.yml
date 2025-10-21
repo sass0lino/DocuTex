@@ -21,98 +21,96 @@ jobs:
           fetch-depth: 0
 
       - name: Process LaTeX Files
+        id: process_files
         run: |
+          # (La logica per pulire i PDF di file rinominati/cancellati e per identificare
+          # i file da compilare rimane la stessa)
           echo "--- Cleaning up old PDFs for deleted or renamed files ---"
-          # Trova i file eliminati (D) e i vecchi nomi dei file rinominati (R)
           deleted_files=$(git diff --name-only --diff-filter=D HEAD~1 HEAD | grep '\.tex$' || true)
           renamed_from_files=$(git diff --name-only --diff-filter=R HEAD~1 HEAD | awk '{print $1}' | grep '\.tex$' || true)
-          
           cleanup_list="$deleted_files\n$renamed_from_files"
           unique_cleanup_list=$(echo -e "$cleanup_list" | sed '/^$/d' | sort -u)
-
           if [ -n "$unique_cleanup_list" ]; then
-            echo -e "Files to clean up:\n$unique_cleanup_list"
             echo "$unique_cleanup_list" | while IFS= read -r file_to_clean; do
-              filepath=$(dirname "$file_to_clean")
-              filename=$(basename "$file_to_clean" .tex)
+              filepath=$(dirname "$file_to_clean"); filename=$(basename "$file_to_clean" .tex)
               output_subpath=$(echo "$filepath" | sed 's|^src/||; s|^src$||')
               pdf_to_delete="docs/$output_subpath/$filename.pdf"
-              if [ -f "$pdf_to_delete" ]; then
-                echo "Deleting old PDF: $pdf_to_delete"
-                rm "$pdf_to_delete"
-              fi
+              if [ -f "$pdf_to_delete" ]; then echo "Deleting old PDF: $pdf_to_delete"; rm "$pdf_to_delete"; fi
             done
-          else
-            echo "No old PDFs to clean up."
           fi
-
           echo -e "\n--- Identifying files to compile ---"
-          # Cerca file Aggiunti, Modificati e il nuovo nome dei Rinomimati
           changed_files=$(git diff --name-only --diff-filter=AMR HEAD~1 HEAD | grep '\.tex$' || true)
-
-          if [ -z "$changed_files" ]; then
-            echo "No .tex files to compile. Skipping."
-            exit 0
-          fi
-
+          if [ -z "$changed_files" ]; then echo "No .tex files to compile. Skipping."; exit 0; fi
           compile_list=""
           while IFS= read -r file; do
             if [[ "$file" == *"/contenuti/"* ]]; then
-              parent_dir=$(echo "$file" | sed 's|/contenuti/.*||')
-              target_files=$(find "$parent_dir" -maxdepth 1 -type f -name "*.tex")
-              echo "Change in child '$file'. Adding potential parents: $target_files"
+              parent_dir=$(echo "$file" | sed 's|/contenuti/.*||'); target_files=$(find "$parent_dir" -maxdepth 1 -type f -name "*.tex")
               if [ -n "$target_files" ]; then compile_list="$compile_list\n$target_files"; fi
             else
-              target_file="$file"
-              echo "Change in main file: '$target_file'"
-              compile_list="$compile_list\n$target_file"
+              compile_list="$compile_list\n$file"
             fi
           done < <(echo "$changed_files")
-
           unique_compile_list=$(echo -e "$compile_list" | sed '/^$/d' | sort -u)
-
-          if [ -z "$unique_compile_list" ]; then
-            echo "Could not determine any main .tex files to compile. Exiting."
-            exit 0
-          fi
-          
+          if [ -z "$unique_compile_list" ]; then echo "Could not determine any main .tex files to compile."; exit 0; fi
           echo -e "\nFinal list of files to compile:\n$unique_compile_list\n"
 
-          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
-            set -e # Interrompe lo script al primo errore
+          echo "--- Preemptively deleting PDFs before recompilation ---"
+          echo "$unique_compile_list" | while IFS= read -r file_to_compile; do
+            filepath=$(dirname "$file_to_compile")
+            filename=$(basename "$file_to_compile" .tex)
+            output_subpath=$(echo "$filepath" | sed 's|^src/||; s|^src$||')
+            pdf_to_delete="docs/$output_subpath/$filename.pdf"
+            if [ -f "$pdf_to_delete" ]; then
+              echo "Deleting existing PDF to ensure consistency: $pdf_to_delete"
+              rm "$pdf_to_delete"
+            fi
+          done
+
+          touch successes.log failures.log
+          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
             echo 'Starting compilation loop...'
-            
             echo \"$unique_compile_list\" | while IFS= read -r final_file; do
-              echo \"--- Compiling: '$final_file' ---\"
-
-              # Avvolge la compilazione in una condizione per un feedback migliore
-              if ! latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory=\"\$(pwd)/tmp_build\" \"\$(pwd)/\$final_file\"; then
-                # Se latexmk fallisce, stampa un'annotazione di errore e lo script si ferma (grazie a set -e)
-                echo \"::error file=\$final_file::LaTeX compilation failed for \$final_file. Check log above for details.\"
-                exit 1
+              echo \"--- Compiling: '\$final_file' ---\"
+              if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory=\"\$(pwd)/tmp_build\" \"\$(pwd)/\$final_file\"; then
+                # SUCCESSO
+                filepath=\$(dirname \"\$final_file\"); filename=\$(basename \"\$final_file\" .tex)
+                output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src\$||')
+                output_dir=\"\$(pwd)/docs/\$output_subpath\"; mkdir -p \"\$output_dir\"
+                mv \"\$(pwd)/tmp_build/\$filename.pdf\" \"\$output_dir/\"
+                echo \"\$final_file\" >> successes.log
+              else
+                # FALLIMENTO
+                echo \"::error file=\$final_file::LaTeX compilation failed. Check log above.\"
+                echo \"\$final_file;\$GITHUB_SHA\" >> failures.log
               fi
-
-              # Logica per spostare il PDF e pulire
-              ROOT_DIR=\$(pwd)
-              filepath=\$(dirname \"\$final_file\")
-              filename=\$(basename \"\$final_file\" .tex)
-              output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src$||')
-              output_dir=\"\$ROOT_DIR/docs/\$output_subpath\"
-              mkdir -p \"\$output_dir\"
-              
-              mv \"\$ROOT_DIR/tmp_build/\$filename.pdf\" \"\$output_dir/\"
-              rm -rf \"\$ROOT_DIR/tmp_build\" # Pulisce la cartella temporanea
+              rm -rf \"\$(pwd)/tmp_build\"
             done
           "
-
-      - name: Commit & Push PDF files
+      # (Il resto dello script per aggiornare il log dei fallimenti e fare il commit rimane invariato)
+      - name: Update Failure Log
         run: |
-          if [ -z "$(git status --porcelain docs)" ]; then
-            echo "No changes in PDF output. Nothing to commit."
+          echo "--- Updating compilation_failures.log ---"
+          touch compilation_failures.log successes.log failures.log
+          awk -F';' '{print $1}' compilation_failures.log > old_failures_paths.log
+          cat old_failures_paths.log failures.log | sort -u > temp_failures.log
+          if [ -s successes.log ]; then
+            awk -F';' 'NR==FNR{a[$1]=$0; next} !($1 in a) || $0=a[$1]' failures.log temp_failures.log | \
+            grep -v -F -x -f successes.log > compilation_failures.log
+          else
+            awk -F';' 'NR==FNR{a[$1]=$0; next} !($1 in a) || $0=a[$1]' failures.log temp_failures.log > compilation_failures.log
+          fi
+          echo "Current failed files (file;commit_hash):"
+          cat compilation_failures.log
+          rm -f successes.log failures.log temp_failures.log old_failures_paths.log
+
+      - name: Commit & Push PDF and Failure Log
+        run: |
+          git add docs compilation_failures.log
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
           else
             git config --global user.name "github-actions[bot]"
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git add docs
-            git commit -m "Automated LaTeX compilation"
+            git commit -m "Automated LaTeX compilation and updated failure log"
             git push
           fi
