@@ -20,12 +20,38 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Find and Compile changed .tex files
+      - name: Process LaTeX Files
         run: |
-          changed_files=$(git diff --name-only --diff-filter=AM HEAD~1 HEAD | grep '\.tex$' || true)
+          echo "--- Cleaning up old PDFs for deleted or renamed files ---"
+          # Trova i file eliminati (D) e i vecchi nomi dei file rinominati (R)
+          deleted_files=$(git diff --name-only --diff-filter=D HEAD~1 HEAD | grep '\.tex$' || true)
+          renamed_from_files=$(git diff --name-only --diff-filter=R HEAD~1 HEAD | awk '{print $1}' | grep '\.tex$' || true)
+          
+          cleanup_list="$deleted_files\n$renamed_from_files"
+          unique_cleanup_list=$(echo -e "$cleanup_list" | sed '/^$/d' | sort -u)
+
+          if [ -n "$unique_cleanup_list" ]; then
+            echo -e "Files to clean up:\n$unique_cleanup_list"
+            echo "$unique_cleanup_list" | while IFS= read -r file_to_clean; do
+              filepath=$(dirname "$file_to_clean")
+              filename=$(basename "$file_to_clean" .tex)
+              output_subpath=$(echo "$filepath" | sed 's|^src/||; s|^src$||')
+              pdf_to_delete="docs/$output_subpath/$filename.pdf"
+              if [ -f "$pdf_to_delete" ]; then
+                echo "Deleting old PDF: $pdf_to_delete"
+                rm "$pdf_to_delete"
+              fi
+            done
+          else
+            echo "No old PDFs to clean up."
+          fi
+
+          echo -e "\n--- Identifying files to compile ---"
+          # Cerca file Aggiunti, Modificati e il nuovo nome dei Rinomimati
+          changed_files=$(git diff --name-only --diff-filter=AMR HEAD~1 HEAD | grep '\.tex$' || true)
 
           if [ -z "$changed_files" ]; then
-            echo "No .tex files changed. Skipping compilation."
+            echo "No .tex files to compile. Skipping."
             exit 0
           fi
 
@@ -34,15 +60,11 @@ jobs:
             if [[ "$file" == *"/contenuti/"* ]]; then
               parent_dir=$(echo "$file" | sed 's|/contenuti/.*||')
               target_files=$(find "$parent_dir" -maxdepth 1 -type f -name "*.tex")
-              echo "Change in child '$file'. Adding all potential parents to compile list:"
-              echo "$target_files"
-              
-              if [ -n "$target_files" ]; then
-                compile_list="$compile_list\n$target_files"
-              fi
+              echo "Change in child '$file'. Adding potential parents: $target_files"
+              if [ -n "$target_files" ]; then compile_list="$compile_list\n$target_files"; fi
             else
               target_file="$file"
-              echo "Change detected in main file: '$target_file'"
+              echo "Change in main file: '$target_file'"
               compile_list="$compile_list\n$target_file"
             fi
           done < <(echo "$changed_files")
@@ -51,29 +73,35 @@ jobs:
 
           if [ -z "$unique_compile_list" ]; then
             echo "Could not determine any main .tex files to compile. Exiting."
-            exit 1
+            exit 0
           fi
           
           echo -e "\nFinal list of files to compile:\n$unique_compile_list\n"
 
           docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
+            set -e # Interrompe lo script al primo errore
             echo 'Starting compilation loop...'
             
             echo \"$unique_compile_list\" | while IFS= read -r final_file; do
               echo \"--- Compiling: '$final_file' ---\"
 
+              # Avvolge la compilazione in una condizione per un feedback migliore
+              if ! latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory=\"\$(pwd)/tmp_build\" \"\$(pwd)/\$final_file\"; then
+                # Se latexmk fallisce, stampa un'annotazione di errore e lo script si ferma (grazie a set -e)
+                echo \"::error file=\$final_file::LaTeX compilation failed for \$final_file. Check log above for details.\"
+                exit 1
+              fi
+
+              # Logica per spostare il PDF e pulire
               ROOT_DIR=\$(pwd)
               filepath=\$(dirname \"\$final_file\")
               filename=\$(basename \"\$final_file\" .tex)
-              
               output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src$||')
               output_dir=\"\$ROOT_DIR/docs/\$output_subpath\"
               mkdir -p \"\$output_dir\"
               
-              latexmk -pdf -cd -output-directory=\"\$output_dir\" -jobname=\"\$filename\" \"\$ROOT_DIR/\$final_file\"
-              latexmk -c -cd -output-directory=\"\$output_dir\" -jobname=\"\$filename\" \"\$ROOT_DIR/\$final_file\"
-
-              rm -f \"\$output_dir\"/*.bbl
+              mv \"\$ROOT_DIR/tmp_build/\$filename.pdf\" \"\$output_dir/\"
+              rm -rf \"\$ROOT_DIR/tmp_build\" # Pulisce la cartella temporanea
             done
           "
 
