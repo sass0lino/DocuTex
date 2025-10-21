@@ -1,0 +1,79 @@
+% Intestazione
+\fancyhead[L]{3 \hspace{0.2cm} Installazione} % Testo a sinistra
+
+
+\section{Installazione}
+\label{sec:installazione}
+
+\subsection{Installazione di Docker}
+Prima di procedere con l'installazione di \textit{BuddyBot} è importante verificare che \emph{Docker}\textsubscript{\textbf{\textit{G}}} sia installato sulla propria macchina e pronto all'uso.  
+Per farlo, digitare nel terminale:
+\begin{verbatim}
+    docker --version
+\end{verbatim}
+Se la console fornisce come output un numero di versione (ad esempio "Docker version 27.3.1, build ce12230"), allora \emph{Docker} è
+correttamente
+installato e funzionante.\\
+Nel caso in cui il terminale segnali un errore, è possibile scaricare \emph{Docker} seguendo la guida presente al link
+\bulhref{https://docs.docker.com/get-started/get-docker/}{https://docs.docker.com/get-started/get-docker/}
+\emph{(Ultimo accesso: 03/04/2025)}.\\
+Il gruppo \emph{SWEg labs} ha testato l'applicazione utilizzando \emph{Docker} in versione 27.3.1, dunque si consiglia di utilizzare una
+versione uguale o superiore per garantire il corretto funzionamento dell'applicazione.
+
+\subsection{Download dell'Applicazione}
+E' possibile clonare la \emph{repository}\textsubscript{\textbf{\textit{G}}} \emph{GitHub}\textsubscript{\textbf{\textit{G}}} di BuddyBot eseguendo sul proprio terminale:
+\begin{verbatim}
+    git clone https://github.com/SWEg-Labs/BuddyBot.git
+\end{verbatim}
+Una volta scaricato il \emph{repository}, posizionarsi nella cartella del progetto con il comando:
+\begin{verbatim}
+    cd BuddyBot
+\end{verbatim}
+
+\subsection{Creazione e configurazione del file \texttt{.env}}
+Tutte le variabili di sistema di configurazione sono già incluse nel \emph{Dockerfile}\textsubscript{\textbf{\textit{G}}}.  
+Tuttavia, per le impostazioni sensibili e personalizzabili, occorre creare nella directory \texttt{src/backend} un file
+\texttt{.env} contenente le seguenti voci (alle quali associare i propri dati):
+\begin{verbatim}
+    OPENAI_API_KEY = la_tua_chiave_openai
+    OPENAI_MODEL_NAME = modello_llm_scelto
+
+    GITHUB_TOKEN = il_tuo_token_github
+    OWNER = proprietario_repository
+    REPO = nome_repository
+
+    ATLASSIAN_TOKEN = il_tuo_token_atlassian
+    ATLASSIAN_USER_EMAIL = la_tua_mail_atlassian
+
+    JIRA_BASE_URL = url_base_jira
+    JIRA_PROJECT_KEY = jira_project_key
+
+    CONFLUENCE_BASE_URL = confluence_base_key
+    CONFLUENCE_SPACE_KEY = confluence_space_key
+\end{verbatim}
+
+\subsection{Creazione dell'immagine e avvio del container Docker}
+Una volta pronti, è possibile creare l'\emph{immagine Docker}\textsubscript{\textbf{\textit{G}}} posizionandosi nella cartella del progetto ed eseguendo:
+\begin{verbatim}
+    docker compose up --build
+\end{verbatim}
+La creazione dell'immagine impiegherà poco più di 5 minuti.
+Al termine della creazione di quest'ultima, verrà creato ed avviato il \emph{container}\textsubscript{\textbf{\textit{G}}} \texttt{buddybot}. Al termine dell'utilizzo, per
+spegnere l'applicazione è possibile fermare il container impartendo la combinazione di tasti Ctrl+C nel terminale, oppure premendo il tasto Stop nell'applicazione \emph{Docker Desktop}\textsubscript{\textbf{\textit{G}}}.\\
+Per i successivi accessi, aprire \emph{Docker Desktop} e premere il tasto Play sul container \texttt{buddybot} per avviare di nuovo il
+container dell'applicazione. Per stopparlo, premere il tasto Stop dalla stessa interfaccia.\\
+Se si vuole continuare ad interagire con il container da terminale, è possibile eseguire il comando:
+\begin{verbatim}
+    docker compose up
+\end{verbatim}
+per avviarlo, e poi, come sopra, Ctrl+C per stopparlo.
+
+\subsection{Esecuzione dell'Applicazione}
+Per avviare BuddyBot, è sufficiente aprire un \emph{browser}\textsubscript{\textbf{\textit{G}}} e digitare nella barra
+degli indirizzi:
+\begin{verbatim}
+    localhost:4200
+\end{verbatim}
+Si aprirà dunque l'interfaccia grafica dell'\emph{applicazione web}\textsubscript{\textbf{\textit{G}}}, pronta per ricevere domande
+dalla barra di input visibile nella parte inferiore dello schermo.\\
+Le istruzioni per l'utilizzo dell'applicazione sono fornite nella sezione \S\bulref{sec:guida_utilizzo}.
