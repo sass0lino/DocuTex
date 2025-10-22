@@ -1,8 +1,8 @@
-# Build Report del 2025-10-22T22:18:21+00:00
+# Build Report del 2025-10-22T22:21:47+00:00
 
 ## Fallimenti
-_Nessun errore di compilazione._
+- ❌ src/baci secondo copia.tex → **non compilato**
 
 ## Successi
-- ✅ [docs/RTB/Documentazione interna/Glossario/glossario_v1.0.0.pdf](docs/RTB/Documentazione%20interna/Glossario/glossario_v1.0.0.pdf)
-- ✅ [docs/RTB/Documentazione interna/Norme di Progetto/norme_progetto_v1.0.0.pdf](docs/RTB/Documentazione%20interna/Norme%20di%20Progetto/norme_progetto_v1.0.0.pdf)
+- ✅ [docs/baci secondo copia 2.pdf](docs/baci%20secondo%20copia%202.pdf)
+- ✅ [docs/orario sa.pdf](docs/orario%20sa.pdf)
