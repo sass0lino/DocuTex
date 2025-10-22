@@ -50,22 +50,145 @@ jobs:
           echo "--- Preparing compile list ---"
           BEFORE_SHA="${{ github.event.before }}"; AFTER_SHA="${{ github.event.after }}"
           
+          echo "DEBUG: BEFORE_SHA=$BEFORE_SHA"
+          echo "DEBUG: AFTER_SHA=$AFTER_SHA"
+          
           # Fonte 1: File modificati nel push
           changed_parents=""
           if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
-            changed_files=$(git ls-tree --name-only -r "$AFTER_SHA" | grep '\.tex$' || true)
+            changed_files=$(git ls-tree --name-only -r "$AFTER_SHA" | grep '\.tex
+          
+          # Fonte 2: Lo Scanner
+          missing_pdfs_list=""
+          while IFS= read -r tex_file; do
+            pdf_file=$(echo "$tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+            if [ ! -f "$pdf_file" ]; then
+              missing_pdfs_list="$missing_pdfs_list\n$tex_file"
+            fi
+          done < <(find src -type f -name "*.tex" | grep -v '/contenuti/')
+          
+          # Unisce le due fonti in una lista unica
+          master_compile_list=$(echo -e "$changed_parents\n$missing_pdfs_list" | sed '/^$/d' | sort -u)
+
+          if [ -z "$master_compile_list" ]; then
+            echo "No .tex files to compile."; echo "compile_needed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Final list of files to compile:"; echo "$master_compile_list"
+            echo "$master_compile_list" > compile_list.txt; echo "compile_needed=true" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Step 3 - Compile and Generate Build Report
+        if: steps.prepare.outputs.compile_needed == 'true'
+        run: |
+          echo "--- Starting LaTeX compilation ---"
+          
+          # Inizializza report Markdown
+          cat > build_report.md << 'EOFMARKDOWN'
+          # 📊 LaTeX Build Report
+          EOFMARKDOWN
+          echo "" >> build_report.md
+          echo "**Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> build_report.md
+          echo "**Commit:** \`${{ github.sha }}\`" >> build_report.md
+          echo "**Triggered by:** @${{ github.actor }}" >> build_report.md
+          echo "" >> build_report.md
+          echo "---" >> build_report.md
+          echo "" >> build_report.md
+          
+          # File temporanei per tracciare risultati
+          > success_list.txt
+          > failure_list.txt
+          
+          # Pre-cancellazione dei PDF
+          cat compile_list.txt | while IFS= read -r file_to_compile; do
+            pdf_to_delete=$(echo "$file_to_compile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+            if [ -f "$pdf_to_delete" ]; then echo "Preemptively deleting: $pdf_to_delete"; rm -f "$pdf_to_delete"; fi
+          done
+          
+          # Compilazione Docker
+          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
+            cat compile_list.txt | while IFS= read -r final_file; do
+              if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory=\"\$(pwd)/tmp_build\" \"\$(pwd)/\$final_file\"; then
+                filepath=\$(dirname \"\$final_file\"); filename=\$(basename \"\$final_file\" .tex); output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src\$||')
+                output_dir=\"\$(pwd)/docs/\$output_subpath\"; mkdir -p \"\$output_dir\"
+                mv \"\$(pwd)/tmp_build/\$filename.pdf\" \"\$output_dir/\"
+                echo \"\$final_file|SUCCESS|\$output_dir/\$filename.pdf\" >> success_list.txt
+              else
+                echo \"::error file=\$final_file::LaTeX compilation failed.\"
+                echo \"\$final_file|FAILURE\" >> failure_list.txt
+              fi; rm -rf \"\$(pwd)/tmp_build\"
+            done
+          "
+          
+          # Genera sezioni del report
+          if [ -s failure_list.txt ]; then
+            echo "## ❌ Failed Compilations" >> build_report.md
+            echo "" >> build_report.md
+            echo "The following files failed to compile:" >> build_report.md
+            echo "" >> build_report.md
+            cat failure_list.txt | while IFS='|' read -r failed_file status; do
+              encoded_path=$(echo "$failed_file" | sed 's/ /%20/g')
+              echo "- ❌ [\`$failed_file\`](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/$encoded_path)" >> build_report.md
+            done
+            echo "" >> build_report.md
+          fi
+          
+          if [ -s success_list.txt ]; then
+            echo "## ✅ Successful Compilations" >> build_report.md
+            echo "" >> build_report.md
+            echo "The following files were compiled successfully:" >> build_report.md
+            echo "" >> build_report.md
+            cat success_list.txt | while IFS='|' read -r tex_file status pdf_file; do
+              encoded_tex=$(echo "$tex_file" | sed 's/ /%20/g')
+              encoded_pdf=$(echo "$pdf_file" | sed 's/ /%20/g')
+              echo "- ✅ [\`$tex_file\`](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/$encoded_tex) → [📄 View PDF](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/$encoded_pdf)" >> build_report.md
+            done
+            echo "" >> build_report.md
+          fi
+          
+          # Footer
+          echo "---" >> build_report.md
+          echo "*Generated by GitHub Actions*" >> build_report.md
+          
+          # Cleanup
+          rm -f success_list.txt failure_list.txt
+
+      - name: Step 4 - Final Commit
+        run: |
+          echo "--- Committing changes ---"
+          touch build_report.md
+          git add docs build_report.md
+          if git diff --staged --quiet; then
+            echo "No changes in docs or build report to commit."
+          else
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -m "Automated LaTeX compilation and build report"
+            git push
+          fi
+ || true)
           else
             changed_files=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'src/**/*.tex' || true)
           fi
+          
+          echo "DEBUG: Changed files detected:"
+          echo "$changed_files"
+          echo "---"
+          
           if [ -n "$changed_files" ]; then
             while IFS= read -r file; do
+              echo "DEBUG: Processing file: $file"
               if [[ "$file" == *"/contenuti/"* ]]; then
-                parent_dir=$(echo "$file" | sed 's|/contenuti/.*||'); find "$parent_dir" -maxdepth 1 -type f -name "*.tex"
+                parent_dir=$(echo "$file" | sed 's|/contenuti/.*||')
+                echo "DEBUG: File in contenuti/ - parent_dir=$parent_dir"
+                find "$parent_dir" -maxdepth 1 -type f -name "*.tex"
               else
+                echo "DEBUG: Regular file, echoing: $file"
                 echo "$file"
               fi
             done < <(echo "$changed_files") | sort -u > changed_parents.txt
             changed_parents=$(cat changed_parents.txt)
+            echo "DEBUG: Content of changed_parents.txt:"
+            cat changed_parents.txt
           fi
           
           # Fonte 2: Lo Scanner
