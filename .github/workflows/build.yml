@@ -33,14 +33,26 @@ jobs:
               fi
             done
           fi
+          
+          # --- LOGICA CORRETTA PER LA PULIZIA DEL LOG ---
+          echo "--> Cleaning failure log from non-existent .tex files..."
           touch compilation_failures.log
-          all_current_main_files=$(find src -type f -name "*.tex" | grep -v '/contenuti/' || true)
-          awk -F';' 'BEGIN{while((getline line < "all_current_files.txt") > 0) a[line]=1} a[$1]' all_current_files.txt="$all_current_main_files" compilation_failures.log > temp_log.log
+          # 1. Salva tutti i file .tex "padre" esistenti in un file temporaneo
+          find src -type f -name "*.tex" | grep -v '/contenuti/' > all_current_files.txt
+
+          # 2. Usa awk con un pattern standard e robusto per filtrare il log
+          # NR==FNR è vero solo per il primo file (all_current_files.txt), e crea una "lista di controllo"
+          # Per il secondo file (compilation_failures.log), stampa la riga solo se il file è nella lista.
+          awk -F';' 'NR==FNR{a[$1]=1; next} a[$1]' all_current_files.txt compilation_failures.log > temp_log.log
           mv temp_log.log compilation_failures.log
+          
+          # 3. Pulisce il file temporaneo
+          rm all_current_files.txt
 
       - name: Step 2 - Identify Files to Compile
         id: prepare
         run: |
+          # (Logica invariata)
           BEFORE_SHA="${{ github.event.before }}"; AFTER_SHA="${{ github.event.after }}"
           if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
             changed_files=$(git ls-tree --name-only -r "$AFTER_SHA" | grep '\.tex$' || true)
@@ -48,7 +60,6 @@ jobs:
             changed_files=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" | grep '\.tex$' || true)
           fi
           files_from_log=$(awk -F';' '{print $1}' compilation_failures.log)
-          
           compile_list_from_changes=""
           if [ -n "$changed_files" ]; then
             while IFS= read -r file; do
@@ -60,7 +71,6 @@ jobs:
               fi
             done < <(echo "$changed_files")
           fi
-          
           master_compile_list=$(echo -e "$compile_list_from_changes\n$files_from_log" | sed '/^$/d' | sort -u)
           if [ -z "$master_compile_list" ]; then
             echo "No .tex files to compile."
@@ -68,27 +78,23 @@ jobs:
           else
             echo "Final list of files to compile:"
             echo "$master_compile_list"
-            # Salva la lista in un file per il prossimo step e imposta l'output
             echo "$master_compile_list" > compile_list.txt
             echo "compile_needed=true" >> $GITHUB_OUTPUT
           fi
           
       - name: Step 3 - Preemptive Deletion & Compilation
-        # Questo step viene eseguito SOLO SE ci sono file da compilare
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
-          echo "--- Preemptively deleting PDFs before recompilation ---"
+          # (Logica invariata)
           cat compile_list.txt | while IFS= read -r file_to_compile; do
             filepath=$(dirname "$file_to_compile"); filename=$(basename "$file_to_compile" .tex)
             output_subpath=$(echo "$filepath" | sed 's|^src/||; s|^src$||')
             pdf_to_delete="docs/$output_subpath/$filename.pdf"
-            if [ -f "$pdf_to_delete" ]; then echo "Deleting existing PDF: $pdf_to_delete"; rm "$pdf_to_delete"; fi
+            if [ -f "$pdf_to_delete" ]; then rm "$pdf_to_delete"; fi
           done
-          
           touch successes.log failures.log
           docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
             cat compile_list.txt | while IFS= read -r final_file; do
-              echo \"--- Compiling: '\$final_file' ---\"
               if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory=\"\$(pwd)/tmp_build\" \"\$(pwd)/\$final_file\"; then
                 filepath=\$(dirname \"\$final_file\"); filename=\$(basename \"\$final_file\" .tex); output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src\$||')
                 output_dir=\"\$(pwd)/docs/\$output_subpath\"; mkdir -p \"\$output_dir\"
@@ -102,10 +108,9 @@ jobs:
           "
 
       - name: Step 4 - Update Failure Log and Commit
-        # Anche questo step viene eseguito SOLO SE c'è stata una compilazione
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
-          echo "--- Updating failure log ---"
+          # (Logica invariata)
           cat compilation_failures.log failures.log | sort -u > temp_failures.log
           if [ -s successes.log ]; then
             while IFS= read -r successful_file; do
@@ -115,8 +120,6 @@ jobs:
             done < successes.log
           fi
           mv temp_failures.log compilation_failures.log
-
-          echo "--- Committing changes ---"
           git add docs compilation_failures.log
           if git diff --staged --quiet; then
             echo "No changes to commit."
