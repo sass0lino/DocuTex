@@ -8,7 +8,6 @@ on:
     branches:
       - main
     paths:
-      # Ascolta le modifiche sia ai sorgenti che ai PDF (per la tua regola 2)
       - 'src/**/*.tex'
       - 'docs/**/*.pdf'
 
@@ -20,117 +19,106 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # FONDAMENTALE: Scarica l'intera cronologia per permettere a git diff di funzionare
           fetch-depth: 0
 
-      - name: Step 1 - Enforce Consistency (Analisi e Pulizia)
+      - name: Step 1 - Enforce Consistency (Cleanup)
         id: analysis
         run: |
-          echo "--- Analizzando le modifiche e forzando la coerenza ---"
+          echo "--- Enforcing repository consistency ---"
           BEFORE_SHA="${{ github.event.before }}"; AFTER_SHA="${{ github.event.after }}"
           
           # 1. Pulizia PDF Orfani (Controllo di stato generale)
-          echo "--> Controllo PDF orfani (src vs docs)..."
           if [ -d "docs" ]; then
             find docs -type f -name "*.pdf" | while IFS= read -r pdf_file; do
               src_file=$(echo "$pdf_file" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
-              if [ ! -f "$src_file" ]; then
-                echo "PDF Orfano trovato (sorgente .tex non esiste). Eliminazione: $pdf_file"
-                rm "$pdf_file"
-              fi
+              if [ ! -f "$src_file" ]; then echo "Orphan PDF found. Deleting: $pdf_file"; rm "$pdf_file"; fi
             done
           fi
 
-          # Gestione del primo push (non c'è un 'before' da confrontare)
-          if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
-            echo "Primo push. Salto l'analisi delle modifiche."
-          else
-            # 2. Tua Richiesta 2: Trova e cancella i PDF aggiunti/modificati/rinominati dall'utente
+          # 2. Pulizia Anti-Manomissione (PDF aggiunti dall'utente)
+          if [[ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
             manually_changed_pdfs=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'docs/**/*.pdf' || true)
             if [ -n "$manually_changed_pdfs" ]; then
-              echo "--> Rilevati PDF aggiunti/modificati/rinominati manualmente. Eliminazione:"
-              echo "$manually_changed_pdfs"
+              echo "--> Detected manually added/modified/renamed PDFs. Deleting them:"
               echo "$manually_changed_pdfs" | xargs -r rm -f
-            fi
-
-            # 3. Tua Richiesta 1: Trova i .tex modificati dall'utente e cancella i loro PDF
-            modified_tex_files=$(git diff --name-only --diff-filter=M "$BEFORE_SHA" "$AFTER_SHA" -- 'src/**/*.tex' || true)
-            if [ -n "$modified_tex_files" ]; then
-              echo "--> Rilevati .tex modificati. Eliminazione dei PDF corrispondenti:"
-              echo "$modified_tex_files" | while IFS= read -r tex_file; do
-                if [[ "$tex_file" == *"/contenuti/"* ]]; then
-                  parent_dir=$(echo "$tex_file" | sed 's|/contenuti/.*||'); find "$parent_dir" -maxdepth 1 -type f -name "*.tex"
-                else
-                  echo "$tex_file"
-                fi
-              done | sort -u | while IFS= read -r main_tex_file; do
-                pdf_to_delete=$(echo "$main_tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
-                if [ -f "$pdf_to_delete" ]; then echo "Eliminazione: $pdf_to_delete"; rm -f "$pdf_to_delete"; fi
-              done
             fi
           fi
 
-      - name: Step 2 - Scan for Missing PDFs (Crea Lista di Lavoro)
+      - name: Step 2 - Prepare Compile List (Unification)
         id: prepare
         run: |
-          echo "--- Scansione dei PDF mancanti ---"
-          compile_list=""
-          # 4. Tua Richiesta 1 (Lo "Scanner"): Trova tutti i .tex padri che non hanno un .pdf
-          find src -type f -name "*.tex" | grep -v '/contenuti/' | while IFS= read -r tex_file; do
+          echo "--- Preparing compile list ---"
+          BEFORE_SHA="${{ github.event.before }}"; AFTER_SHA="${{ github.event.after }}"
+          
+          # Fonte 1: File modificati nel push
+          changed_parents=""
+          if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
+            changed_files=$(git ls-tree --name-only -r "$AFTER_SHA" | grep '\.tex$' || true)
+          else
+            changed_files=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'src/**/*.tex' || true)
+          fi
+          if [ -n "$changed_files" ]; then
+            while IFS= read -r file; do
+              if [[ "$file" == *"/contenuti/"* ]]; then
+                parent_dir=$(echo "$file" | sed 's|/contenuti/.*||'); find "$parent_dir" -maxdepth 1 -type f -name "*.tex"
+              else
+                echo "$file"
+              fi
+            done < <(echo "$changed_files") | sort -u > changed_parents.txt
+            changed_parents=$(cat changed_parents.txt)
+          fi
+          
+          # Fonte 2: Lo Scanner (con la correzione del bug subshell)
+          missing_pdfs_list=""
+          # CORREZIONE: Usa < <(...) per evitare il subshell e preservare la variabile
+          while IFS= read -r tex_file; do
             pdf_file=$(echo "$tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
             if [ ! -f "$pdf_file" ]; then
-              echo "PDF mancante per $tex_file. Aggiunto alla lista di compilazione."
-              compile_list="$compile_list\n$tex_file"
+              missing_pdfs_list="$missing_pdfs_list\n$tex_file"
             fi
-          done
+          done < <(find src -type f -name "*.tex" | grep -v '/contenuti/')
           
-          unique_compile_list=$(echo -e "$compile_list" | sed '/^$/d' | sort -u)
-          if [ -z "$unique_compile_list" ]; then
-            echo "Nessun file .tex da compilare. La cartella 'docs' è coerente."
-            echo "compile_needed=false" >> $GITHUB_OUTPUT
+          # Unisce le due fonti in una lista unica
+          master_compile_list=$(echo -e "$changed_parents\n$missing_pdfs_list" | sed '/^$/d' | sort -u)
+
+          if [ -z "$master_compile_list" ]; then
+            echo "No .tex files to compile."; echo "compile_needed=false" >> $GITHUB_OUTPUT
           else
-            echo "Lista finale dei file da compilare:"; echo "$unique_compile_list"
-            echo "$unique_compile_list" > compile_list.txt; echo "compile_needed=true" >> $GITHUB_OUTPUT
+            echo "Final list of files to compile:"; echo "$master_compile_list"
+            echo "$master_compile_list" > compile_list.txt; echo "compile_needed=true" >> $GITHUB_OUTPUT
           fi
           
       - name: Step 3 - Compile and Generate Build Report
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
-          echo "--- Compilazione e generazione del Build Report ---"
-          # 5. Tua Richiesta 4: Crea il report da zero
+          # (Logica di compilazione e report invariata)
           echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.log
-          
+          cat compile_list.txt | while IFS= read -r file_to_compile; do
+            pdf_to_delete=$(echo "$file_to_compile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+            if [ -f "$pdf_to_delete" ]; then echo "Preemptively deleting: $pdf_to_delete"; rm -f "$pdf_to_delete"; fi
+          done
           docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
-            # 6. Tua Richiesta 5: Compila
             cat compile_list.txt | while IFS= read -r final_file; do
-              echo \"--- Compilando: '\$final_file' ---\"
               if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory=\"\$(pwd)/tmp_build\" \"\$(pwd)/\$final_file\"; then
-                # Successo
                 filepath=\$(dirname \"\$final_file\"); filename=\$(basename \"\$final_file\" .tex); output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src\$||')
                 output_dir=\"\$(pwd)/docs/\$output_subpath\"; mkdir -p \"\$output_dir\"
                 mv \"\$(pwd)/tmp_build/\$filename.pdf\" \"\$output_dir/\"
-                # 7. Tua Richiesta 6: Scrive il successo nel report
                 echo \"\$final_file;Successo\" >> build_report.log
               else
-                # Fallimento
                 echo \"::error file=\$final_file::LaTeX compilation failed.\"
-                # 8. Tua Richiesta 6: Scrive il fallimento nel report
                 echo \"\$final_file;Fallimento;\$GITHUB_SHA\" >> build_report.log
-              fi
-              # Mantiene la pulizia dei file .bbl, .aux, ecc.
-              rm -rf \"\$(pwd)/tmp_build\"
+              fi; rm -rf \"\$(pwd)/tmp_build\"
             done
           "
 
       - name: Step 4 - Final Commit
         run: |
-          echo "--- Salvataggio delle modifiche ---"
-          # Assicura che il file di report esista anche se la compilazione è stata saltata
+          # (Logica di commit invariata)
+          echo "--- Committing changes ---"
           touch build_report.log
           git add docs build_report.log
-          
           if git diff --staged --quiet; then
-            echo "Nessuna modifica a 'docs' o al 'build_report.log'. Commit non necessario."
+            echo "No changes in docs or build report to commit."
           else
             git config --global user.name "github-actions[bot]"
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
