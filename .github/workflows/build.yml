@@ -20,39 +20,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Step 1 - State Reconciliation and Cleanup
-        id: cleanup
+      - name: Step 1 & 2 - Reconciliation, Cleanup, and Identification
+        id: prepare
         run: |
-          echo "--- Cleaning up orphan PDFs and failure log ---"
+          # (Tutta la logica di pulizia e identificazione file rimane invariata)
           if [ -d "docs" ]; then
             find docs -type f -name "*.pdf" | while IFS= read -r pdf_file; do
               src_file=$(echo "$pdf_file" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
-              if [ ! -f "$src_file" ]; then
-                echo "Orphan PDF found. Deleting: $pdf_file"
-                rm "$pdf_file"
-              fi
+              if [ ! -f "$src_file" ]; then rm "$pdf_file"; fi
             done
           fi
-          
-          # --- LOGICA CORRETTA PER LA PULIZIA DEL LOG ---
-          echo "--> Cleaning failure log from non-existent .tex files..."
           touch compilation_failures.log
-          # 1. Salva tutti i file .tex "padre" esistenti in un file temporaneo
           find src -type f -name "*.tex" | grep -v '/contenuti/' > all_current_files.txt
-
-          # 2. Usa awk con un pattern standard e robusto per filtrare il log
-          # NR==FNR è vero solo per il primo file (all_current_files.txt), e crea una "lista di controllo"
-          # Per il secondo file (compilation_failures.log), stampa la riga solo se il file è nella lista.
           awk -F';' 'NR==FNR{a[$1]=1; next} a[$1]' all_current_files.txt compilation_failures.log > temp_log.log
           mv temp_log.log compilation_failures.log
-          
-          # 3. Pulisce il file temporaneo
           rm all_current_files.txt
-
-      - name: Step 2 - Identify Files to Compile
-        id: prepare
-        run: |
-          # (Logica invariata)
           BEFORE_SHA="${{ github.event.before }}"; AFTER_SHA="${{ github.event.after }}"
           if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
             changed_files=$(git ls-tree --name-only -r "$AFTER_SHA" | grep '\.tex$' || true)
@@ -73,19 +55,14 @@ jobs:
           fi
           master_compile_list=$(echo -e "$compile_list_from_changes\n$files_from_log" | sed '/^$/d' | sort -u)
           if [ -z "$master_compile_list" ]; then
-            echo "No .tex files to compile."
-            echo "compile_needed=false" >> $GITHUB_OUTPUT
+            echo "No .tex files to compile."; echo "compile_needed=false" >> $GITHUB_OUTPUT
           else
-            echo "Final list of files to compile:"
-            echo "$master_compile_list"
-            echo "$master_compile_list" > compile_list.txt
-            echo "compile_needed=true" >> $GITHUB_OUTPUT
+            echo "$master_compile_list" > compile_list.txt; echo "compile_needed=true" >> $GITHUB_OUTPUT
           fi
           
       - name: Step 3 - Preemptive Deletion & Compilation
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
-          # (Logica invariata)
           cat compile_list.txt | while IFS= read -r file_to_compile; do
             filepath=$(dirname "$file_to_compile"); filename=$(basename "$file_to_compile" .tex)
             output_subpath=$(echo "$filepath" | sed 's|^src/||; s|^src$||')
@@ -93,8 +70,11 @@ jobs:
             if [ -f "$pdf_to_delete" ]; then rm "$pdf_to_delete"; fi
           done
           touch successes.log failures.log
-          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
+          
+          # Passa il timestamp al container Docker
+          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA -e TIMESTAMP=$(date -u --iso-8601=seconds) ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
             cat compile_list.txt | while IFS= read -r final_file; do
+              echo \"--- Compiling: '\$final_file' ---\"
               if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory=\"\$(pwd)/tmp_build\" \"\$(pwd)/\$final_file\"; then
                 filepath=\$(dirname \"\$final_file\"); filename=\$(basename \"\$final_file\" .tex); output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src\$||')
                 output_dir=\"\$(pwd)/docs/\$output_subpath\"; mkdir -p \"\$output_dir\"
@@ -102,7 +82,8 @@ jobs:
                 echo \"\$final_file\" >> successes.log
               else
                 echo \"::error file=\$final_file::LaTeX compilation failed.\"
-                echo \"\$final_file;\$GITHUB_SHA\" >> failures.log
+                # Aggiunge al log dei fallimenti anche il timestamp
+                echo \"\$final_file;\$GITHUB_SHA;\$TIMESTAMP\" >> failures.log
               fi; rm -rf \"\$(pwd)/tmp_build\"
             done
           "
@@ -110,8 +91,13 @@ jobs:
       - name: Step 4 - Update Failure Log and Commit
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
-          # (Logica invariata)
+          echo "--- Updating failure log ---"
+          touch compilation_failures.log
+          
+          # Combina i vecchi e i nuovi fallimenti. `sort -u` ora manterrà le righe separate grazie al timestamp
           cat compilation_failures.log failures.log | sort -u > temp_failures.log
+          
+          # Rimuove dalla lista finale i file che ora hanno avuto successo
           if [ -s successes.log ]; then
             while IFS= read -r successful_file; do
                 escaped_file=$(printf '%s\n' "$successful_file" | sed 's/[.[\*^$]/\\&/g')
@@ -119,7 +105,14 @@ jobs:
                 mv new_temp_failures.log temp_failures.log
             done < successes.log
           fi
+          
           mv temp_failures.log compilation_failures.log
+          
+          echo "Current failed files (file;commit_hash;timestamp):"
+          cat compilation_failures.log
+          rm -f successes.log failures.log
+
+          # Logica di commit
           git add docs compilation_failures.log
           if git diff --staged --quiet; then
             echo "No changes to commit."
