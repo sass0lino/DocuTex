@@ -9,6 +9,7 @@ on:
       - main
     paths:
       - 'src/**/*.tex'
+      - 'docs/**/*.pdf'
 
 jobs:
   build_latex:
@@ -20,105 +21,91 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Step 1 - State Reconciliation and Cleanup
-        id: cleanup
+      - name: Step 1 - Analyze Changes & Enforce Consistency
+        id: analysis
         run: |
-          # (Logica invariata)
+          echo "--- Analyzing user changes and enforcing consistency ---"
+          BEFORE_SHA="${{ github.event.before }}"; AFTER_SHA="${{ github.event.after }}"
+
+          echo "--> Scanning for orphan PDFs..."
           if [ -d "docs" ]; then
             find docs -type f -name "*.pdf" | while IFS= read -r pdf_file; do
               src_file=$(echo "$pdf_file" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
-              if [ ! -f "$src_file" ]; then echo "Orphan PDF found. Deleting: $pdf_file"; rm "$pdf_file"; fi
+              if [ ! -f "$src_file" ]; then
+                echo "Orphan PDF found (source .tex does not exist). Deleting: $pdf_file"
+                rm "$pdf_file"
+              fi
             done
           fi
-          touch compilation_failures.log
-          find src -type f -name "*.tex" | grep -v '/contenuti/' > all_current_files.txt
-          awk -F';' 'NR==FNR{a[$1]=1; next} a[$1]' all_current_files.txt compilation_failures.log > temp_log.log
-          mv temp_log.log compilation_failures.log
-          rm all_current_files.txt
 
-      - name: Step 2 - Identify Files to Compile
+          # CORREZIONE: Ora traccia anche i PDF Modificati (AMR)
+          manually_changed_pdfs=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'docs/**/*.pdf' || true)
+          if [ -n "$manually_changed_pdfs" ]; then
+            echo "--> Detected manually added/modified/renamed PDFs. Deleting them:"
+            echo "$manually_changed_pdfs" | xargs -r rm -f
+          fi
+
+          modified_tex_files=$(git diff --name-only --diff-filter=M "$BEFORE_SHA" "$AFTER_SHA" -- 'src/**/*.tex' || true)
+          if [ -n "$modified_tex_files" ]; then
+            echo "--> Detected modified .tex files. Deleting corresponding PDFs:"
+            echo "$modified_tex_files" | while IFS= read -r tex_file; do
+              if [[ "$tex_file" == *"/contenuti/"* ]]; then
+                parent_dir=$(echo "$tex_file" | sed 's|/contenuti/.*||'); find "$parent_dir" -maxdepth 1 -type f -name "*.tex"
+              else
+                echo "$tex_file"
+              fi
+            done | sort -u | while IFS= read -r main_tex_file; do
+              pdf_to_delete=$(echo "$main_tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+              if [ -f "$pdf_to_delete" ]; then echo "Deleting: $pdf_to_delete"; rm -f "$pdf_to_delete"; fi
+            done
+          fi
+
+      - name: Step 2 - Scan for Missing PDFs & Prepare Compile List
         id: prepare
         run: |
-          # (Logica invariata)
-          BEFORE_SHA="${{ github.event.before }}"; AFTER_SHA="${{ github.event.after }}"
-          if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
-            changed_files=$(git ls-tree --name-only -r "$AFTER_SHA" | grep '\.tex$' || true)
-          else
-            changed_files=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" | grep '\.tex$' || true)
-          fi
-          files_from_log=$(awk -F';' '{print $1}' compilation_failures.log)
-          compile_list_from_changes=""
-          if [ -n "$changed_files" ]; then
-            while IFS= read -r file; do
-              if [[ "$file" == *"/contenuti/"* ]]; then
-                parent_dir=$(echo "$file" | sed 's|/contenuti/.*||'); target_files=$(find "$parent_dir" -maxdepth 1 -type f -name "*.tex")
-                if [ -n "$target_files" ]; then compile_list_from_changes="$compile_list_from_changes\n$target_files"; fi
-              else
-                compile_list_from_changes="$compile_list_from_changes\n$file"
-              fi
-            done < <(echo "$changed_files")
-          fi
-          master_compile_list=$(echo -e "$compile_list_from_changes\n$files_from_log" | sed '/^$/d' | sort -u)
-          if [ -z "$master_compile_list" ]; then
+          echo "--- Scanning for missing PDFs ---"
+          compile_list=""
+          find src -type f -name "*.tex" | grep -v '/contenuti/' | while IFS= read -r tex_file; do
+            pdf_file=$(echo "$tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+            if [ ! -f "$pdf_file" ]; then
+              compile_list="$compile_list\n$tex_file"
+            fi
+          done
+          unique_compile_list=$(echo -e "$compile_list" | sed '/^$/d' | sort -u)
+          if [ -z "$unique_compile_list" ]; then
             echo "No .tex files to compile."; echo "compile_needed=false" >> $GITHUB_OUTPUT
           else
-            echo "$master_compile_list" > compile_list.txt; echo "compile_needed=true" >> $GITHUB_OUTPUT
+            echo "Final list of files to compile:"; echo "$unique_compile_list"
+            echo "$unique_compile_list" > compile_list.txt; echo "compile_needed=true" >> $GITHUB_OUTPUT
           fi
           
-      - name: Step 3 - Preemptive Deletion & Compilation
+      - name: Step 3 - Compile and Generate Build Report
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
-          # (Logica invariata con l'aggiunta del TIMESTAMP)
-          cat compile_list.txt | while IFS= read -r file_to_compile; do
-            filepath=$(dirname "$file_to_compile"); filename=$(basename "$file_to_compile" .tex)
-            output_subpath=$(echo "$filepath" | sed 's|^src/||; s|^src$||')
-            pdf_to_delete="docs/$output_subpath/$filename.pdf"
-            if [ -f "$pdf_to_delete" ]; then rm "$pdf_to_delete"; fi
-          done
-          touch successes.log failures.log
-          
-          # CORREZIONE: Aggiunto nuovamente il TIMESTAMP
-          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA -e TIMESTAMP=$(date -u --iso-8601=seconds) ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
+          echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.log
+          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
             cat compile_list.txt | while IFS= read -r final_file; do
               if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory=\"\$(pwd)/tmp_build\" \"\$(pwd)/\$final_file\"; then
                 filepath=\$(dirname \"\$final_file\"); filename=\$(basename \"\$final_file\" .tex); output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src\$||')
                 output_dir=\"\$(pwd)/docs/\$output_subpath\"; mkdir -p \"\$output_dir\"
                 mv \"\$(pwd)/tmp_build/\$filename.pdf\" \"\$output_dir/\"
-                echo \"\$final_file\" >> successes.log
+                echo \"\$final_file;Successo\" >> build_report.log
               else
                 echo \"::error file=\$final_file::LaTeX compilation failed.\"
-                # CORREZIONE: Aggiunto nuovamente il TIMESTAMP al log
-                echo \"\$final_file;\$GITHUB_SHA;\$TIMESTAMP\" >> failures.log
+                echo \"\$final_file;Fallimento;\$GITHUB_SHA\" >> build_report.log
               fi; rm -rf \"\$(pwd)/tmp_build\"
             done
           "
 
-      - name: Step 4 - Update Failure Log
-        if: steps.prepare.outputs.compile_needed == 'true'
-        run: |
-          # (Logica invariata)
-          cat compilation_failures.log failures.log | sort -u > temp_failures.log
-          if [ -s successes.log ]; then
-            while IFS= read -r successful_file; do
-                escaped_file=$(printf '%s\n' "$successful_file" | sed 's/[.[\*^$]/\\&/g')
-                grep -v "^${escaped_file};" temp_failures.log > new_temp_failures.log
-                mv new_temp_failures.log temp_failures.log
-            done < successes.log
-          fi
-          mv temp_failures.log compilation_failures.log
-          rm -f successes.log failures.log
-      
-      - name: Step 5 - Final Commit
-        # CORREZIONE: Questo step ora è separato e viene eseguito sempre
+      - name: Step 4 - Final Commit
         run: |
           echo "--- Committing changes ---"
-          git add docs compilation_failures.log
-          
+          git add docs build_report.log
           if git diff --staged --quiet; then
-            echo "No changes in docs or failure log to commit."
+            echo "No changes in docs or build report to commit."
           else
             git config --global user.name "github-actions[bot]"
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git commit -m "Automated LaTeX compilation and state reconciliation"
+            git commit -m "Automated LaTeX compilation and build report"
             git push
           fi
