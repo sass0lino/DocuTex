@@ -25,26 +25,27 @@ jobs:
         id: analysis
         run: |
           echo "--- Enforcing repository consistency ---"
-          BEFORE_SHA="${{ github.event.before }}"; AFTER_SHA="${{ github.event.after }}"
+          BEFORE_SHA="${{ github.event.before }}"
+          AFTER_SHA="${{ github.event.after }}"
 
-          # 1. Pulizia PDF Orfani (Controllo di stato generale)
+          # 1. Pulizia PDF orfani
           if [ -d "docs" ]; then
             find docs -type f -name "*.pdf" | while IFS= read -r pdf_file; do
-              src_file=$(printf '%s' "$pdf_file" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
+              src_file=$(echo "$pdf_file" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
               if [ ! -f "$src_file" ]; then
-                echo "Orphan PDF found. Deleting: $pdf_file"
+                echo "Deleting orphan PDF: $pdf_file"
                 rm -f -- "$pdf_file"
               fi
             done
           fi
 
-          # 2. Pulizia Anti-Manomissione (PDF aggiunti dall'utente)
+          # 2. Pulizia PDF aggiunti a mano
           if [[ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
-            manually_changed_pdfs=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'docs/*.pdf' 'docs/**/*.pdf' || true)
+            manually_changed_pdfs=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'docs/**/*.pdf' || true)
             if [ -n "$manually_changed_pdfs" ]; then
-              echo "--> Detected manually added/modified/renamed PDFs. Deleting them:"
-              printf '%s\n' "$manually_changed_pdfs" | while IFS= read -r p; do
-                [ -n "$p" ] && echo "Deleting: $p" && rm -f -- "$p"
+              echo "--> Manually modified PDFs detected. Deleting them:"
+              echo "$manually_changed_pdfs" | while IFS= read -r pdf; do
+                [ -n "$pdf" ] && rm -f -- "$pdf"
               done
             fi
           fi
@@ -53,193 +54,126 @@ jobs:
         id: prepare
         run: |
           echo "--- Preparing compile list ---"
-          BEFORE_SHA="${{ github.event.before }}"; AFTER_SHA="${{ github.event.after }}"
+          BEFORE_SHA="${{ github.event.before }}"
+          AFTER_SHA="${{ github.event.after }}"
 
-          # Fonte 1: File modificati nel push
           changed_parents_file="changed_parents.txt"
           > "$changed_parents_file"
 
+          # 🔧 FIX CRUCIALE: ora i file in src/ (come src/hello_world.tex) vengono rilevati
           if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
-            # initial push: consider all .tex
-            git ls-tree --name-only -r "$AFTER_SHA" | grep '\.tex$' || true > /tmp/all_tex.txt
-            changed_files=$(cat /tmp/all_tex.txt)
+            changed_files=$(git ls-tree --name-only -r "$AFTER_SHA" | grep '\.tex$' || true)
           else
-            # Nota: uso due pathspec per catturare anche i .tex direttamente in src/
-            changed_files=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'src/*.tex' 'src/**/*.tex' || true)
+            changed_files=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- src | grep '\.tex$' || true)
           fi
 
           if [ -n "$changed_files" ]; then
-            printf '%s\n' "$changed_files" | while IFS= read -r file; do
+            echo "Changed .tex files detected:"
+            echo "$changed_files"
+            while IFS= read -r file; do
               [ -z "$file" ] && continue
               if [[ "$file" == *"/contenuti/"* ]]; then
-                parent_dir=$(printf '%s' "$file" | sed 's|/contenuti/.*||')
-                # trova il file "padre" (i .tex nella cartella padre)
-                find "$parent_dir" -maxdepth 1 -type f -name "*.tex" -print
+                parent_dir=$(echo "$file" | sed 's|/contenuti/.*||')
+                find "$parent_dir" -maxdepth 1 -type f -name "*.tex"
               else
-                # file singolo (anche quelli in src/)
-                printf '%s\n' "$file"
+                echo "$file"
               fi
-            done | sort -u > "$changed_parents_file"
+            done < <(echo "$changed_files") | sort -u > "$changed_parents_file"
           fi
 
-          # Fonte 2: Lo Scanner (tutti i .tex "padre" che non hanno pdf corrispondente)
+          # 🔍 Scanner: trova tutti i .tex "padre" che non hanno il PDF corrispondente
           missing_pdfs_file="missing_pdfs.txt"
           > "$missing_pdfs_file"
-          # trova tutti i tex "padre" (esclude cartelle 'contenuti')
+
           find src -type f -name "*.tex" | grep -v '/contenuti/' | while IFS= read -r tex_file; do
-            pdf_file=$(printf '%s' "$tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+            pdf_file=$(echo "$tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
             if [ ! -f "$pdf_file" ]; then
-              printf '%s\n' "$tex_file" >> "$missing_pdfs_file"
+              echo "$tex_file" >> "$missing_pdfs_file"
             fi
           done
 
-          # Unisce le due fonti in una lista unica
-          master_compile_file="compile_list.txt"
-          cat "$changed_parents_file" "$missing_pdfs_file" | sed '/^$/d' | sort -u > "$master_compile_file"
+          # ✅ Unisce le due fonti
+          cat "$changed_parents_file" "$missing_pdfs_file" | sed '/^$/d' | sort -u > compile_list.txt
 
-          if [ ! -s "$master_compile_file" ]; then
+          if [ ! -s compile_list.txt ]; then
             echo "No .tex files to compile."
             echo "compile_needed=false" >> $GITHUB_OUTPUT
           else
-            echo "Final list of files to compile:"
-            cat "$master_compile_file"
+            echo "Files to compile:"
+            cat compile_list.txt
             echo "compile_needed=true" >> $GITHUB_OUTPUT
-            # preservo la lista per lo step successivo
-            cp "$master_compile_file" compile_list.txt
           fi
 
       - name: Step 3 - Compile and Generate Build Report
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
-          set -euo pipefail
           echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.md
-          echo "" >> build_report.md
-          echo "_Commit: $GITHUB_SHA_" >> build_report.md
           echo "" >> build_report.md
 
           > successes.txt
           > failures.txt
 
-          # Pre-delete any existing PDFs for the to-be-compiled tex files (local)
-          while IFS= read -r file_to_compile || [ -n "$file_to_compile" ]; do
-            [ -z "$file_to_compile" ] && continue
-            pdf_to_delete=$(printf '%s' "$file_to_compile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
-            if [ -f "$pdf_to_delete" ]; then
-              echo "Preemptively deleting: $pdf_to_delete"
-              rm -f -- "$pdf_to_delete"
-            fi
+          # 🔄 Rimuove PDF esistenti
+          while IFS= read -r texfile; do
+            [ -z "$texfile" ] && continue
+            pdf_file=$(echo "$texfile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+            [ -f "$pdf_file" ] && rm -f "$pdf_file"
           done < compile_list.txt
 
-          # Create tmp build directory once (latexmk will put files here)
           mkdir -p tmp_build
 
-          # Use docker only if there are files (this step executed only if compile_needed==true)
-          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
-            set -euo pipefail
-            while IFS= read -r final_file || [ -n \"\$final_file\" ]; do
-              [ -z \"\$final_file\" ] && continue
-              echo 'Compiling: '\$final_file
-              # assicurati che tmp_build esista
-              mkdir -p \"\$(pwd)/tmp_build\"
-              if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory=\"\$(pwd)/tmp_build\" \"\$(pwd)/\$final_file\"; then
-                filepath=\$(dirname \"\$final_file\"); filename=\$(basename \"\$final_file\" .tex)
-                # calcola sottocartella di output rimuovendo prefisso src/
-                output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src\$||')
-                output_dir=\"\$(pwd)/docs/\$output_subpath\"
-                mkdir -p \"\$output_dir\"
-                mv \"\$(pwd)/tmp_build/\$filename.pdf\" \"\$output_dir/\" || true
-                echo \"\$final_file;Successo\" >> build_report_entries.txt
-              else
-                echo \"::error file=\$final_file::LaTeX compilation failed.\"
-                echo \"\$final_file;Fallimento\" >> build_report_entries.txt
-              fi
-              # pulisco artefatti temporanei (ma lascio tmp_build dir)
-              find \"\$(pwd)/tmp_build\" -mindepth 1 -maxdepth 1 -exec rm -rf {} \;
-            done < compile_list.txt
-          "
+          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" \
+            ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c '
+              while IFS= read -r texfile || [ -n "$texfile" ]; do
+                [ -z "$texfile" ] && continue
+                echo "Compiling: $texfile"
+                if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory="$(pwd)/tmp_build" "$(pwd)/$texfile"; then
+                  filepath=$(dirname "$texfile")
+                  filename=$(basename "$texfile" .tex)
+                  out_sub=$(echo "$filepath" | sed "s|^src/||; s|^src\$||")
+                  out_dir="$(pwd)/docs/$out_sub"
+                  mkdir -p "$out_dir"
+                  mv "$(pwd)/tmp_build/$filename.pdf" "$out_dir/"
+                  echo "$texfile;Success" >> build_result.log
+                else
+                  echo "$texfile;Fail" >> build_result.log
+                fi
+                rm -rf "$(pwd)/tmp_build"/*
+              done < compile_list.txt
+            '
 
-          # process results collected in docker (if any)
-          if [ -f build_report_entries.txt ]; then
-            while IFS= read -r line || [ -n "$line" ]; do
-              status=$(printf '%s' "$line" | awk -F';' '{print $2}')
-              texfile=$(printf '%s' "$line" | awk -F';' '{print $1}')
-              pdfpath=$(printf '%s' "$texfile" | sed 's|^src/|docs/|; s|\.tex$|.pdf|')
-              if [ "$status" = "Successo" ]; then
-                printf '%s\n' "$pdfpath" >> successes.txt
-              else
-                printf '%s\n' "$pdfpath" >> failures.txt
-              fi
-            done < build_report_entries.txt
-          fi
-
-          # Dedup e ordina
-          sort -u successes.txt -o successes.txt || true
-          sort -u failures.txt -o failures.txt || true
-
-          # Funzione di url-encode semplice (solo spazi -> %20; lascia altri caratteri)
-          url_encode() {
-            python3 - <<PY
-import sys, urllib.parse
-s=sys.stdin.read().rstrip('\n')
-print(urllib.parse.quote(s))
-PY
-          }
-
-          # Report: prima fallimenti, poi successi
-          echo "## Fallite" >> build_report.md
-          echo "" >> build_report.md
-          if [ -s failures.txt ]; then
-            while IFS= read -r f || [ -n "$f" ]; do
-              [ -z "$f" ] && continue
-              # se il file esiste, linkalo; altrimenti mostra solo il nome
-              if [ -f "$f" ]; then
-                enc=$(printf '%s' "$f" | python3 -c "import sys,urllib.parse; print(urllib.parse.quote(sys.stdin.read().strip()))")
-                echo "- **[`$(basename "$f")`]($enc)** — `$(dirname "$f")`" >> build_report.md
-              else
-                enc=$(printf '%s' "$f" | python3 -c "import sys,urllib.parse; print(urllib.parse.quote(sys.stdin.read().strip()))")
-                echo "- **$(basename "$f")** — file non generato. ([percorso]($enc))" >> build_report.md
-              fi
-            done < failures.txt
+          # 📄 Generazione build_report.md
+          echo "## Fallimenti" >> build_report.md
+          if grep -q ";Fail" build_result.log; then
+            grep ";Fail" build_result.log | while IFS=";" read -r tex status; do
+              pdf_path=$(echo "$tex" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+              echo "- ❌ $tex → **non compilato**" >> build_report.md
+            done
           else
-            echo "_Nessuna compilazione fallita._" >> build_report.md
+            echo "_Nessun errore di compilazione._" >> build_report.md
           fi
 
           echo "" >> build_report.md
-          echo "## Riuscite" >> build_report.md
-          echo "" >> build_report.md
-          if [ -s successes.txt ]; then
-            while IFS= read -r s || [ -n "$s" ]; do
-              [ -z "$s" ] && continue
-              enc=$(printf '%s' "$s" | python3 -c "import sys,urllib.parse; print(urllib.parse.quote(sys.stdin.read().strip()))")
-              echo "- [`$(basename "$s")`]($enc) — `$(dirname "$s")`" >> build_report.md
-            done < successes.txt
+          echo "## Successi" >> build_report.md
+          if grep -q ";Success" build_result.log; then
+            grep ";Success" build_result.log | while IFS=";" read -r tex status; do
+              pdf_path=$(echo "$tex" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+              enc=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$pdf_path")
+              echo "- ✅ [$pdf_path]($enc)" >> build_report.md
+            done
           else
-            echo "_Nessuna compilazione riuscita._" >> build_report.md
+            echo "_Nessun PDF compilato._" >> build_report.md
           fi
 
-          echo "" >> build_report.md
-          echo "_Fine del report._" >> build_report.md
-
-          # cleanup temporanei
-          rm -f build_report_entries.txt || true
-          rm -f successes.txt failures.txt || true
-          rm -rf tmp_build || true
-
-      - name: Step 4 - Final Commit
+      - name: Step 4 - Commit Results
         run: |
-          echo "--- Committing changes ---"
-          # assicurati che ci sia almeno il report
-          if [ ! -f build_report.md ]; then
-            # crea un report vuoto se per qualche motivo non esiste (edge-case)
-            echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.md
-          fi
+          echo "--- Committing results ---"
           git add docs build_report.md
-          # se non ci sono cambi stage, evita commit
           if git diff --staged --quiet; then
-            echo "No changes in docs or build report to commit."
+            echo "No changes to commit."
           else
             git config --global user.name "github-actions[bot]"
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git commit -m "Automated LaTeX compilation and build report"
+            git commit -m "Automated LaTeX build"
             git push
           fi
