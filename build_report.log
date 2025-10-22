@@ -1,37 +1,3 @@
-# Build Report del 2025-10-22T17:07:55+00:00
-src/Candidatura/Valutazione dei Capitolati/valutazione_capitolati_v1.0.0.tex;Successo
-src/Candidatura/letteraina a te/lettera no.tex;Fallimento;6fd32b369e373cf9dbeca998d2459386b78f9be8
-src/RTB/Documentazione esterna/Analisi dei Requisiti/analisi_requisiti_v1.0.0.tex;Successo
-src/RTB/Documentazione esterna/Piano di Progetto/piano_progetto_v1.0.0.tex;Successo
-src/RTB/Documentazione esterna/Piano di Qualifica/piano_qualifica_v1.0.0.tex;Successo
-src/RTB/Documentazione esterna/Verbali esterni/verbale_esterno_03-01-25/verbale_esterno_03-01-25.tex;Successo
-src/RTB/Documentazione esterna/Verbali esterni/verbale_esterno_05-12-24/verbale_esterno_05-12-24.tex;Successo
-src/RTB/Documentazione esterna/Verbali esterni/verbale_esterno_12-11-24/verbale_esterno_12-11-24.tex;Successo
-src/RTB/Documentazione esterna/Verbali esterni/verbale_esterno_16-01-25/verbale_esterno_16-01-25.tex;Successo
-src/RTB/Documentazione esterna/Verbali esterni/verbale_esterno_19-12-24/verbale_esterno_19-12-24.tex;Successo
-src/RTB/Documentazione esterna/Verbali esterni/verbale_esterno_21-11-24/verbale_esterno_21-11-24.tex;Successo
-src/RTB/Documentazione interna/Glossario/glossario_v1.0.0.tex;Successo
-src/RTB/Documentazione interna/Norme di Progetto/norme_progetto_v1.0.0.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_02-01-25/verbale_interno_02-01-25.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_03-01-25/verbale_interno_03-01-25.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_04-11-24/verbale_interno_04-11-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_04-12-24/verbale_interno_04-12-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_05-12-24/verbale_interno_05-12-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_07-11-24/verbale_interno_07-11-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_08-01-25/verbale_interno_08-01-25.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_11-11-24/verbale_interno_11-11-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_11-12-24/verbale_interno_11-12-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_13-11-24/verbale_interno_13-11-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_15-01-25/verbale_interno_15-01-25.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_16-01-25/verbale_interno_16-01-25.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_16-11-24/verbale_interno_16-11-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_17-12-24/verbale_interno_17-12-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_18-11-24/verbale_interno_18-11-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_19-12-24/verbale_interno_19-12-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_20-11-24/verbale_interno_20-11-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_21-11-24/verbale_interno_21-11-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_25-11-24/verbale_interno_25-11-24.tex;Successo
-src/RTB/Documentazione interna/Verbali interni/verbale_interno_28-11-24/verbale_interno_28-11-24.tex;Successo
-src/RTB/Lettera di Presentazione/lettera_presentazione.tex;Successo
+# Build Report del 2025-10-22T17:17:16+00:00
+src/Candidatura/letteraina a te/lettera no.tex;Fallimento;0e368beb0ca5dd1bc9e53fa73be90746c595c2b8
 src/baci.tex;Successo
-src/ciao patato.tex;Successo
