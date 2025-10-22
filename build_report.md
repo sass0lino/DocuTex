@@ -1,7 +1,7 @@
-# Build Report del 2025-10-22T21:48:39+00:00
+# Build Report del 2025-10-22T21:53:10+00:00
 
 ## Fallimenti
-_Nessun errore di compilazione._
+- ❌ src/baci secondo.tex → **non compilato**
 
 ## Successi
-- ✅ [docs/baci secondo.pdf](docs/baci%20secondo.pdf)
+- ✅ [docs/RTB/Docu estern/Piano di Progetto/piano_p.pdf](docs/RTB/Docu%20estern/Piano%20di%20Progetto/piano_p.pdf)
