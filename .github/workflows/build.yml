@@ -8,6 +8,7 @@ on:
     branches:
       - main
     paths:
+      # Ascolta le modifiche sia ai sorgenti che ai PDF (per la tua regola 2)
       - 'src/**/*.tex'
       - 'docs/**/*.pdf'
 
@@ -22,26 +23,40 @@ jobs:
           # FONDAMENTALE: Scarica l'intera cronologia per permettere a git diff di funzionare
           fetch-depth: 0
 
-      - name: Step 1 - Analyze Changes & Enforce Consistency
+      - name: Step 1 - Enforce Consistency (Analisi e Pulizia)
         id: analysis
         run: |
-          echo "--- Analyzing user changes and enforcing consistency ---"
+          echo "--- Analizzando le modifiche e forzando la coerenza ---"
           BEFORE_SHA="${{ github.event.before }}"; AFTER_SHA="${{ github.event.after }}"
           
-          # Gestione del primo push
+          # 1. Pulizia PDF Orfani (Controllo di stato generale)
+          echo "--> Controllo PDF orfani (src vs docs)..."
+          if [ -d "docs" ]; then
+            find docs -type f -name "*.pdf" | while IFS= read -r pdf_file; do
+              src_file=$(echo "$pdf_file" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
+              if [ ! -f "$src_file" ]; then
+                echo "PDF Orfano trovato (sorgente .tex non esiste). Eliminazione: $pdf_file"
+                rm "$pdf_file"
+              fi
+            done
+          fi
+
+          # Gestione del primo push (non c'è un 'before' da confrontare)
           if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
-            echo "First push detected. No diff to analyze."
+            echo "Primo push. Salto l'analisi delle modifiche."
           else
-            # Controlli basati sulle modifiche (pulizia)
+            # 2. Tua Richiesta 2: Trova e cancella i PDF aggiunti/modificati/rinominati dall'utente
             manually_changed_pdfs=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'docs/**/*.pdf' || true)
             if [ -n "$manually_changed_pdfs" ]; then
-              echo "--> Detected manually added/modified/renamed PDFs. Deleting them:"
+              echo "--> Rilevati PDF aggiunti/modificati/rinominati manualmente. Eliminazione:"
               echo "$manually_changed_pdfs"
               echo "$manually_changed_pdfs" | xargs -r rm -f
             fi
+
+            # 3. Tua Richiesta 1: Trova i .tex modificati dall'utente e cancella i loro PDF
             modified_tex_files=$(git diff --name-only --diff-filter=M "$BEFORE_SHA" "$AFTER_SHA" -- 'src/**/*.tex' || true)
             if [ -n "$modified_tex_files" ]; then
-              echo "--> Detected modified .tex files. Deleting corresponding PDFs:"
+              echo "--> Rilevati .tex modificati. Eliminazione dei PDF corrispondenti:"
               echo "$modified_tex_files" | while IFS= read -r tex_file; do
                 if [[ "$tex_file" == *"/contenuti/"* ]]; then
                   parent_dir=$(echo "$tex_file" | sed 's|/contenuti/.*||'); find "$parent_dir" -maxdepth 1 -type f -name "*.tex"
@@ -50,55 +65,72 @@ jobs:
                 fi
               done | sort -u | while IFS= read -r main_tex_file; do
                 pdf_to_delete=$(echo "$main_tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
-                if [ -f "$pdf_to_delete" ]; then echo "Deleting: $pdf_to_delete"; rm -f "$pdf_to_delete"; fi
+                if [ -f "$pdf_to_delete" ]; then echo "Eliminazione: $pdf_to_delete"; rm -f "$pdf_to_delete"; fi
               done
             fi
           fi
 
-      - name: Step 2 - Scan for Missing PDFs & Prepare Compile List
+      - name: Step 2 - Scan for Missing PDFs (Crea Lista di Lavoro)
         id: prepare
         run: |
-          echo "--- Scanning for missing PDFs ---"
+          echo "--- Scansione dei PDF mancanti ---"
           compile_list=""
+          # 4. Tua Richiesta 1 (Lo "Scanner"): Trova tutti i .tex padri che non hanno un .pdf
           find src -type f -name "*.tex" | grep -v '/contenuti/' | while IFS= read -r tex_file; do
             pdf_file=$(echo "$tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
             if [ ! -f "$pdf_file" ]; then
+              echo "PDF mancante per $tex_file. Aggiunto alla lista di compilazione."
               compile_list="$compile_list\n$tex_file"
             fi
           done
+          
           unique_compile_list=$(echo -e "$compile_list" | sed '/^$/d' | sort -u)
           if [ -z "$unique_compile_list" ]; then
-            echo "No .tex files to compile."; echo "compile_needed=false" >> $GITHUB_OUTPUT
+            echo "Nessun file .tex da compilare. La cartella 'docs' è coerente."
+            echo "compile_needed=false" >> $GITHUB_OUTPUT
           else
-            echo "Final list of files to compile:"; echo "$unique_compile_list"
+            echo "Lista finale dei file da compilare:"; echo "$unique_compile_list"
             echo "$unique_compile_list" > compile_list.txt; echo "compile_needed=true" >> $GITHUB_OUTPUT
           fi
           
       - name: Step 3 - Compile and Generate Build Report
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
+          echo "--- Compilazione e generazione del Build Report ---"
+          # 5. Tua Richiesta 4: Crea il report da zero
           echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.log
+          
           docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
+            # 6. Tua Richiesta 5: Compila
             cat compile_list.txt | while IFS= read -r final_file; do
+              echo \"--- Compilando: '\$final_file' ---\"
               if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory=\"\$(pwd)/tmp_build\" \"\$(pwd)/\$final_file\"; then
-                filepath=\$(dirname \"\$final_file\"); filename=\$(basename \"\$final_file\" .tex); output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src$||')
+                # Successo
+                filepath=\$(dirname \"\$final_file\"); filename=\$(basename \"\$final_file\" .tex); output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src\$||')
                 output_dir=\"\$(pwd)/docs/\$output_subpath\"; mkdir -p \"\$output_dir\"
                 mv \"\$(pwd)/tmp_build/\$filename.pdf\" \"\$output_dir/\"
+                # 7. Tua Richiesta 6: Scrive il successo nel report
                 echo \"\$final_file;Successo\" >> build_report.log
               else
+                # Fallimento
                 echo \"::error file=\$final_file::LaTeX compilation failed.\"
+                # 8. Tua Richiesta 6: Scrive il fallimento nel report
                 echo \"\$final_file;Fallimento;\$GITHUB_SHA\" >> build_report.log
-              fi; rm -rf \"\$(pwd)/tmp_build\"
+              fi
+              # Mantiene la pulizia dei file .bbl, .aux, ecc.
+              rm -rf \"\$(pwd)/tmp_build\"
             done
           "
 
       - name: Step 4 - Final Commit
         run: |
-          echo "--- Committing changes ---"
+          echo "--- Salvataggio delle modifiche ---"
+          # Assicura che il file di report esista anche se la compilazione è stata saltata
           touch build_report.log
           git add docs build_report.log
+          
           if git diff --staged --quiet; then
-            echo "No changes in docs or build report to commit."
+            echo "Nessuna modifica a 'docs' o al 'build_report.log'. Commit non necessario."
           else
             git config --global user.name "github-actions[bot]"
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
