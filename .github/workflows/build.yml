@@ -19,48 +19,45 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          # FONDAMENTALE: Scarica l'intera cronologia per permettere a git diff di funzionare
           fetch-depth: 0
 
       - name: Step 1 - Analyze Changes & Enforce Consistency
         id: analysis
         run: |
-          # (Logica invariata)
           echo "--- Analyzing user changes and enforcing consistency ---"
           BEFORE_SHA="${{ github.event.before }}"; AFTER_SHA="${{ github.event.after }}"
-          echo "--> Scanning for orphan PDFs..."
-          if [ -d "docs" ]; then
-            find docs -type f -name "*.pdf" | while IFS= read -r pdf_file; do
-              src_file=$(echo "$pdf_file" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
-              if [ ! -f "$src_file" ]; then
-                echo "Orphan PDF found (source .tex does not exist). Deleting: $pdf_file"
-                rm "$pdf_file"
-              fi
-            done
-          fi
-          manually_changed_pdfs=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'docs/**/*.pdf' || true)
-          if [ -n "$manually_changed_pdfs" ]; then
-            echo "--> Detected manually added/modified/renamed PDFs. Deleting them:"
-            echo "$manually_changed_pdfs" | xargs -r rm -f
-          fi
-          modified_tex_files=$(git diff --name-only --diff-filter=M "$BEFORE_SHA" "$AFTER_SHA" -- 'src/**/*.tex' || true)
-          if [ -n "$modified_tex_files" ]; then
-            echo "--> Detected modified .tex files. Deleting corresponding PDFs:"
-            echo "$modified_tex_files" | while IFS= read -r tex_file; do
-              if [[ "$tex_file" == *"/contenuti/"* ]]; then
-                parent_dir=$(echo "$tex_file" | sed 's|/contenuti/.*||'); find "$parent_dir" -maxdepth 1 -type f -name "*.tex"
-              else
-                echo "$tex_file"
-              fi
-            done | sort -u | while IFS= read -r main_tex_file; do
-              pdf_to_delete=$(echo "$main_tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
-              if [ -f "$pdf_to_delete" ]; then echo "Deleting: $pdf_to_delete"; rm -f "$pdf_to_delete"; fi
-            done
+          
+          # Gestione del primo push
+          if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
+            echo "First push detected. No diff to analyze."
+          else
+            # Controlli basati sulle modifiche (pulizia)
+            manually_changed_pdfs=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'docs/**/*.pdf' || true)
+            if [ -n "$manually_changed_pdfs" ]; then
+              echo "--> Detected manually added/modified/renamed PDFs. Deleting them:"
+              echo "$manually_changed_pdfs"
+              echo "$manually_changed_pdfs" | xargs -r rm -f
+            fi
+            modified_tex_files=$(git diff --name-only --diff-filter=M "$BEFORE_SHA" "$AFTER_SHA" -- 'src/**/*.tex' || true)
+            if [ -n "$modified_tex_files" ]; then
+              echo "--> Detected modified .tex files. Deleting corresponding PDFs:"
+              echo "$modified_tex_files" | while IFS= read -r tex_file; do
+                if [[ "$tex_file" == *"/contenuti/"* ]]; then
+                  parent_dir=$(echo "$tex_file" | sed 's|/contenuti/.*||'); find "$parent_dir" -maxdepth 1 -type f -name "*.tex"
+                else
+                  echo "$tex_file"
+                fi
+              done | sort -u | while IFS= read -r main_tex_file; do
+                pdf_to_delete=$(echo "$main_tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+                if [ -f "$pdf_to_delete" ]; then echo "Deleting: $pdf_to_delete"; rm -f "$pdf_to_delete"; fi
+              done
+            fi
           fi
 
       - name: Step 2 - Scan for Missing PDFs & Prepare Compile List
         id: prepare
         run: |
-          # (Logica invariata)
           echo "--- Scanning for missing PDFs ---"
           compile_list=""
           find src -type f -name "*.tex" | grep -v '/contenuti/' | while IFS= read -r tex_file; do
@@ -80,12 +77,11 @@ jobs:
       - name: Step 3 - Compile and Generate Build Report
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
-          # (Logica invariata)
           echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.log
           docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
             cat compile_list.txt | while IFS= read -r final_file; do
               if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory=\"\$(pwd)/tmp_build\" \"\$(pwd)/\$final_file\"; then
-                filepath=\$(dirname \"\$final_file\"); filename=\$(basename \"\$final_file\" .tex); output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src\$||')
+                filepath=\$(dirname \"\$final_file\"); filename=\$(basename \"\$final_file\" .tex); output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src$||')
                 output_dir=\"\$(pwd)/docs/\$output_subpath\"; mkdir -p \"\$output_dir\"
                 mv \"\$(pwd)/tmp_build/\$filename.pdf\" \"\$output_dir/\"
                 echo \"\$final_file;Successo\" >> build_report.log
@@ -99,10 +95,8 @@ jobs:
       - name: Step 4 - Final Commit
         run: |
           echo "--- Committing changes ---"
-          # CORREZIONE: Assicura che il file di report esista sempre prima di aggiungerlo
           touch build_report.log
           git add docs build_report.log
-          
           if git diff --staged --quiet; then
             echo "No changes in docs or build report to commit."
           else
