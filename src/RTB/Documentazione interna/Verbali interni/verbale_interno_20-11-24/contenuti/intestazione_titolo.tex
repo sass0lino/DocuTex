@@ -1,0 +1,38 @@
+\thispagestyle{plain} % Niente intestazione e piè di pagina
+\thispagestyle{empty} % Rimuove la numerazione della pagina
+
+
+\begin{tikzpicture}[remember picture, overlay]
+    % Punto di partenza al centro orizzontale nella metà superiore
+    \coordinate (top_center) at ($(current page.north)!0.3!(current page.south)$);
+
+    % UniPD: Logo e descrizione
+    \node at (top_center) [anchor=north, xshift=-3cm, yshift=4.85cm] 
+        {\includegraphics[width=0.15\textwidth]{Logo Universita di Padova.png}};
+    \node at (top_center) [anchor=north, xshift=1.7cm, yshift=4.5cm]
+        {\textcolor{red}{\textbf{Università degli Studi di Padova}}};
+    \node at (top_center) [anchor=north, xshift=1.7cm, yshift=4cm]
+        {\textcolor{red}{Laurea: Informatica}};
+    \node at (top_center) [anchor=north, xshift=1.7cm, yshift=3.5cm]
+        {\textcolor{red}{Corso: Ingegneria del Software}};
+    \node at (top_center) [anchor=north, xshift=1.7cm, yshift=3cm]
+        {\textcolor{red}{Anno Accademico: 2024/2025}};
+
+    % SWEg Labs: Logo e descrizione
+    \node at (top_center) [anchor=north, xshift=-2.85cm, yshift=1.5cm] 
+        {\includegraphics[width=0.16\textwidth]{Logo SWEg.png}};
+    \node at (top_center) [anchor=north, xshift=1.7cm, yshift=0.5cm]
+        {\textbf{Gruppo: SWEg Labs}};
+    \node at (top_center) [anchor=north, xshift=1.7cm, yshift=0cm]
+        {Email: \textsf{gruppo.sweg@gmail.com}};
+\end{tikzpicture}
+
+
+\vspace{10cm}
+
+{
+\centering
+\Huge\bfseries Verbale Riunione\par
+\vspace{0.5cm}
+\Large\bfseries 20 Novembre 2024\par
+}

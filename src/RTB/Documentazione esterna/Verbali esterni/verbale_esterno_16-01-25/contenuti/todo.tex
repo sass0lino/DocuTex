@@ -1,0 +1,31 @@
+% Intestazione
+\fancyhead[L]{5 \hspace{0.2cm} Todo} % Testo a sinistra
+
+
+\section{Todo}
+
+Durante la riunione sono emersi i seguenti task da svolgere:
+
+\vspace{0.5cm}
+
+\begin{table}[htbp]
+\centering
+\rowcolors{2}{lightgray}{white}
+\begin{tabular}{|c|c|p{0.25\textwidth}|p{0.4\textwidth}|}
+    \hline
+    \rowcolor[gray]{0.75}
+    \multicolumn{1}{|c|}{\textbf{Codice}} & \multicolumn{1}{|c|}{\textbf{Dalla decisione}} & \multicolumn{1}{|c|}{\textbf{Assegnatario}} & \multicolumn{1}{|c|}{\textbf{Task Todo}} \\
+    \hline
+    BUD-213 & VE 8.1 & Riccardo Stefani & Cercare una domanda multipiattaforma da porre a BuddyBot per le prossime demo. \\
+    \hline
+    BUD-214 & VE 8.2 & Riccardo Stefani & Inviare una mail ad AzzurroDigitale contenente il repo del PoC ed il sito della documentazione. \\
+    \hline
+    BUD-215 & VE 8.3 & Riccardo Stefani & Redigere il verbale della riunione esterna del 16/01/25. \\
+    \hline
+\end{tabular}
+\end{table}
+
+\begin{tikzpicture}[remember picture, overlay]
+    \node at (current page.south east) [anchor=south east, xshift=-2.4cm, yshift=17.5cm] 
+        {\includegraphics[width=0.2\textwidth]{immagini/Approvazione_AzzurroDigitale.png}};
+\end{tikzpicture}

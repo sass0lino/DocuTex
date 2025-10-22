@@ -1,0 +1,221 @@
+% Intestazione
+\fancyhead[L]{3 \hspace{0.2cm} Piano di qualità} % Testo a sinistra
+
+\section{Piano di qualità}
+\label{sec:Piano di qualità}
+
+\subsection{Qualità di processo}
+\label{sec:Qualità di processo}
+
+\subsubsection{Varianza di Budget}
+\textbf{Codice:} MPC-1 \\
+\textbf{Processo:} Fornitura. \\
+\textbf{Formula:}
+\[
+100 \cdot \frac{\text{Budget Consuntivato} - \text{Budget Preventivato}}{\text{Budget Preventivato}}
+\]
+\textbf{Descrizione:} Questa metrica valuta la percentuale di variazione del budget tra preventivo e consuntivo in uno sprint. Il valore è positivo quando viene preventivato un budget inferiore a quello effettivamente utilizzato, mentre è negativo quando viene preventivato un budget maggiore a quello effettivamente utilizzato.
+
+\subsubsection{Varianza dell’impegno orario}
+\textbf{Codice:} MPC-2 \\
+\textbf{Processo:} Fornitura. \\
+\textbf{Formula:}
+\[
+100 \cdot \frac{\text{Ore Consuntivate} - \text{Ore Preventivate}}{\text{Ore Preventivate}}
+\]
+\textbf{Descrizione:} Questa metrica valuta la percentuale di variazione dell’impegno orario complessivo tra preventivo e consuntivo in uno sprint. Il valore è positivo quando viene preventivato un impegno orario inferiore a quello effettivamente svolto, mentre è negativo quando viene preventivato un impegno orario maggiore a quello effettivamente svolto.
+
+\subsubsection{Earned Value}
+\textbf{Codice:} MPC-3 \\
+\textbf{Processo:} Fornitura. \\
+\textbf{Formula:}
+\[
+\text{Budget Preventivato} \cdot \% \text{Completamento di Attività Sprint}
+\]
+\textbf{Descrizione:} Questa metrica rappresenta il valore effettivo del lavoro realizzato alla fine di uno sprint. Se l’Earned Value è maggiore dell’Actual Cost, significa che è stato speso meno del previsto. Al contrario, se è minore, significa che è stato speso di più del previsto.
+
+\subsubsection{Actual Cost}
+\textbf{Codice:} MPC-4 \\
+\textbf{Processo:} Fornitura. \\
+\textbf{Formula:}
+\[
+\sum_{i=1}^{n\_Sprint} \text{Budget Consuntivato}_i
+\]
+\textbf{Descrizione:} Questa metrica rappresenta il costo totale effettivamente sostenuto in base al lavoro eseguito nello sprint.
+
+\subsubsection{Planned Value}
+\textbf{Codice:} MPC-5 \\
+\textbf{Processo:} Fornitura. \\
+\textbf{Formula:}
+\[
+\text{Actual Cost}_{\text{sprint-1}} + \text{Budget Preventivato}_{\text{sprint}}
+\]
+\textbf{Descrizione:} Rappresenta il totale dei costi pianificati allo sprint e viene calcolata prima che esso inizi.
+
+\subsubsection{Cost Variance}
+\textbf{Codice:} MPC-6 \\
+\textbf{Processo:} Fornitura. \\
+\textbf{Formula:}
+\[
+\text{Earned Value} - \text{Actual Cost}
+\]
+\textbf{Descrizione:} Rappresenta lo scostamento dai costi pianificati. Un valore positivo indica che il lavoro effettivamente prodotto è costato meno di quanto preventivato, mentre un valore negativo indica il contrario.
+
+\subsubsection{Schedule Variance}
+\textbf{Codice:} MPC-7 \\
+\textbf{Processo:} Fornitura. \\
+\textbf{Formula:}
+\[
+\text{Earned Value} - \text{Planned Value}
+\]
+\textbf{Descrizione:} Indica lo scostamento dai tempi pianificati.
+
+\subsubsection{Cost Performance Index}
+\textbf{Codice:} MPC-8 \\
+\textbf{Processo:} Fornitura. \\
+\textbf{Formula:}
+\[
+\frac{\text{Earned Value}}{\text{Actual Cost}}
+\]
+\textbf{Descrizione:} Rappresenta l’efficienza economica del progetto.
+
+\subsubsection{Schedule Performance Index}
+\textbf{Codice:} MPC-9 \\
+\textbf{Processo:} Fornitura. \\
+\textbf{Formula:}
+\[
+\frac{\text{Earned Value}}{\text{Planned Value}}
+\]
+\textbf{Descrizione:} Rappresenta l’efficienza temporale del progetto.
+
+\subsubsection{Estimate to Complete}
+\textbf{Codice:} MPC-10 \\
+\textbf{Processo:} Fornitura. \\
+\textbf{Formula:}
+\[
+\frac{\text{Budget at Completion} - \text{Earned Value}}{\text{Cost Performance Index}}
+\]
+\textbf{Descrizione:} Indica il costo totale ancora da sostenere per il completamento del progetto.
+
+\subsubsection{Estimate at Completion}
+\textbf{Codice:} MPC-11 \\
+\textbf{Processo:} Fornitura. \\
+\textbf{Formula:}
+\[
+\text{Actual Cost} + \text{Estimate to Complete}
+\]
+\textbf{Descrizione:} Indica il costo totale alla fine del progetto in base all’andamento attuale.
+
+\subsubsection{Budget at Completion}
+\textbf{Codice:} MPC-12 \\
+\textbf{Processo:} Fornitura. \\
+\textbf{Descrizione:} Indica il budget totale del progetto.
+
+\subsubsection{Code Coverage}
+\textbf{Codice:} MPC-13 \\
+\textbf{Processo:} Sviluppo. \\
+\textbf{Descrizione:} Percentuale di codice attraversato dai test rispetto al totale della codebase.
+
+\subsubsection{Misure di mitigazione insufficienti}
+\textbf{Codice:} MPC-14 \\
+\textbf{Processo:} Risoluzione dei problemi. \\
+\textbf{Descrizione:} Indica il numero totale di misure di mitigazione previste che si sono rivelate insufficienti.
+
+\subsubsection{Rischi inattesi}
+\textbf{Codice:} MPC-15 \\
+\textbf{Processo:} Risoluzione dei problemi. \\
+\textbf{Descrizione:} Indica il numero totale di rischi inattesi (non analizzati) che si sono verificati.
+
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \setlength{\tabcolsep}{5pt}
+    \begin{tabularx}{\textwidth}{|l|X|c|c|}
+    \hline
+    \rowcolor[HTML]{FFD700}
+    \textbf{Codice} & \textbf{Nome} & \textbf{Accettabile} & \textbf{Preferibile} \\ \hline
+    MPC-1 & Varianza di Budget & ±5\% & ±0\% \\ \hline
+    MPC-2 & Varianza dell’impegno orario & ±10\% & ±0\% \\ \hline
+    MPC-3 & Earned Value & \(\geq\) MPC-4 & - \\ \hline
+    MPC-4 & Actual Cost & - & - \\ \hline
+    MPC-5 & Planned Value & - & - \\ \hline
+    MPC-6 & Cost Variance & ±150 & 0 \\ \hline
+    MPC-7 & Schedule Variance & ±150 & 0 \\ \hline
+    MPC-8 & Cost Performance Index & 1 ±0.15 & 1 \\ \hline
+    MPC-9 & Schedule Performance Index & 1 ±0.15 & 1 \\ \hline
+    MPC-10 & Estimate to Complete & - & - \\ \hline
+    MPC-11 & Estimate at Completion & ±5\% di MPC-12 & MPC-12 \\ \hline
+    MPC-12 & Budget at Completion & - & - \\ \hline
+    MPC-13 & Code Coverage & 75\% & 100\% \\ \hline
+    MPC-14 & Misure di mitigazione insufficienti & 3 & 0 \\ \hline
+    MPC-15 & Rischi inattesi & 3 & 0 \\ \hline
+    \end{tabularx}
+    \caption{Metriche di qualità di processo}
+    \label{tab:metriche-qualita-processo}
+\end{table}
+
+
+
+\subsection{Qualità di prodotto}
+\label{sec:Qualità di prodotto}
+
+\subsubsection{Indice di Gulpease}
+\textbf{Codice:} MPD-1 \\
+\textbf{Processo:} Documentazione. \\
+\textbf{Formula:}
+\[
+89 + \frac{300 \cdot (\text{Numero Frasi}) - 10 \cdot (\text{Numero Lettere})}{\text{Numero Parole}}
+\]
+\textbf{Descrizione:} Misura il grado di leggibilità di un testo su una scala da 1 a 100. Un valore minimo accettabile è 40, mentre un valore preferibile è 60 o più.
+
+\subsubsection{Errori ortografici}
+\textbf{Codice:} MPD-2 \\
+\textbf{Processo:} Documentazione. \\
+\textbf{Descrizione:} Indica il numero di errori grammaticali presenti nella documentazione. Il valore accettabile è 5, mentre il valore preferibile è 0.
+
+
+\subsubsection{Requisiti obbligatori soddisfatti}
+\textbf{Codice:} MPD-3 \\
+\textbf{Processo:} Sviluppo. \\
+\textbf{Formula:}
+\[
+100 \cdot \frac{\text{Numero Requisiti Obbligatori Soddisfatti}}{\text{Numero Requisiti Obbligatori}}
+\]
+\textbf{Descrizione:} Indica la percentuale di requisiti obbligatori soddisfatti. Deve raggiungere il 100\%.
+
+\subsubsection{Requisiti desiderabili soddisfatti}
+\textbf{Codice:} MPD-4 \\
+\textbf{Processo:} Sviluppo. \\
+\textbf{Formula:}
+\[
+100 \cdot \frac{\text{Numero Requisiti Desiderabili Soddisfatti}}{\text{Numero Requisiti Desiderabili}}
+\]
+\textbf{Descrizione:} Indica la percentuale di requisiti desiderabili soddisfatti. Il valore accettabile è 0\%, mentre il valore preferibile è 100\%.
+
+\subsubsection{Requisiti opzionali soddisfatti}
+\textbf{Codice:} MPD-5 \\
+\textbf{Processo:} Sviluppo. \\
+\textbf{Formula:}
+\[
+100 \cdot \frac{\text{Numero Requisiti Opzionali Soddisfatti}}{\text{Numero Requisiti Opzionali}}
+\]
+\textbf{Descrizione:} Indica la percentuale di requisiti opzionali soddisfatti. Il valore accettabile è 0\%, mentre il valore preferibile è 100\%.
+
+
+
+\subsubsection{Metriche utilizzate}
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.5} % Per aumentare l'altezza delle righe
+    \begin{tabularx}{\textwidth}{|X|X|X|X|}\hline
+    \rowcolor[HTML]{FFD700}
+    \textbf{Codice} & \textbf{Nome metrica} & \textbf{Valore accettabile} & \textbf{Valore ottimale} \\ \hline
+    MPD-1 & Indice di Gulpease & \( \geq 40 \) & 60 \\ \hline
+    MPD-2 & Errori ortografici & 5 & 0 \\ \hline
+    MPD-3 & Requisiti obbligatori soddisfatti & 100\%  & 100\%\\ \hline
+    MPD-4 & Requisiti desiderabili soddisfatti & 0\% & 100\%\\ \hline
+    MPD-5 & Requisiti opzionali soddisfatti & 0\% & 100\% \\ \hline
+
+    \end{tabularx}
+    \caption{\textbf{RT1}: Metriche di qualità di prodotto}
+\end{table}

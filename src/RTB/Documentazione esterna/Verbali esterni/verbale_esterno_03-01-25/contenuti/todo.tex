@@ -1,0 +1,30 @@
+% Intestazione
+\fancyhead[L]{5 \hspace{0.2cm} Todo} % Testo a sinistra
+
+
+\section{Todo}
+
+Durante la riunione sono emersi i seguenti task da svolgere:
+
+\vspace{0.5cm}
+
+\begin{table}[htbp]
+\centering
+\rowcolors{2}{lightgray}{white}
+\begin{tabular}{|c|c|p{0.25\textwidth}|p{0.4\textwidth}|}
+    \hline
+    \rowcolor[gray]{0.75}
+    \multicolumn{1}{|c|}{\textbf{Codice}} & \multicolumn{1}{|c|}{\textbf{Dalla decisione}} & \multicolumn{1}{|c|}{\textbf{Assegnatario}} & \multicolumn{1}{|c|}{\textbf{Task Todo}} \\
+    \hline
+    BUD-177 & VE 7.1 & Riccardo Stefani, Michael Fantinato, Giacomo Loat & Provare a pesare la similarità basandosi sulla lunghezza dei documenti, in modo da dare più importanza alla similarità con documenti lunghi rispetto a quella con documenti corti. \\
+    BUD-178 & VE 7.6 & Tutto il gruppo & Studiare tecnologia Docker \\
+    BUD-184 & VE 7.8 & Davide Verzotto & Redigere verbale riunione esterna \\
+    BUD-185 & VE 7.9 & Riccardo Stefani & Inviare il verbale esterno, lo screenshot della risposta via mail del professore e il PDF della presentazione della riunione esterna, non appena Davide avrà finito il verbale. \\
+    \hline
+\end{tabular}
+\end{table}
+
+\begin{tikzpicture}[remember picture, overlay]
+    \node at (current page.south east) [anchor=south east, xshift=-2.4cm, yshift=16.5cm] 
+        {\includegraphics[width=0.2\textwidth]{immagini/Approvazione_AzzurroDigitale.png}};
+\end{tikzpicture}
