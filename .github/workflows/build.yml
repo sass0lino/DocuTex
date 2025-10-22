@@ -20,10 +20,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Step 1 & 2 - Reconciliation, Cleanup, and Identification
-        id: prepare
+      - name: Step 1 - State Reconciliation and Cleanup
+        id: cleanup
         run: |
-          # (Tutta la logica di pulizia e identificazione file rimane invariata)
+          # (Logica invariata)
           if [ -d "docs" ]; then
             find docs -type f -name "*.pdf" | while IFS= read -r pdf_file; do
               src_file=$(echo "$pdf_file" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
@@ -35,6 +35,11 @@ jobs:
           awk -F';' 'NR==FNR{a[$1]=1; next} a[$1]' all_current_files.txt compilation_failures.log > temp_log.log
           mv temp_log.log compilation_failures.log
           rm all_current_files.txt
+
+      - name: Step 2 - Identify Files to Compile
+        id: prepare
+        run: |
+          # (Logica invariata)
           BEFORE_SHA="${{ github.event.before }}"; AFTER_SHA="${{ github.event.after }}"
           if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
             changed_files=$(git ls-tree --name-only -r "$AFTER_SHA" | grep '\.tex$' || true)
@@ -63,6 +68,7 @@ jobs:
       - name: Step 3 - Preemptive Deletion & Compilation
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
+          # (Logica invariata)
           cat compile_list.txt | while IFS= read -r file_to_compile; do
             filepath=$(dirname "$file_to_compile"); filename=$(basename "$file_to_compile" .tex)
             output_subpath=$(echo "$filepath" | sed 's|^src/||; s|^src$||')
@@ -70,11 +76,8 @@ jobs:
             if [ -f "$pdf_to_delete" ]; then rm "$pdf_to_delete"; fi
           done
           touch successes.log failures.log
-          
-          # Passa il timestamp al container Docker
-          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA -e TIMESTAMP=$(date -u --iso-8601=seconds) ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
+          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
             cat compile_list.txt | while IFS= read -r final_file; do
-              echo \"--- Compiling: '\$final_file' ---\"
               if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory=\"\$(pwd)/tmp_build\" \"\$(pwd)/\$final_file\"; then
                 filepath=\$(dirname \"\$final_file\"); filename=\$(basename \"\$final_file\" .tex); output_subpath=\$(echo \"\$filepath\" | sed 's|^src/||; s|^src\$||')
                 output_dir=\"\$(pwd)/docs/\$output_subpath\"; mkdir -p \"\$output_dir\"
@@ -82,8 +85,7 @@ jobs:
                 echo \"\$final_file\" >> successes.log
               else
                 echo \"::error file=\$final_file::LaTeX compilation failed.\"
-                # Aggiunge al log dei fallimenti anche il timestamp
-                echo \"\$final_file;\$GITHUB_SHA;\$TIMESTAMP\" >> failures.log
+                echo \"\$final_file;\$GITHUB_SHA\" >> failures.log
               fi; rm -rf \"\$(pwd)/tmp_build\"
             done
           "
@@ -91,26 +93,21 @@ jobs:
       - name: Step 4 - Update Failure Log and Commit
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
-          echo "--- Updating failure log ---"
-          touch compilation_failures.log
+          # --- NUOVA LOGICA DI AGGIORNAMENTO DEL LOG, SEMPLICE E ROBUSTA ---
+          echo "--- Updating failure log with a single, robust command ---"
+          touch compilation_failures.log successes.log failures.log
           
-          # Combina i vecchi e i nuovi fallimenti. `sort -u` ora manterrà le righe separate grazie al timestamp
-          cat compilation_failures.log failures.log | sort -u > temp_failures.log
-          
-          # Rimuove dalla lista finale i file che ora hanno avuto successo
-          if [ -s successes.log ]; then
-            while IFS= read -r successful_file; do
-                escaped_file=$(printf '%s\n' "$successful_file" | sed 's/[.[\*^$]/\\&/g')
-                grep -v "^${escaped_file};" temp_failures.log > new_temp_failures.log
-                mv new_temp_failures.log temp_failures.log
-            done < successes.log
-          fi
-          
-          mv temp_failures.log compilation_failures.log
-          
-          echo "Current failed files (file;commit_hash;timestamp):"
+          # 1. Combina i fallimenti vecchi e nuovi
+          cat compilation_failures.log failures.log > temp_combined_failures.log
+
+          # 2. Usa un singolo comando awk per filtrare i successi.
+          # Carica i successi in memoria, poi scorre i fallimenti e stampa solo
+          # quelli il cui percorso non è nella lista dei successi.
+          awk -F';' 'NR==FNR{successes[$0]=1; next} !(successes[$1])' successes.log temp_combined_failures.log > compilation_failures.log
+
+          echo "Current failed files (file;commit_hash):"
           cat compilation_failures.log
-          rm -f successes.log failures.log
+          rm -f successes.log failures.log temp_combined_failures.log
 
           # Logica di commit
           git add docs compilation_failures.log
