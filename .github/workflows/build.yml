@@ -24,9 +24,9 @@ jobs:
       - name: Step 1 - Analyze Changes & Enforce Consistency
         id: analysis
         run: |
+          # (Logica invariata)
           echo "--- Analyzing user changes and enforcing consistency ---"
           BEFORE_SHA="${{ github.event.before }}"; AFTER_SHA="${{ github.event.after }}"
-
           echo "--> Scanning for orphan PDFs..."
           if [ -d "docs" ]; then
             find docs -type f -name "*.pdf" | while IFS= read -r pdf_file; do
@@ -37,14 +37,11 @@ jobs:
               fi
             done
           fi
-
-          # CORREZIONE: Ora traccia anche i PDF Modificati (AMR)
           manually_changed_pdfs=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'docs/**/*.pdf' || true)
           if [ -n "$manually_changed_pdfs" ]; then
             echo "--> Detected manually added/modified/renamed PDFs. Deleting them:"
             echo "$manually_changed_pdfs" | xargs -r rm -f
           fi
-
           modified_tex_files=$(git diff --name-only --diff-filter=M "$BEFORE_SHA" "$AFTER_SHA" -- 'src/**/*.tex' || true)
           if [ -n "$modified_tex_files" ]; then
             echo "--> Detected modified .tex files. Deleting corresponding PDFs:"
@@ -63,6 +60,7 @@ jobs:
       - name: Step 2 - Scan for Missing PDFs & Prepare Compile List
         id: prepare
         run: |
+          # (Logica invariata)
           echo "--- Scanning for missing PDFs ---"
           compile_list=""
           find src -type f -name "*.tex" | grep -v '/contenuti/' | while IFS= read -r tex_file; do
@@ -82,6 +80,7 @@ jobs:
       - name: Step 3 - Compile and Generate Build Report
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
+          # (Logica invariata)
           echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.log
           docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
             cat compile_list.txt | while IFS= read -r final_file; do
@@ -100,7 +99,10 @@ jobs:
       - name: Step 4 - Final Commit
         run: |
           echo "--- Committing changes ---"
+          # CORREZIONE: Assicura che il file di report esista sempre prima di aggiungerlo
+          touch build_report.log
           git add docs build_report.log
+          
           if git diff --staged --quiet; then
             echo "No changes in docs or build report to commit."
           else
