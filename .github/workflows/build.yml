@@ -18,17 +18,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          # Scarichiamo l'intera cronologia per garantire che entrambi i commit (before/after) siano presenti
           fetch-depth: 0
 
       - name: Process LaTeX Files
         id: process_files
         run: |
-          # --- PASSI 1, 2, 3 E 4 (invariati) ---
-          # La logica per pulire, identificare, cancellare preventivamente e compilare
-          # rimane esattamente la stessa.
+          # --- NUOVA LOGICA: Analizza l'intero push, non solo l'ultimo commit ---
+          BEFORE_SHA="${{ github.event.before }}"
+          AFTER_SHA="${{ github.event.after }}"
+
+          # Gestisce il caso speciale del primo push su un nuovo ramo
+          if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
+            echo "First push detected. Analyzing all .tex files in the repository."
+            # Al primo push, non ci sono file eliminati o rinominati da pulire
+            deleted_files=""
+            renamed_from_files=""
+            # Tutti i file .tex sono considerati "nuovi" o "modificati"
+            changed_files=$(git ls-tree --name-only -r "$AFTER_SHA" | grep '\.tex$' || true)
+          else
+            echo "Analyzing changes between $BEFORE_SHA and $AFTER_SHA"
+            # Confronta l'intero range di commit del push
+            deleted_files=$(git diff --name-only --diff-filter=D "$BEFORE_SHA" "$AFTER_SHA" | grep '\.tex$' || true)
+            renamed_from_files=$(git diff --name-only --diff-filter=R "$BEFORE_SHA" "$AFTER_SHA" | awk '{print $1}' | grep '\.tex$' || true)
+            changed_files=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" | grep '\.tex$' || true)
+          fi
+
+          # --- PASSI SUCCESSIVI (PULIZIA, IDENTIFICAZIONE, COMPILAZIONE) ---
+          # La logica da qui in poi rimane la stessa, ma ora opera sulla lista corretta di file
+          # generata dalla nuova logica qui sopra.
+          
           echo "--- Cleaning up old PDFs for deleted or renamed files ---"
-          deleted_files=$(git diff --name-only --diff-filter=D HEAD~1 HEAD | grep '\.tex$' || true)
-          renamed_from_files=$(git diff --name-only --diff-filter=R HEAD~1 HEAD | awk '{print $1}' | grep '\.tex$' || true)
           cleanup_list="$deleted_files\n$renamed_from_files"
           unique_cleanup_list=$(echo -e "$cleanup_list" | sed '/^$/d' | sort -u)
           if [ -n "$unique_cleanup_list" ]; then
@@ -39,8 +59,8 @@ jobs:
               if [ -f "$pdf_to_delete" ]; then echo "Deleting old PDF: $pdf_to_delete"; rm "$pdf_to_delete"; fi
             done
           fi
+          
           echo -e "\n--- Identifying files to compile ---"
-          changed_files=$(git diff --name-only --diff-filter=AMR HEAD~1 HEAD | grep '\.tex$' || true)
           if [ -z "$changed_files" ]; then echo "No .tex files to compile. Skipping."; exit 0; fi
           compile_list=""
           while IFS= read -r file; do
@@ -54,6 +74,7 @@ jobs:
           unique_compile_list=$(echo -e "$compile_list" | sed '/^$/d' | sort -u)
           if [ -z "$unique_compile_list" ]; then echo "Could not determine any main .tex files to compile."; exit 0; fi
           echo -e "\nFinal list of files to compile:\n$unique_compile_list\n"
+          
           echo "--- Preemptively deleting PDFs before recompilation ---"
           echo "$unique_compile_list" | while IFS= read -r file_to_compile; do
             filepath=$(dirname "$file_to_compile"); filename=$(basename "$file_to_compile" .tex)
@@ -61,6 +82,7 @@ jobs:
             pdf_to_delete="docs/$output_subpath/$filename.pdf"
             if [ -f "$pdf_to_delete" ]; then echo "Deleting existing PDF: $pdf_to_delete"; rm "$pdf_to_delete"; fi
           done
+          
           touch successes.log failures.log
           docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" -e GITHUB_SHA ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c "
             echo 'Starting compilation loop...'
@@ -82,28 +104,18 @@ jobs:
 
       - name: Update Failure Log
         run: |
-          # --- LOGICA CORRETTA E ROBUSTA PER AGGIORNARE IL LOG ---
+          # (Logica di aggiornamento del log dei fallimenti invariata)
           echo "--- Updating compilation_failures.log ---"
           touch compilation_failures.log
-
-          # 1. Combina i vecchi e i nuovi fallimenti in un file temporaneo
           cat compilation_failures.log failures.log | sort -u > temp_failures.log
-          
-          # 2. Se ci sono stati dei successi, li rimuove dalla lista
           if [ -s successes.log ]; then
-            # Scorre ogni file che ha avuto successo
             while IFS= read -r successful_file; do
-                # Scappa eventuali caratteri speciali nel nome del file per sicurezza
                 escaped_file=$(printf '%s\n' "$successful_file" | sed 's/[.[\*^$]/\\&/g')
-                # Usa il pattern corretto (^PERCORSO;) per rimuovere la riga corrispondente
                 grep -v "^${escaped_file};" temp_failures.log > new_temp_failures.log
                 mv new_temp_failures.log temp_failures.log
             done < successes.log
           fi
-
-          # 3. Sovrascrive il vecchio log con quello aggiornato
           mv temp_failures.log compilation_failures.log
-
           echo "Current failed files (file;commit_hash):"
           cat compilation_failures.log
           rm -f successes.log failures.log
