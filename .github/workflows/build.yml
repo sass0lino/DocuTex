@@ -98,6 +98,11 @@ jobs:
           if [ ! -s compile_list.txt ]; then
             echo "No .tex files to compile."
             echo "compile_needed=false" >> $GITHUB_OUTPUT
+
+            # 🧹 Pulisce il report precedente
+            echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.md
+            echo "" >> build_report.md
+            echo "_Nessun file modificato o mancante. Nessuna compilazione eseguita._" >> build_report.md
           else
             echo "Files to compile:"
             cat compile_list.txt
@@ -109,6 +114,8 @@ jobs:
         run: |
           echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.md
           echo "" >> build_report.md
+
+          build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
           > successes.txt
           > failures.txt
@@ -124,6 +131,7 @@ jobs:
 
           docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" \
             ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c '
+              build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
               while IFS= read -r texfile || [ -n "$texfile" ]; do
                 [ -z "$texfile" ] && continue
                 echo "Compiling: $texfile"
@@ -136,6 +144,7 @@ jobs:
                   mv "$(pwd)/tmp_build/$filename.pdf" "$out_dir/"
                   echo "$texfile;Success" >> build_result.log
                 else
+                  echo "::error file=$texfile::LaTeX compilation failed"
                   echo "$texfile;Fail" >> build_result.log
                 fi
                 rm -rf "$(pwd)/tmp_build"/*
@@ -146,8 +155,7 @@ jobs:
           echo "## Fallimenti" >> build_report.md
           if grep -q ";Fail" build_result.log; then
             grep ";Fail" build_result.log | while IFS=";" read -r tex status; do
-              pdf_path=$(echo "$tex" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
-              echo "- ❌ $tex → **non compilato**" >> build_report.md
+              echo "- ❌ [$tex]($build_url) → **errore in compilazione**" >> build_report.md
             done
           else
             echo "_Nessun errore di compilazione._" >> build_report.md
