@@ -1,59 +1,8 @@
-name: Build LaTeX documents
-
-permissions:
-  contents: write
-
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'src/**/*.tex'
-      - 'src/*.tex'
-
-jobs:
-  build_latex:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      # Step 1 – Cleanup & consistency check
-      - name: Step 1 - Cleanup & Validation
-        id: analysis
-        run: |
-          echo "--- Enforcing repository consistency ---"
-          BEFORE_SHA="${{ github.event.before }}"
-          AFTER_SHA="${{ github.event.after }}"
-
-          # 1️⃣ Remove orphan PDFs
-          if [ -d "docs" ]; then
-            find docs -type f -name "*.pdf" | while IFS= read -r pdf_file; do
-              src_file=$(echo "$pdf_file" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
-              if [ ! -f "$src_file" ]; then
-                echo "🗑️ Orphan PDF found → $pdf_file"
-                rm "$pdf_file"
-              fi
-            done
-          fi
-
-          # 2️⃣ Remove PDFs manually added or modified
-          if [[ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
-            changed_pdfs=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'docs/*.pdf' 'docs/**/*.pdf' || true)
-            if [ -n "$changed_pdfs" ]; then
-              echo "🚫 Manually changed PDFs detected, removing:"
-              echo "$changed_pdfs" | xargs -r rm -f
-            fi
-          fi
-
-      # Step 2 – Determine which files to compile
       - name: Step 2 - Prepare Compile List
         id: prepare
         run: |
           echo "--- Preparing compile list ---"
+          set +e  # Disabilita 'exit on error' per gestire casi senza output
           BEFORE_SHA="${{ github.event.before }}"
           AFTER_SHA="${{ github.event.after }}"
 
@@ -64,100 +13,43 @@ jobs:
             changed_files=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'src/*.tex' 'src/**/*.tex' || true)
           fi
 
+          echo "$changed_files" > changed_raw.txt
           changed_parents=""
-          if [ -n "$changed_files" ]; then
+
+          # Only process if we have changed files
+          if [ -s changed_raw.txt ]; then
             while IFS= read -r file; do
+              [ -z "$file" ] && continue
               if [[ "$file" == *"/contenuti/"* ]]; then
                 parent_dir=$(echo "$file" | sed 's|/contenuti/.*||')
-                find "$parent_dir" -maxdepth 1 -type f -name "*.tex"
+                if [ -d "$parent_dir" ]; then
+                  find "$parent_dir" -maxdepth 1 -type f -name "*.tex" || true
+                fi
               else
                 echo "$file"
               fi
-            done < <(echo "$changed_files") | sort -u > changed_parents.txt
+            done < changed_raw.txt | sort -u > changed_parents.txt
+          else
+            > changed_parents.txt
           fi
 
-          # Detect missing PDFs (for consistency)
-          find src -type f -name "*.tex" ! -path "*/contenuti/*" | while IFS= read -r tex_file; do
+          # Detect missing PDFs
+          find src -type f -name "*.tex" ! -path "*/contenuti/*" 2>/dev/null | while IFS= read -r tex_file; do
             pdf_file=$(echo "$tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
             [ ! -f "$pdf_file" ] && echo "$tex_file"
-          done > missing_pdfs.txt
+          done > missing_pdfs.txt || true
 
-          master_compile_list=$(cat changed_parents.txt missing_pdfs.txt 2>/dev/null | sort -u)
+          # Merge both lists (if they exist)
+          touch changed_parents.txt missing_pdfs.txt
+          master_compile_list=$(cat changed_parents.txt missing_pdfs.txt | sort -u)
+
           if [ -z "$master_compile_list" ]; then
-            echo "compile_needed=false" >> $GITHUB_OUTPUT
             echo "No .tex files to compile."
+            echo "compile_needed=false" >> $GITHUB_OUTPUT
           else
             echo "$master_compile_list" > compile_list.txt
             echo "compile_needed=true" >> $GITHUB_OUTPUT
             echo "Files to compile:"
             cat compile_list.txt
           fi
-
-      # Step 3 – Compile with Docker + Generate Markdown Report
-      - name: Step 3 - Compile and Generate Report
-        if: steps.prepare.outputs.compile_needed == 'true'
-        run: |
-          echo "# 🧱 Build Report – $(date -u '+%Y-%m-%d %H:%M:%S UTC')" > build_report.md
-          echo "" >> build_report.md
-          echo "## ❌ Compilation Failures" >> build_report.md
-          echo "" >> build_report.md
-          touch failures.tmp successes.tmp
-
-          while IFS= read -r file; do
-            pdf_target=$(echo "$file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
-            [ -f "$pdf_target" ] && rm -f "$pdf_target"
-          done < compile_list.txt
-
-          docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" -e GITHUB_SHA \
-            ghcr.io/xu-cheng/texlive-full:latest bash -c '
-            mkdir -p tmp_build
-            while IFS= read -r texfile; do
-              echo "🔧 Compiling $texfile..."
-              if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory="tmp_build" "$texfile"; then
-                filepath=$(dirname "$texfile")
-                filename=$(basename "$texfile" .tex)
-                output_subpath=$(echo "$filepath" | sed "s|^src/||")
-                mkdir -p "docs/$output_subpath"
-                mv "tmp_build/$filename.pdf" "docs/$output_subpath/" 2>/dev/null || true
-                echo "$texfile;docs/$output_subpath/$filename.pdf" >> successes.tmp
-              else
-                echo "$texfile" >> failures.tmp
-              fi
-              rm -rf tmp_build/*
-            done < compile_list.txt
-          '
-
-          echo "" >> build_report.md
-          if [ -s failures.tmp ]; then
-            while IFS= read -r fail; do
-              echo "- \`$fail\`" >> build_report.md
-            done < failures.tmp
-          else
-            echo "_Nessun fallimento! 🎉_" >> build_report.md
-          fi
-
-          echo "" >> build_report.md
-          echo "## ✅ Successful Compilations" >> build_report.md
-          echo "" >> build_report.md
-          if [ -s successes.tmp ]; then
-            while IFS=\; read -r src pdf; do
-              safe_link=$(echo "$pdf" | sed 's| |%20|g')
-              echo "- [\`$src\`](./$safe_link)" >> build_report.md
-            done < successes.tmp
-          else
-            echo "_Nessuna compilazione completata._" >> build_report.md
-          fi
-
-      # Step 4 – Commit results back
-      - name: Step 4 - Commit results
-        run: |
-          echo "--- Committing results ---"
-          git add docs build_report.md
-          if git diff --staged --quiet; then
-            echo "No changes to commit."
-          else
-            git config --global user.name "github-actions[bot]"
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git commit -m "🧱 Automated LaTeX build and report"
-            git push
-          fi
+          set -e  # Riabilita controllo errori
