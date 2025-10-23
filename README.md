@@ -1,16 +1,17 @@
 # Guida all'uso
-1) Per compilare caricate tutti i file `.tex` che volete compilare nella cartella `src/`, la build si attiva in automatico e compila tutto nella cartella `docs/`.
-2) La compilazione dei file avviene in root, dunque per la compilazione delle immagini, basta aggiungere all'inizio del proprio file latex, le seguenti direttive:
+1) Per compilare i vostri file latex, caricateli tutti nella cartella `src/`. La build si attiva in automatico e compila tutto nella cartella `docs/`.
+2) Questione immagini: la compilazione dei file avviene in root, dunque per la compilazione delle immagini, basta aggiungere all'inizio del proprio file latex, le seguenti direttive:
    ```
    \usepackage{graphicx} % Pacchetto classico per le immagini
    \usepackage{currfile} % Pacchetto per ottenere il percorso del file compilato dinamicamente
    \graphicspath{{src/immagini/}{\currfiledir contenuti/}{\currfiledir contenuti/immagini/}} % Percorsi dove cercare le immagini
    ```
-   Quindi continuando con l'esempio del codice sopra, potrai mettere le immagini nella cartella `src/immagini/` oppure nella rispettiva cartella `contenuti/` o `contenuti/immagini/` dello specifico file latex.
-   Ecco un esempio di come si include una immagini in questo sistema:
+   Potrai mettere le immagini nella cartella `src/immagini/` oppure nella rispettiva cartella `contenuti/` o `contenuti/immagini/` dello specifico file latex.
+   Ecco un esempio di come si include una immagine con questo sistema (dopo averla inserita in una delle cartelle che ho scritto sopra chiaramente):
    ```
-   \includegraphics[width=0.4\textwidth]{logo.jpg}
+   \includegraphics[width=0.4\textwidth]{logo.jpg} % Molto semplice, non serve specificare il percorso
    ```
+   Avrai capito che l'idea di questo sistema é di utilizzare la cartella `src/immagini/` per le immagini condivise da tutti i file, e utilizzare le cartelle ad "hoc" (`contenuti/`) dei file latex per le immagini non condivise.
 3) Potete caricare progetti .tex standalone (monolitici) oppure progetti multi-file. Per i progetti multi-file è importante che esista un file .tex principale (quello da cui partirá la compilazione) mentre tutti i file secondari dovrai collocarli nella rispettiva cartella denominata esattamente `contenuti/`.
 4) Se volessimo ricompilare tutti i documenti del repository, basta eliminare tutta la cartella docs.
 
