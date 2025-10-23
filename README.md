@@ -1,3 +1,2 @@
 # DocuTex
-fine
 secondo commit
