@@ -1,9 +1,9 @@
-# Build Report del 2025-10-23T13:05:03+00:00
+# Build Report del 2025-10-23T15:30:19+00:00
 
-_Compilazione basata su commit d8094c611988bee7fa3fd815178c811b135351b0 (base: d8094c6)_
+_Compilazione basata su commit 278769bd79ce584540ab3f93d9dabd4b31eda55b (base: 278769b)_
 
 ## Fallimenti
-- ❌ [src/template.tex](https://github.com/sass0lino/DocuTex/actions/runs/18749305488) → **errore in compilazione**
+- ❌ [src/template.tex](https://github.com/sass0lino/DocuTex/actions/runs/18753605967) → **errore in compilazione**
 
 ## Successi
-_Nessun PDF compilato._
+- ✅ [docs/Candidatura/Lettera di Presentazione/lettera_presentazione_v1.0.0.pdf](docs/Candidatura/Lettera%20di%20Presentazione/lettera_presentazione_v1.0.0.pdf)
