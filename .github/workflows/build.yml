@@ -166,7 +166,7 @@ jobs:
             '
 
           # Generazione report
-          echo "## Fallimenti" >> report.md
+          echo " --- " >> report.md
           if grep -q ";Fail" build_result.log; then
             grep ";Fail" build_result.log | while IFS=";" read -r tex status; do
               echo "- ❌ [$tex]($build_url) → **errore in compilazione**" >> report.md
@@ -176,7 +176,7 @@ jobs:
           fi
 
           echo "" >> report.md
-          echo "## Successi" >> report.md
+          echo " --- " >> report.md
           if grep -q ";Success" build_result.log; then
             grep ";Success" build_result.log | while IFS=";" read -r tex status; do
               pdf_path=$(echo "$tex" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
