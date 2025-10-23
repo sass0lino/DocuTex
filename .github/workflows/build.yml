@@ -113,7 +113,7 @@ jobs:
 
             echo "# Report di compilazione" > report.md
             echo "" >> report.md
-            echo "_Nessun file modificato o mancante. Nessuna compilazione eseguita._" >> report.md
+            echo "  Nessun file modificato o mancante. Nessuna compilazione eseguita." >> report.md
           else
             echo "Files to compile:"
             cat compile_list.txt
@@ -172,7 +172,7 @@ jobs:
               echo "- ❌ [$tex]($build_url) → **errore in compilazione**" >> report.md
             done
           else
-            echo "_Nessun errore di compilazione._" >> report.md
+            echo "  Nessun errore di compilazione." >> report.md
           fi
 
           echo "" >> report.md
@@ -184,7 +184,7 @@ jobs:
               echo "- ✅ [$pdf_path]($enc)" >> report.md
             done
           else
-            echo "_Nessun PDF compilato._" >> report.md
+            echo "  Nessun PDF compilato." >> report.md
           fi
 
       - name: Step 4 - Commit Results
