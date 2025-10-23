@@ -113,7 +113,7 @@ jobs:
 
             echo "# Report di compilazione" > report.md
             echo "" >> report.md
-            echo "💡 Nessun file modificato o mancante. Nessuna compilazione eseguita." >> report.md
+            echo "`💡 Nessun file modificato o mancante. Nessuna compilazione eseguita`" >> report.md
           else
             echo "Files to compile:"
             cat compile_list.txt
@@ -128,7 +128,7 @@ jobs:
 
           build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
-          echo "_Compilazione basata su commit ${LAST_COMPILED} ${BASE_DESC}_" >> report.md
+          echo "_Compilazione basata sul commit ${LAST_COMPILED} ${BASE_DESC}_" >> report.md
           echo "" >> report.md
 
           > successes.txt
@@ -169,10 +169,10 @@ jobs:
           echo " --- " >> report.md
           if grep -q ";Fail" build_result.log; then
             grep ";Fail" build_result.log | while IFS=";" read -r tex status; do
-              echo "❌ [$tex]($build_url) → **errore in compilazione**" >> report.md
+              echo "❌ [$tex]($build_url)<br>" >> report.md
             done
           else
-            echo "💡 Nessun errore di compilazione." >> report.md
+            echo "`💡 Nessun errore di compilazione`" >> report.md
           fi
 
           echo "" >> report.md
@@ -181,10 +181,10 @@ jobs:
             grep ";Success" build_result.log | while IFS=";" read -r tex status; do
               pdf_path=$(echo "$tex" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
               enc=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$pdf_path")
-              echo "✅ [$pdf_path]($enc)" >> report.md
+              echo "✅ [$pdf_path]($enc)<br>" >> report.md
             done
           else
-            echo "💡 Nessun PDF compilato." >> report.md
+            echo "`💡 Nessun PDF compilato`" >> report.md
           fi
 
       - name: Step 4 - Commit Results
