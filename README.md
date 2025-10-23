@@ -1,1 +1,1 @@
-_work in progess..._
+_ready for collaboration_
