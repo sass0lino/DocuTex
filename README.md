@@ -49,11 +49,11 @@ Scopo: salvare lo stato aggiornato e coerente del repository:
 1. Se sono stati generati o aggiornati PDF, crea un commit automatico: `Automated LaTeX build (base: <SHA>)` dove `<SHA>` è il commit della precedente build automatica ritenuta coerente.  
 2. Questo commit diventa il nuovo **punto di riferimento** per la prossima build (in pratica, ogni commit “Automated LaTeX build”rappresenta uno **snapshot coerente** tra `src/` e `docs/`).
 
-# **Informazioni di compilazione**
+# Informazioni di compilazione
 - **Compilatore:** `latexmk`  
 - **Ambiente:** Docker `ghcr.io/xu-cheng/texlive-full`
 
-# **Varie ed eventuali da sistemare/aggiungere**
+# Varie ed eventuali da sistemare/aggiungere
 - commenti del file yaml
 - implementare l'autocompilazione anche in caso di modifica di immagini
 - generalizzare il sistema di build dei progetti multi-file eliminando il vincolo della cartella `contenuti/`
