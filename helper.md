@@ -1,8 +1,8 @@
-# Regole di utilizzo
-1) caricare tutti i file `.tex` nella cartella `src/`, la build di compilazione infatti si attiva solo in tal caso
-2) potete caricare progetti .tex standalone (monolitici) oppure progetti multi-file
+# Come compilare
+1) caricate tutti i file `.tex` che volete compilare nella cartella `src/`
+2) la build si attiva in automatico e compila tutto nella cartella `docs/`
 
-Attenzione: per i progetti multi-file è importante che esista un file .tex principale (cioè il file principale da compilare) e che tutti i file secondari o inclusi siano collocati in un sottocartella denominata esattamente `contenuti/`.
+Attenzione: potete caricare progetti .tex standalone (monolitici) oppure progetti multi-file. er i progetti multi-file è importante che esista un file .tex principale (cioè il file principale da compilare) e che tutti i file secondari o inclusi siano collocati in un sottocartella denominata esattamente `contenuti/`.
 
 # Obiettivi della Build
 
