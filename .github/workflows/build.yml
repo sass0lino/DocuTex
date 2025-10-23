@@ -128,7 +128,7 @@ jobs:
 
           build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
-          echo "`Compilazione basata sul commit ${LAST_COMPILED} ${BASE_DESC}`" >> report.md
+          echo "Compilazione basata sul commit ${LAST_COMPILED} ${BASE_DESC}" >> report.md
           echo "" >> report.md
 
           > successes.txt
