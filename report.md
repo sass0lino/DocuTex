@@ -1,9 +1,9 @@
 # Report di compilazione
 
-_Compilazione basata su commit d7266f11addbb03129fb2b831e78eea83f03f27b (base: d7266f1)_
+_Compilazione basata su commit 949d91ddfdd6198c55d8e0e4168cc5f4497083fc (base: 949d91d)_
 
-## Fallimenti
+ --- 
 _Nessun errore di compilazione._
 
-## Successi
-- ✅ [docs/Candidatura/Lettera di Presentazione/lettera_presentazione_v1.pdf](docs/Candidatura/Lettera%20di%20Presentazione/lettera_presentazione_v1.pdf)
+ --- 
+- ✅ [docs/Candidatura/Lettera di Presentazione/lettera_presentazione_v1 copia.pdf](docs/Candidatura/Lettera%20di%20Presentazione/lettera_presentazione_v1%20copia.pdf)
