@@ -149,7 +149,8 @@ jobs:
               while IFS= read -r texfile || [ -n "$texfile" ]; do
                 [ -z "$texfile" ] && continue
                 echo "Compiling: $texfile"
-                if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory="$(pwd)/tmp_build" "$(pwd)/$texfile"; then
+                if latexmk -pdf -interaction=nonstopmode -file-line-error -output-directory="$(pwd)/tmp_build" "$texfile"; then
+
                   filepath=$(dirname "$texfile")
                   filename=$(basename "$texfile" .tex)
                   out_sub=$(echo "$filepath" | sed "s|^src/||; s|^src\$||")
