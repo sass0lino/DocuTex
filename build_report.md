@@ -1,7 +1,9 @@
-# Build Report del 2025-10-23T09:07:19+00:00
+# Build Report del 2025-10-23T09:13:38+00:00
 
 ## Fallimenti
-- ❌ [src/baci secondo copia.tex](https://github.com/sass0lino/DocuTex/actions/runs/18743339611) → **errore in compilazione**
+_Nessun errore di compilazione._
 
 ## Successi
-- ✅ [docs/baci secondo copia 2.pdf](docs/baci%20secondo%20copia%202.pdf)
+- ✅ [docs/baci secondo copia.pdf](docs/baci%20secondo%20copia.pdf)
+- ✅ [docs/lettera_presen.pdf](docs/lettera_presen.pdf)
+- ✅ [docs/vediamo fi/prova.pdf](docs/vediamo%20fi/prova.pdf)
