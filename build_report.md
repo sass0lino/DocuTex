@@ -1,9 +1,9 @@
 # Build Report
 
-_Compilazione basata su commit d5cc8654599b1113ebbcbff31e5209381158271f (base: d5cc865)_
+_Compilazione basata su commit 011a7dece9cfadce2761d51c30ec94b31fda8d03 (base: 011a7de)_
 
 ## Fallimenti
-- ❌ [src/template.tex](https://github.com/sass0lino/DocuTex/actions/runs/18754502677) → **errore in compilazione**
+- ❌ [src/template.tex](https://github.com/sass0lino/DocuTex/actions/runs/18755004663) → **errore in compilazione**
 
 ## Successi
 _Nessun PDF compilato._
