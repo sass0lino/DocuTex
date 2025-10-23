@@ -8,7 +8,11 @@ Nello specifico la build garantisce che:
 - i documenti latex che falliscono la compilazione non avranno il rispettivo documento pdf (nemmeno la versione precedente alla build)
 - non esistono PDF orfani o obsoleti;  
 
+# Regole di utilizzo
+1) caricare tutti i file `.tex` nella cartella `src/`, la build di compilazione infatti si attiva solo in tal caso
+2) potete caricare progetti .tex standalone (monolitici) oppure progetti multi-file
 
+Attenzione: per i progetti multi-file è importante che esista un file .tex principale (cioè il file principale da compilare) e che tutti i file secondari o inclusi siano collocati in un sottocartella denominata esattamente `contenuti/`.
 
 # Struttura logica del processo
 
@@ -46,10 +50,7 @@ Scopo: salvare lo stato aggiornato e coerente del repository:
 1. Se sono stati generati o aggiornati PDF, crea un commit automatico: `Automated LaTeX build (base: <SHA>)` dove `<SHA>` è il commit della precedente build automatica ritenuta coerente.  
 2. Questo commit diventa il nuovo **punto di riferimento** per la prossima build (in pratica, ogni commit “Automated LaTeX build”rappresenta uno **snapshot coerente** tra `src/` e `docs/`).
 
-
-
 # **Informazioni di compilazione**
-
 - **Compilatore:** `latexmk`  
 - **Ambiente:** Docker `ghcr.io/xu-cheng/texlive-full`
 
