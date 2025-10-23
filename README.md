@@ -53,7 +53,7 @@ Scopo: salvare lo stato aggiornato e coerente del repository:
 - **Compilatore:** `latexmk`  
 - **Ambiente:** Docker `ghcr.io/xu-cheng/texlive-full`
 
-# Varie ed eventuali da sistemare/aggiungere
+# Da sistemare
 - commenti del file yaml
 - implementare l'autocompilazione anche in caso di modifica di immagini
 - generalizzare il sistema di build dei progetti multi-file eliminando il vincolo della cartella `contenuti/`
