@@ -190,7 +190,15 @@ jobs:
       - name: Step 4 - Commit Results
         run: |
           echo "--- Committing results ---"
-          git add docs build_report.md
+          
+          # Aggiunge sempre il report
+          git add -f build_report.md
+          
+          # Aggiunge docs solo se esiste
+          if [ -d "docs" ]; then
+            git add docs
+          fi
+
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
