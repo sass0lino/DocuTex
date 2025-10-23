@@ -1,0 +1,108 @@
+% Intestazione
+\fancyhead[L]{Registro delle modifiche} % Testo a sinistra
+\fancyhead[R]{\includegraphics[width=0.16\textwidth]{sweg_logo_sito_inverted.png}} % Immagine a destra
+
+% Piè di pagina
+\fancyfoot[L]{Specifica Tecnica}       % Testo a sinistra
+\fancyfoot[C]{\thepage}                % Numero di pagina al centro
+\fancyfoot[R]{Versione 1.0.0}          % Testo a destra
+
+\pagenumbering{roman} % Numerazione romana per l'indice
+
+
+\section*{Registro delle modifiche}
+
+\begin{table}[h]
+    \centering
+    \rowcolors{2}{lightgray}{white}
+    \begin{tabular}{|c|c|p{5cm}|p{3cm}|p{3cm}|}
+        \hline
+        \rowcolor[gray]{0.75}
+        \textbf{Versione} & \textbf{Data} & \multicolumn{1}{|c|}{\textbf{Descrizione}} & 
+        \multicolumn{1}{|c|}{\textbf{Autore}} & \multicolumn{1}{|c|}{\textbf{Verificatore}}\\
+        \hline
+        1.0.0 & 25-03-25 & Corretto il link al Glossario nella sezione \S\bulref{sec:riferimenti} & Giacomo Loat & Riccardo Stefani\\
+        \hline
+        0.3.0 & 24-03-25 & Aggiornamento della catena di GetMessages nelle sezioni \S\bulref{sec:architettura_recupero_messaggi_storico} e \S\bulref{sec:descrizione_classi}
+        dopo l'implementazione dell'infinite scroll & Riccardo Stefani & Filippo Righetto\\
+        \hline
+        0.2.8 & 21-03-25 & Inseriti screenshot dei diagrammi delle classi e completata sezione \S\bulref{sec:architettura_di_dettaglio} &
+        Riccardo Stefani & Giacomo Loat\\
+        \hline
+        0.2.7 & 18-03-25 & Terminata scrittura sezione \S\bulref{sec:stato_requisiti_funzionali} & Riccardo Stefani & Giacomo Loat\\
+        \hline
+        0.2.6 & 18-03-25 & Iniziata scrittura sezione \S\bulref{sec:stato_requisiti_funzionali} & Filippo Righetto & Riccardo Stefani\\
+        \hline
+        0.2.5 & 17-03-25 & Scritte le sezioni \S\bulref{sec:architettura_rendering_storico},
+        \S\bulref{sec:architettura_rendering_domanda_risposta}, \S\bulref{sec:architettura_frontend_badge_aggiornamento} e
+        \S\bulref{sec:frontend} & Riccardo Stefani & Michael Fantinato\\
+        \hline
+        0.2.4 & 17-03-25 & Scritta la sezione \S\bulref{sec:logica_prodotto} & Michael Fantinato &
+        Riccardo Stefani\\
+        \hline
+        0.2.3 & 09-03-25 & Scritte le sezioni \S\bulref{sec:architettura_backend_badge_aggiornamento} e
+        \S\bulref{sec:architettura_generazione_domande_conversazione}, e aggiunta la descrizione di tutte le relative
+        classi nella sezione \S\bulref{sec:descrizione_classi} & Riccardo Stefani & Giacomo Loat\\
+        \hline
+        0.2.2 & 09-03-25 & Scritte le sezioni \S\bulref{sec:architettura_salvataggio_messaggi_storico} 
+        e \S\bulref{sec:architettura_recupero_messaggi_storico}, 
+        e aggiunta la descrizione di tutte le relative classi nella sezione \S\bulref{sec:descrizione_classi} &
+        Giacomo Loat & Riccardo Stefani\\
+        \hline
+        0.2.1 & 08-03-25 & Scritte le sezioni \S\bulref{sec:architettura_aggiornamento_database_vettoriale} e
+        \S\bulref{sec:design_pattern_utilizzati} & Riccardo Stefani & Giacomo Loat\\
+        \hline
+        0.2.0 & 08-03-25 & Corretti alcuni simboli del glossario inseriti sbagliati & Riccardo Stefani & Giacomo Loat\\
+        \hline
+        0.1.11 & 07-03-25 & Scritta la sezione \S\bulref{sec:architettura_generazione_risposta} & Riccardo Stefani &
+        Michael Fantinato\\
+        \hline
+        0.1.10 & 05-03-25 & Inizializzazione della struttura delle sezioni \S\bulref{sec:architettura_di_dettaglio},
+        \S\bulref{sec:design_pattern_utilizzati} e \S\bulref{sec:descrizione_classi} & Riccardo Stefani & Giacomo Loat\\
+        \hline
+        0.1.9 & 25-02-25 & Aggiunta sezione \S\bulref{sec:architettura_deployment} riguardante l'architettura di deployment &
+        Filippo Righetto & Riccardo Stefani\\
+        \hline
+        0.1.8 & 24-02-25 & Aggiunta sezione \S\bulref{sec:architettura} e stesura architettura logica & Davide Verzotto &
+        Riccardo Stefani\\
+        \hline
+        0.1.7 & 13-02-25 & Aggiunto PostgreSQL alla sezione \S\bulref{subsec:strumenti_gestione_dati} & Giacomo Loat &
+        Riccardo Stefani \\
+        \hline
+        0.1.6 & 11-02-25 & Sistemati i link presenti nella sezione \S\bulref{sec:riferimenti} seguendo i consigli del professor
+        Vardanega & Riccardo Stefani & Giacomo Loat\\
+        \hline
+        0.1.5 & 10-02-25 & Aggiunti PyTest e Jasmine alla sezione \S\bulref{subsec:strumenti_analisi_dinamica} & Riccardo Stefani &
+        Giacomo Loat\\
+        \hline
+        0.1.4 & 10-02-25 & Aggiunto FastAPI alla sezione \S\bulref{subsec:strumenti_backend}, Angular e Node Docker alla sezione
+        \S\bulref{subsec:strumenti_frontend} e GPT-4o alla sezione \S\bulref{subsec:strumenti_integrazione_supporto} &
+        Michael Fantinato & Riccardo Stefani \\
+        \hline
+        0.1.3 & 10-02-25 & Aggiunti Python e LangChain alla sezione \S\bulref{subsec:strumenti_backend} e 
+        aggiunto Docker alla sezione \S\bulref{subsec:strumenti_integrazione_supporto} & Giacomo Loat & Riccardo Stefani \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\newpage
+
+\begin{table}[h]
+    \centering
+    \rowcolors{2}{lightgray}{white}
+    \begin{tabular}{|c|c|p{5cm}|p{3cm}|p{3cm}|}
+        \hline
+        \rowcolor[gray]{0.75}
+        \textbf{Versione} & \textbf{Data} & \multicolumn{1}{|c|}{\textbf{Descrizione}} & 
+        \multicolumn{1}{|c|}{\textbf{Autore}} & \multicolumn{1}{|c|}{\textbf{Verificatore}}\\
+        \hline
+        0.1.2 & 08-02-25 & Scrittura sezione \S\bulref{sec:introduzione} & Federica Bolognini & Riccardo Stefani \\
+        \hline
+        0.1.1 & 06-02-25 & Scrittura sezioni \S\bulref{subsec:strumenti_gestione_dati} e \S\bulref{subsec:strumenti_analisi_statica} & 
+        Riccardo Stefani & Giacomo Loat\\
+        \hline
+        0.1.0 & 06-02-25 & Creazione del documento & Riccardo Stefani & Federica Bolognini\\
+        \hline
+    \end{tabular}
+    \caption{Registro delle modifiche}
+\end{table}

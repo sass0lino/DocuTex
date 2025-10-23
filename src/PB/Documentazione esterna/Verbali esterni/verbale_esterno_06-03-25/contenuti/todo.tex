@@ -1,0 +1,31 @@
+% Intestazione
+\fancyhead[L]{5 \hspace{0.2cm} Todo} % Testo a sinistra
+
+
+\section{Todo}
+
+Durante la riunione sono emersi i seguenti task da svolgere:
+
+\vspace{0.5cm}
+
+\begin{table}[htbp]
+\centering
+\rowcolors{2}{lightgray}{white}
+\begin{tabular}{|c|c|p{0.25\textwidth}|p{0.4\textwidth}|}
+    \hline
+    \rowcolor[gray]{0.75}
+    \multicolumn{1}{|c|}{\textbf{Codice}} & \multicolumn{1}{|c|}{\textbf{Dalla decisione}} & \multicolumn{1}{|c|}{\textbf{Assegnatario}} & \multicolumn{1}{|c|}{\textbf{Task Todo}} \\
+    \hline
+    BUD-385 & VE 10.10 & Riccardo Stefani & Convertire le slide della riunione odierna in PDF ed inviarle per mail ad
+    \emph{AzzurroDigitale} assieme al verbale esterno.\\
+    \hline
+    BUD-384 & VE 10.10 & Riccardo Stefani & Redigere il verbale della riunione esterna del 06/03/25.\\
+    \hline
+\end{tabular}
+\end{table}
+
+
+\begin{tikzpicture}[remember picture, overlay]
+    \node at (current page.south east) [anchor=south east, xshift=-2.4cm, yshift=19.5cm] 
+        {\includegraphics[width=0.2\textwidth]{immagini/Approvazione_AzzurroDigitale.png}};
+\end{tikzpicture}

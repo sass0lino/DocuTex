@@ -1,0 +1,58 @@
+% Intestazione
+\fancyhead[L]{4 \hspace{0.2cm} Decisioni} % Testo a sinistra
+
+\section{Decisioni}
+
+Durante la riunione sono state prese le seguenti decisioni:
+
+\vspace{0.5cm}
+
+\begin{table}[htbp]
+    \centering
+    \rowcolors{2}{lightgray}{white}
+    \begin{tabular}{|c|p{0.8\textwidth}|}
+        \hline
+        \rowcolor[gray]{0.75}
+        \textbf{Codice} & \textbf{Descrizione}\\
+        \hline
+        VI 29.1 & E' stato deciso di che i file da cui il chatbot ha generato la risposta saranno resi disponibili all'utente tramite
+        link.\\ 
+        \hline
+        VI 29.2 & E' stato deciso che non ci sarà più il concetto di \emph{sessione}, ogni messaggio sarà uguale. Nel
+        \emph{database relazionale}\textsubscript{\textbf{\textit{G}}} ci sarà dunque un'unica tabella \emph{Messaggio}.\\ 
+        \hline
+        VI 29.3 & Le domande per proseguire la conversazione verranno generate basandosi solo sull'ultima coppia domanda-risposta,
+        non potendo più basarsi sulla sessione corrente.\\ 
+        \hline
+        VI 29.4 & E' stato deciso che il requisito delle domande per iniziare la conversazione non verrà soddisfatto, a causa della
+        difficoltà nel capire quando si può parlare di "inizio" della conversazione, dopo la rimozione delle sessioni.\\ 
+        \hline
+        VI 29.5 & Seguendo le indicazioni del \emph{proponente}, non verranno scritte istruzioni particolari nel
+        \emph{Manuale Utente}\textsubscript{\textbf{\textit{G}}} oltre alla sezione "Cosa chiedere e come chiederlo".\\ 
+        \hline
+        VI 29.6 & E' stato deciso che il numero di messaggi da caricare ad ogni refresh verrà stabilito empiricamente solo in fase
+        di programmazione.\\ 
+        \hline
+        VI 29.7 & E' stato deciso che verrà modellato il \emph{caso d'uso}\textsubscript{\textbf{\textit{G}}} per il caricamento
+        dei vecchi messaggi con lo scroll dello schermo non appena sarà stato deciso il numero di messaggi da recuperare. In tale
+        occasione, verrà modellato anche l'extend per il caso di fallimento del recupero dei messaggi.\\ 
+        \hline
+        VI 29.8 & E' stato stabilito di sistemare i diagrammi modellati nella progettazione per adattarli alle nuove istruzioni del
+        proponente.\\ 
+        \hline
+        VI 29.9 & E' stato deciso che manderemo ad \emph{AzzurroDigitale} la sezione del Manuale Utente che fornisce le istruzioni su
+        cosa chiedere al chatbot e come chiederlo.\\ 
+        \hline
+        VI 29.10 & E' stato deciso di non svolgere la verifica di fine sprint, in modo da poter fare subito la pull request nel ramo
+        main, così da poter verificare il corretto aggiornamento dell'automazione.\\ 
+        \hline
+        VI 29.11 & E' stato deciso che Davide si occuperà di redigere il verbale interno.\\ 
+        \hline
+        VI 29.12 & E' stato deciso che Riccardo chiuderà su \emph{Jira}\textsubscript{\textbf{\textit{G}}} la sprint appena trascorsa
+        e si segnerà le percentuali di completamento delle \emph{issues}\textsubscript{\textbf{\textit{G}}} per il cruscotto di
+        qualità.\\ 
+        \hline
+        VI 29.13 & E' stato deviso che Riccardo invierà il verbale esterno ad \emph{AzzurroDigitale}.\\ 
+        \hline
+    \end{tabular}
+\end{table}
