@@ -1,0 +1,203 @@
+name: Build LaTeX documents
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**/*.tex'
+      - 'docs/**/*.pdf'
+
+concurrency:
+  group: latex-build
+  cancel-in-progress: true
+
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Step 1 - Enforce Consistency (Cleanup)
+        id: analysis
+        run: |
+          echo "--- Enforcing repository consistency ---"
+          BEFORE_SHA="${{ github.event.before }}"
+          AFTER_SHA="${{ github.event.after }}"
+
+          # 1. Pulizia PDF orfani
+          if [ -d "docs" ]; then
+            find docs -type f -name "*.pdf" | while IFS= read -r pdf_file; do
+              src_file=$(echo "$pdf_file" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
+              if [ ! -f "$src_file" ]; then
+                echo "Deleting orphan PDF: $pdf_file"
+                rm -f -- "$pdf_file"
+              fi
+            done
+          fi
+
+          # 2. Pulizia PDF aggiunti a mano
+          if [[ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
+            manually_changed_pdfs=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'docs/**/*.pdf' || true)
+            if [ -n "$manually_changed_pdfs" ]; then
+              echo "--> Manually modified PDFs detected. Deleting them:"
+              echo "$manually_changed_pdfs" | while IFS= read -r pdf; do
+                [ -n "$pdf" ] && rm -f -- "$pdf"
+              done
+            fi
+          fi
+
+      - name: Step 2 - Prepare Compile List (Unification)
+        id: prepare
+        run: |
+          echo "--- Preparing compile list ---"
+
+          # Trova l’ultimo commit di build automatica come checkpoint
+          LAST_COMPILED=$(git log --grep="^Automated LaTeX build" -n 1 --pretty=format:%H || echo "")
+          if [ -z "$LAST_COMPILED" ]; then
+            echo "No previous build commit found. Performing full rebuild."
+            LAST_COMPILED=$(git rev-list --max-parents=0 HEAD)
+            BASE_DESC="(first commit)"
+          else
+            BASE_DESC="(base: $(echo $LAST_COMPILED | cut -c1-7))"
+          fi
+
+          echo "Comparing changes since commit: $LAST_COMPILED $BASE_DESC"
+
+          changed_parents_file="changed_parents.txt"
+          > "$changed_parents_file"
+
+          changed_files=$(git diff --name-only --diff-filter=AMR "$LAST_COMPILED" HEAD -- src | grep '\.tex$' || true)
+
+          if [ -n "$changed_files" ]; then
+            echo "Changed .tex files detected:"
+            echo "$changed_files"
+            while IFS= read -r file; do
+              [ -z "$file" ] && continue
+              if [[ "$file" == *"/contenuti/"* ]]; then
+                parent_dir=$(echo "$file" | sed 's|/contenuti/.*||')
+                find "$parent_dir" -maxdepth 1 -type f -name "*.tex"
+              else
+                echo "$file"
+              fi
+            done < <(echo "$changed_files") | sort -u > "$changed_parents_file"
+          fi
+
+          # Scanner: trova tutti i .tex "padre" che non hanno il PDF corrispondente
+          missing_pdfs_file="missing_pdfs.txt"
+          > "$missing_pdfs_file"
+
+          find src -type f -name "*.tex" | grep -v '/contenuti/' | while IFS= read -r tex_file; do
+            pdf_file=$(echo "$tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+            if [ ! -f "$pdf_file" ]; then
+              echo "$tex_file" >> "$missing_pdfs_file"
+            fi
+          done
+
+          # Unisce le due fonti
+          cat "$changed_parents_file" "$missing_pdfs_file" | sed '/^$/d' | sort -u > compile_list.txt
+
+          echo "LAST_COMPILED=$LAST_COMPILED" >> $GITHUB_ENV
+          echo "BASE_DESC=$BASE_DESC" >> $GITHUB_ENV
+
+          if [ ! -s compile_list.txt ]; then
+            echo "No .tex files to compile."
+            echo "compile_needed=false" >> $GITHUB_OUTPUT
+
+            echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.md
+            echo "" >> build_report.md
+            echo "_Nessun file modificato o mancante. Nessuna compilazione eseguita._" >> build_report.md
+          else
+            echo "Files to compile:"
+            cat compile_list.txt
+            echo "compile_needed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Step 3 - Compile and Generate Build Report
+        if: steps.prepare.outputs.compile_needed == 'true'
+        run: |
+          echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.md
+          echo "" >> build_report.md
+
+          build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+          echo "_Compilazione basata su commit ${LAST_COMPILED} ${BASE_DESC}_" >> build_report.md
+          echo "" >> build_report.md
+
+          > successes.txt
+          > failures.txt
+
+          # Rimuove PDF esistenti per i file da ricompilare
+          while IFS= read -r texfile; do
+            [ -z "$texfile" ] && continue
+            pdf_file=$(echo "$texfile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+            [ -f "$pdf_file" ] && rm -f "$pdf_file"
+          done < compile_list.txt
+
+          mkdir -p tmp_build
+
+          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" \
+            ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c '
+              build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+              while IFS= read -r texfile || [ -n "$texfile" ]; do
+                [ -z "$texfile" ] && continue
+                echo "Compiling: $texfile"
+                if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory="$(pwd)/tmp_build" "$(pwd)/$texfile"; then
+                  filepath=$(dirname "$texfile")
+                  filename=$(basename "$texfile" .tex)
+                  out_sub=$(echo "$filepath" | sed "s|^src/||; s|^src\$||")
+                  out_dir="$(pwd)/docs/$out_sub"
+                  mkdir -p "$out_dir"
+                  mv "$(pwd)/tmp_build/$filename.pdf" "$out_dir/"
+                  echo "$texfile;Success" >> build_result.log
+                else
+                  echo "::error file=$texfile::LaTeX compilation failed"
+                  echo "$texfile;Fail" >> build_result.log
+                fi
+                rm -rf "$(pwd)/tmp_build"/*
+              done < compile_list.txt
+            '
+
+          # Generazione report
+          echo "## Fallimenti" >> build_report.md
+          if grep -q ";Fail" build_result.log; then
+            grep ";Fail" build_result.log | while IFS=";" read -r tex status; do
+              echo "- ❌ [$tex]($build_url) → **errore in compilazione**" >> build_report.md
+            done
+          else
+            echo "_Nessun errore di compilazione._" >> build_report.md
+          fi
+
+          echo "" >> build_report.md
+          echo "## Successi" >> build_report.md
+          if grep -q ";Success" build_result.log; then
+            grep ";Success" build_result.log | while IFS=";" read -r tex status; do
+              pdf_path=$(echo "$tex" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+              enc=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$pdf_path")
+              echo "- ✅ [$pdf_path]($enc)" >> build_report.md
+            done
+          else
+            echo "_Nessun PDF compilato._" >> build_report.md
+          fi
+
+      - name: Step 4 - Commit Results
+        run: |
+          echo "--- Committing results ---"
+          git add docs build_report.md
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            COMMIT_MSG="Automated LaTeX build ${BASE_DESC}"
+            echo "Creating commit: $COMMIT_MSG"
+            git commit -m "$COMMIT_MSG"
+            git push
+          fi
