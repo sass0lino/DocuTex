@@ -111,7 +111,6 @@ jobs:
             echo "No .tex files to compile."
             echo "compile_needed=false" >> $GITHUB_OUTPUT
 
-            echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.md
             echo "" >> build_report.md
             echo "_Nessun file modificato o mancante. Nessuna compilazione eseguita._" >> build_report.md
           else
