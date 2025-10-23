@@ -111,7 +111,7 @@ jobs:
             echo "No .tex files to compile."
             echo "compile_needed=false" >> $GITHUB_OUTPUT
 
-            echo "# Build Report" > report.md
+            echo "# Report di compilazione" > report.md
             echo "" >> report.md
             echo "_Nessun file modificato o mancante. Nessuna compilazione eseguita._" >> report.md
           else
@@ -123,7 +123,7 @@ jobs:
       - name: Step 3 - Compile and Generate Build Report
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
-          echo "# Build Report" > report.md
+          echo "# Report di compilazione" > report.md
           echo "" >> report.md
 
           build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
