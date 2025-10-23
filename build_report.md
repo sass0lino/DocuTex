@@ -1,8 +1,45 @@
-# Build Report del 2025-10-23T07:14:03+00:00
+# Build Report del 2025-10-23T08:07:57+00:00
+
+> ⚙️ Ricompilazione completa eseguita a causa di checkpoint non valido o assente.
 
 ## Fallimenti
 _Nessun errore di compilazione._
 
 ## Successi
+- ✅ [docs/Candidatura/Preventivo dei costi ed impegni orari/preventivo_impegni_v1.0.0.pdf](docs/Candidatura/Preventivo%20dei%20costi%20ed%20impegni%20orari/preventivo_impegni_v1.0.0.pdf)
+- ✅ [docs/Candidatura/Valutazione dei Capitolati/valutazione_capitolati_v1.0.0.pdf](docs/Candidatura/Valutazione%20dei%20Capitolati/valutazione_capitolati_v1.0.0.pdf)
+- ✅ [docs/RTB/Docu estern/Analisi dei Requisiti/analisi_requisiti_v1.0.0.pdf](docs/RTB/Docu%20estern/Analisi%20dei%20Requisiti/analisi_requisiti_v1.0.0.pdf)
+- ✅ [docs/RTB/Docu estern/Piano di Progetto/piano_p.pdf](docs/RTB/Docu%20estern/Piano%20di%20Progetto/piano_p.pdf)
+- ✅ [docs/RTB/Docu estern/Piano di Qualifica/piano_qualifica_v1.0.0.pdf](docs/RTB/Docu%20estern/Piano%20di%20Qualifica/piano_qualifica_v1.0.0.pdf)
+- ✅ [docs/RTB/Docu estern/Verbali esterni/verbale_esterno_03-01-25/verbale_esterno_03-01-25.pdf](docs/RTB/Docu%20estern/Verbali%20esterni/verbale_esterno_03-01-25/verbale_esterno_03-01-25.pdf)
+- ✅ [docs/RTB/Docu estern/Verbali esterni/verbale_esterno_05-12-24/verbale_esterno_05-12-24.pdf](docs/RTB/Docu%20estern/Verbali%20esterni/verbale_esterno_05-12-24/verbale_esterno_05-12-24.pdf)
+- ✅ [docs/RTB/Docu estern/Verbali esterni/verbale_esterno_12-11-24/verbale_esterno_12-11-24.pdf](docs/RTB/Docu%20estern/Verbali%20esterni/verbale_esterno_12-11-24/verbale_esterno_12-11-24.pdf)
+- ✅ [docs/RTB/Docu estern/Verbali esterni/verbale_esterno_16-01-25/verbale_esterno_16-01-25.pdf](docs/RTB/Docu%20estern/Verbali%20esterni/verbale_esterno_16-01-25/verbale_esterno_16-01-25.pdf)
+- ✅ [docs/RTB/Docu estern/Verbali esterni/verbale_esterno_19-12-24/verbale_esterno_19-12-24.pdf](docs/RTB/Docu%20estern/Verbali%20esterni/verbale_esterno_19-12-24/verbale_esterno_19-12-24.pdf)
+- ✅ [docs/RTB/Docu estern/Verbali esterni/verbale_esterno_21-11-24/verbale_esterno_21-11-24.pdf](docs/RTB/Docu%20estern/Verbali%20esterni/verbale_esterno_21-11-24/verbale_esterno_21-11-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Glossario/glossario_v1.0.0.pdf](docs/RTB/Documentazione%20interna/Glossario/glossario_v1.0.0.pdf)
+- ✅ [docs/RTB/Documentazione interna/Norme di Progetto/norme_progetto_v1.0.0.pdf](docs/RTB/Documentazione%20interna/Norme%20di%20Progetto/norme_progetto_v1.0.0.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_02-01-25/verbale_interno_02-01-25.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_02-01-25/verbale_interno_02-01-25.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_03-01-25/verbale_interno_03-01-25.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_03-01-25/verbale_interno_03-01-25.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_04-11-24/verbale_interno_04-11-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_04-11-24/verbale_interno_04-11-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_04-12-24/verbale_interno_04-12-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_04-12-24/verbale_interno_04-12-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_05-12-24/verbale_interno_05-12-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_05-12-24/verbale_interno_05-12-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_07-11-24/verbale_interno_07-11-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_07-11-24/verbale_interno_07-11-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_08-01-25/verbale_interno_08-01-25.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_08-01-25/verbale_interno_08-01-25.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_11-11-24/verbale_interno_11-11-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_11-11-24/verbale_interno_11-11-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_11-12-24/verbale_interno_11-12-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_11-12-24/verbale_interno_11-12-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_13-11-24/verbale_interno_13-11-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_13-11-24/verbale_interno_13-11-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_15-01-25/verbale_interno_15-01-25.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_15-01-25/verbale_interno_15-01-25.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_16-01-25/verbale_interno_16-01-25.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_16-01-25/verbale_interno_16-01-25.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_16-11-24/verbale_interno_16-11-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_16-11-24/verbale_interno_16-11-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_17-12-24/verbale_interno_17-12-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_17-12-24/verbale_interno_17-12-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_18-11-24/verbale_interno_18-11-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_18-11-24/verbale_interno_18-11-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_19-12-24/verbale_interno_19-12-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_19-12-24/verbale_interno_19-12-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_20-11-24/verbale_interno_20-11-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_20-11-24/verbale_interno_20-11-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_21-11-24/verbale_interno_21-11-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_21-11-24/verbale_interno_21-11-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_25-11-24/verbale_interno_25-11-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_25-11-24/verbale_interno_25-11-24.pdf)
+- ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_28-11-24/verbale_interno_28-11-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_28-11-24/verbale_interno_28-11-24.pdf)
+- ✅ [docs/baci secondo copia 2.pdf](docs/baci%20secondo%20copia%202.pdf)
 - ✅ [docs/baci secondo copia.pdf](docs/baci%20secondo%20copia.pdf)
 - ✅ [docs/lettera_presentazione.pdf](docs/lettera_presentazione.pdf)
+- ✅ [docs/vediamo fi/prova.pdf](docs/vediamo%20fi/prova.pdf)
