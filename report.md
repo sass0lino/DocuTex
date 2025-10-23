@@ -1,9 +1,9 @@
 # Report di compilazione
 
-_Compilazione basata su commit 8f5dc209b685a40570194fa8f6c0c47164730cff (base: 8f5dc20)_
+_Compilazione basata su commit 7745523b9461780afe132dc28ffdb9a4cff4675a (base: 7745523)_
 
  --- 
-❌ [src/template copia.tex](https://github.com/sass0lino/DocuTex/actions/runs/18758492263) → **errore in compilazione**
+💡 Nessun errore di compilazione.
 
  --- 
-✅ [docs/template/templat.pdf](docs/template/templat.pdf)
+✅ [docs/template/templat copia.pdf](docs/template/templat%20copia.pdf)
