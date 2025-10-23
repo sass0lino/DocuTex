@@ -1,0 +1,87 @@
+\section{Diario della riunione}
+
+\begin{itemize}
+    \item Discussione con il proponente \emph{AzzurroDigitale} sull'artefatto richiesto, guidata dalle nostre domande.
+    \item Risposta del proponente ad alcune domande:
+\end{itemize}
+
+\vspace{0.5cm}
+
+\begingroup
+\renewcommand{\ni}{\noindent}
+
+  {\Large Domande funzionali}
+
+  \vspace{0.5cm}
+
+  \begin{tabular}{>{\justifying\arraybackslash}p{0.5\textwidth} >{\justifying\arraybackslash}p{0.6\textwidth}}
+      \multicolumn{1}{c}{\textbf{Domande}} & \multicolumn{1}{c}{\textbf{Risposte}} \\ \\
+      
+      \ni 1. Come deve essere strutturata la parte web? (nello specifico: deve essere disponibile anche una versione mobile-friendly? il sito deve essere 
+      integrato in un sito vostro già esistente?l'interazione sarà solo testuale oppure deve permettere l'iintegrazione di caricamento di un file?)
+      & \ni Frontend deve essere un’interfaccia in cui fare l’inserimento della domanda e vedere la risposta.
+      Tutta la parte dell’autenticazione è oggetto di sviluppi futuri.
+      La parte principale non è ne il frontend ne il backend, ma quella che comunica con le 3 piattaforme e gestisce la risposta. La parte web può essere 
+      una cosa anche molto base.
+      Non serve una versione mobile e non provedere il caricamento di file (può essere buono ma non è obbligatorio). \\ \\
+      
+      \ni 2. Puo’ essere un’idea usare un prompt di sistema che aggiunge informazioni alla domanda inviata? (personalizzazione della domanda tramite l'uso 
+      di un prompt di sistema)
+      & \ni Questa parte non è stata valutata più di tanto: per il momento è un dettagliare una funzionalità che potenzialmente potrebbe essere uno
+      sviluppo ulteriore ma non quello principale, è qualcosa in più. Cosa che però dato che si tratta di un chatbot interno potrebbe essere hard-coded. \\ \\
+      
+      \ni 3. Volete sicurezza e oscuramento dei dati sensibili?
+      & \ni È un discorso che va nei coni di visibilità, quello è interessante, ma riteniamo sia già complessa la parte di integrazione coi 3 sistemi:
+      si apre un mondo di capire come fanno due utenti a vedere solo una parte di documenti non “allineati”.
+      Il capitolato è già abbastanza complesso per prevedere certe cose \\ \\
+  \end{tabular}
+
+  \begin{tabular}{>{\justifying\arraybackslash}p{0.5\textwidth} >{\justifying\arraybackslash}p{0.6\textwidth}}
+    \ni 4. Parlando di persistenza del database, quante domande per ogni chat devono essere salvate all'interno del db? (Nello specifico, possiamo
+    mantenere nello storico chat un numero limitato di interazioni?)
+    & \ni Nel database man mano che vengono date domande e risposte devono essere salvate una e l’altra. In futuro è possibile implementabile un feedback.
+    Non c'è la questione dell'utenza, c'è un'unica utenza in cui viene mostrato tutto. Possibilità: storico di sessione (prossima sessione tutto vuoto)
+    oppure "ultime 20 o 50 risposte" o "scroll" (scrolli in alto e si visualizzano le interazioni passate). Non perdete tempo sul frontend, 
+    meglio includere Slack e Telegram piuttosto. \\ \\
+  \end{tabular}
+
+  \vspace{0.5cm}
+
+  {\Large Domande non funzionali}
+
+  \vspace{0.5cm}
+
+  \begin{tabular}{>{\justifying\arraybackslash}p{0.4\textwidth} >{\justifying\arraybackslash}p{0.6\textwidth}}
+    \multicolumn{1}{c}{\textbf{Domande}} & \multicolumn{1}{c}{\textbf{Risposte}} \\ \\
+    
+    \ni 5. Ci potete fornire dei comportamenti tipo in modo da istruire il bot? (nello specifico, definiamo delle regole che il bot deve seguire)
+    & \ni Le piattaforme sono incrociate tra loro. Su Confluence sono scritte le specifiche. Jira raccoglie i vari ticket. Su GitHub ci sono gli sviluppi 
+    di codice (con il commit che referenzia il ticket di Jira). Il chatbot deve essere istruito a collegare queste piattaforme tra loro. \\ \\
+    
+    \ni 6. Ci potreste dare APIkey di confluence, git, jira? allo stesso modo APIkey di OpenAI?
+    & \ni Per Confluence e Jira c'è la versione gratuita, fino a 10 utenti. Quindi possiamo procurarci un nostro spazio Confluence e Jira. 
+    GitHub: possiamo usare anche una repo generica o una trovata online. Per OpenAI c’è una questione di token utilizzabili, ma ce li metteranno loro 
+    a disposizione (volendo ci sono anche altre versioni open source). Noi avremo dei nostri spazi in cui ci verranno forniti i documenti con cui allenare
+    il bot, certamente non avremo accesso a tutto il loro Confluence. Su Confluence noi saremo utenti guest. Jira: in caso, noi comunque non avremo accesso 
+    a tutta la documentazione dei progetti, potremo avere una configurazione ad hoc, un ambiente tutto nostro, per non accedere ai loro dati. \\ \\
+\end{tabular}
+
+\begin{tabular}{>{\justifying\arraybackslash}p{0.4\textwidth} >{\justifying\arraybackslash}p{0.6\textwidth}}
+    \ni 7. Per mostrarvi la documentazione tecnica, il bug reporting, il codice sorgente ci potreste  aprire su confluence,su git e su jira  una parte 
+    esclusiva per noi? (nello specifico, uso dei vostri sistemi per una comunicazione diretta)
+    & \ni Non chiedono il tipo di report bug dove l'utente riporta un bug del bot. Per la documentazione tecnica, forse ci danno uno spazio su 
+    Confluence e Jira, ci diranno alla riunione introduttiva che faranno con i due gruppi che si saranno aggiudicati il progetto. 
+    Potenzialmente possono loro aprire la repo sui loro spazi e direttamente farci usare la sezione "Issues" di GitHub. Loro scrivono i bug, 
+    noi li risolviamo. \\ \\
+    
+    \ni 8. Ci potreste fornire degli schemi di come avete organizzato la documentazione su confluence, il codice su git e quanto specifico è il vostro sistema di ticket su jira?
+    & \ni Confluence è simile a documenti Markdown, è come un Drive. Del resto, ne si parla alla riunione introduttiva. I ticket su Jira hanno nome
+    (5-6 parole), richiesta, descrizione e allegati. Buddybot non deve gestire allegati, deve solo leggere la descrizione del ticket. Nulla da dire di 
+    particolare sulla struttura del loro spazio Jira, dunque dovremo allenare il bot ad accedere ad una normale board di Jira.
+    In GitHub, hanno una repo di backend (TypeScript) e una di frontend (JavaScript), non c’è nulla di particolare sulla struttura. \\ \\
+    
+    \ni 9. Volete per forza un'architettura in microservizi? (Nello specifico, si possono usare software monolitici per risparmiare risorse?)
+    & \ni Piena libertà sulla metodologia. Riconoscono che è più rapido fare in modo alternativo, quindi ce lo accettano. \\ \\
+\end{tabular}
+
+\endgroup
