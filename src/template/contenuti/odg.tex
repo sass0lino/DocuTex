@@ -1,0 +1,29 @@
+% Intestazione
+\fancyhead[L]{2 \hspace{0.2cm} Ordine del giorno} % Testo a sinistra
+
+
+\section{Ordine del giorno}
+
+\begin{itemize}
+    \item Item 1 : Da \bulhref{https://www.google.it}{qui} puoi visitare Google
+    \item Item 2
+    \item Item 3
+\end{itemize}
+
+\vspace{2cm}
+
+\begingroup
+\renewcommand{\ni}{\noindent}
+
+{\Large Domande funzionali}
+
+\vspace{0.5cm}
+
+\begin{tabular}{>{\justifying\arraybackslash}p{0.4\textwidth} >{\justifying\arraybackslash}p{0.6\textwidth}}
+    \multicolumn{1}{c}{\textbf{Domande}} & \multicolumn{1}{c}{\textbf{Risposte}} \\ \\
+    \ni Questa è la domanda 1 & \ni Questa è la risposta alla domanda 1. Può essere lunga e si adatta alla larghezza della colonna senza problemi. \\ \\
+    \ni Questa è la domanda 2 & \ni Questa è la risposta alla domanda 2. Anche qui si possono aggiungere dettagli lunghi senza problemi. \\ \\
+    \ni Questa è la domanda 3 & \ni Questa è la risposta alla domanda 3. \\ \\
+\end{tabular}
+
+\endgroup
