@@ -14,6 +14,7 @@
    Avrai capito che l'idea di questo sistema é di utilizzare la cartella `src/immagini/` per le immagini condivise da tutti i file, e utilizzare le cartelle ad "hoc" (`contenuti/`) dei file latex per le immagini non condivise.
 3) Potete caricare progetti .tex standalone (monolitici) oppure progetti multi-file. Per i progetti multi-file è importante che esista un file .tex principale (quello da cui partirá la compilazione) mentre tutti i file secondari dovrai collocarli nella rispettiva cartella denominata esattamente `contenuti/`.
 4) Se volessimo ricompilare tutti i documenti del repository, basta eliminare tutta la cartella docs.
+5) Dettaglio da evidenziare: la build si attiverá anche se elimini/modifichi/aggiungi un file pdf da `docs/`, senza aver modificati i file latex.
 
 # Obiettivi della Build
 
