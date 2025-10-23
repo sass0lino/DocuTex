@@ -1,18 +1,17 @@
-# Obiettivi della Build di Github Action
-
-Questo documento descrive la logica di funzionamento della build automatica LaTeX.  
-L’obiettivo di questa build è quello di mantenere **coerenza e consistenza** tra i file sorgenti latex e i rispettivi pdf.
-Nello specifico la build garantisce che:
-- `src/` e `docs/` sono perfettamente allineati;  
-- ogni file pdf presente in `docs/` é generato esclusivamente dalla build di github action
-- i documenti latex che falliscono la compilazione non avranno il rispettivo documento pdf (nemmeno la versione precedente alla build)
-- non esistono PDF orfani o obsoleti;  
-
 # Regole di utilizzo
 1) caricare tutti i file `.tex` nella cartella `src/`, la build di compilazione infatti si attiva solo in tal caso
 2) potete caricare progetti .tex standalone (monolitici) oppure progetti multi-file
 
 Attenzione: per i progetti multi-file è importante che esista un file .tex principale (cioè il file principale da compilare) e che tutti i file secondari o inclusi siano collocati in un sottocartella denominata esattamente `contenuti/`.
+
+# Obiettivi della Build
+
+L’obiettivo della build implementata con github action è di compilare automaticamente i progetti latex caricati nel repository, mantenendo **coerenza e consistenza** tra i file sorgenti latex e i rispettivi pdf.
+Nello specifico la build garantisce che:
+- `src/` e `docs/` sono perfettamente allineati;  
+- ogni file pdf presente in `docs/` é generato esclusivamente dalla build di github action
+- i documenti latex che falliscono la compilazione non avranno il rispettivo documento pdf (nemmeno la versione precedente alla build)
+- non esistono PDF orfani o obsoleti;  
 
 # Struttura logica del processo
 
@@ -50,7 +49,6 @@ Scopo: salvare lo stato aggiornato e coerente del repository:
 1. Se sono stati generati o aggiornati PDF, crea un commit automatico: `Automated LaTeX build (base: <SHA>)` dove `<SHA>` è il commit della precedente build automatica ritenuta coerente.  
 2. Questo commit diventa il nuovo **punto di riferimento** per la prossima build (in pratica, ogni commit “Automated LaTeX build”rappresenta uno **snapshot coerente** tra `src/` e `docs/`).
 
-# **Informazioni di compilazione**
+# Informazioni di compilazione
 - **Compilatore:** `latexmk`  
 - **Ambiente:** Docker `ghcr.io/xu-cheng/texlive-full`
-
