@@ -111,9 +111,9 @@ jobs:
             echo "No .tex files to compile."
             echo "compile_needed=false" >> $GITHUB_OUTPUT
 
-            echo "# Build Report" > build_report.md
-            echo "" >> build_report.md
-            echo "_Nessun file modificato o mancante. Nessuna compilazione eseguita._" >> build_report.md
+            echo "# Build Report" > report.md
+            echo "" >> report.md
+            echo "_Nessun file modificato o mancante. Nessuna compilazione eseguita._" >> report.md
           else
             echo "Files to compile:"
             cat compile_list.txt
@@ -123,13 +123,13 @@ jobs:
       - name: Step 3 - Compile and Generate Build Report
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
-          echo "# Build Report" > build_report.md
-          echo "" >> build_report.md
+          echo "# Build Report" > report.md
+          echo "" >> report.md
 
           build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
-          echo "_Compilazione basata su commit ${LAST_COMPILED} ${BASE_DESC}_" >> build_report.md
-          echo "" >> build_report.md
+          echo "_Compilazione basata su commit ${LAST_COMPILED} ${BASE_DESC}_" >> report.md
+          echo "" >> report.md
 
           > successes.txt
           > failures.txt
@@ -166,25 +166,25 @@ jobs:
             '
 
           # Generazione report
-          echo "## Fallimenti" >> build_report.md
+          echo "## Fallimenti" >> report.md
           if grep -q ";Fail" build_result.log; then
             grep ";Fail" build_result.log | while IFS=";" read -r tex status; do
-              echo "- ❌ [$tex]($build_url) → **errore in compilazione**" >> build_report.md
+              echo "- ❌ [$tex]($build_url) → **errore in compilazione**" >> report.md
             done
           else
-            echo "_Nessun errore di compilazione._" >> build_report.md
+            echo "_Nessun errore di compilazione._" >> report.md
           fi
 
-          echo "" >> build_report.md
-          echo "## Successi" >> build_report.md
+          echo "" >> report.md
+          echo "## Successi" >> report.md
           if grep -q ";Success" build_result.log; then
             grep ";Success" build_result.log | while IFS=";" read -r tex status; do
               pdf_path=$(echo "$tex" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
               enc=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$pdf_path")
-              echo "- ✅ [$pdf_path]($enc)" >> build_report.md
+              echo "- ✅ [$pdf_path]($enc)" >> report.md
             done
           else
-            echo "_Nessun PDF compilato._" >> build_report.md
+            echo "_Nessun PDF compilato._" >> report.md
           fi
 
       - name: Step 4 - Commit Results
@@ -192,7 +192,7 @@ jobs:
           echo "--- Committing results ---"
           
           # Aggiunge sempre il report
-          git add -f build_report.md
+          git add -f report.md
           
           # Aggiunge docs solo se esiste
           if [ -d "docs" ]; then
