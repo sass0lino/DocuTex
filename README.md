@@ -1,6 +1,6 @@
-# Obiettivi della Build di Github Action
+# Obiettivi della Build
 
-Questo documento descrive la logica di funzionamento della build automatica LaTeX.  
+Questo documento descrive la logica di funzionamento della build implementata con github action. 
 L’obiettivo di questa build è quello di mantenere **coerenza e consistenza** tra i file sorgenti latex e i rispettivi pdf.
 Nello specifico la build garantisce che:
 - `src/` e `docs/` sono perfettamente allineati;  
