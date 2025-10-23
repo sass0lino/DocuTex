@@ -1,5 +1,5 @@
 # Guida all'uso
-1) Per compilare caricate tutti i file `.tex` che volete compilare nella cartella `src/`, la build si attiva in automatico e compila tutto nella cartella `docs/`
+1) Per compilare caricate tutti i file `.tex` che volete compilare nella cartella `src/`, la build si attiva in automatico e compila tutto nella cartella `docs/`.
 2) La compilazione dei file avviene in root, dunque per la compilazione delle immagini, basta aggiungere all'inizio del proprio file latex, le seguenti direttive:
    ```
    \usepackage{graphicx} % Pacchetto classico per le immagini
@@ -12,6 +12,7 @@
    \includegraphics[width=0.4\textwidth]{logo.jpg}
    ```
 3) Potete caricare progetti .tex standalone (monolitici) oppure progetti multi-file. Per i progetti multi-file è importante che esista un file .tex principale (quello da cui partirá la compilazione) mentre tutti i file secondari dovrai collocarli nella rispettiva cartella denominata esattamente `contenuti/`.
+4) Se volessimo ricompilare tutti i documenti del repository, basta eliminare tutta la cartella docs.
 
 # Obiettivi della Build
 
