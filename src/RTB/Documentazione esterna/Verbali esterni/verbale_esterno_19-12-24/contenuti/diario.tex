@@ -1,0 +1,38 @@
+% Intestazione
+\fancyhead[L]{3 \hspace{0.2cm} Diario della riunione} % Testo a sinistra
+
+\section{Diario della riunione}
+
+\begin{itemize}
+    \item È stato visto in particolare il caso d'uso sull'aggiornamento periodico del database vettoriale sulla base delle indicazioni date dal prof. Cardin.
+    A questo fine stata valutata la possibilità di usare un Cron ed è stato proposto l'utilizzo di una libreria Python chiamata \emph{Python-Crontab}\textsubscript{\textbf{\textit{G}}}.
+    \item È stato specificato come requisito di vincolo che \emph{l'applicazione web}\textsubscript{\textbf{\textit{G}}} deve essere compatibile con l'ultima versione attuale di Google Chrome,
+    e non è necessario garantire alcuna retrocompatibilità. Sono stati ribaditi i vincoli di compatibilità con le \emph{API}\textsubscript{\textbf{\textit{G}}} di \emph{Confluence}\textsubscript{\textbf{\textit{G}}}, \emph{Jira}\textsubscript{\textbf{\textit{G}}} e \emph{GitHub}\textsubscript{\textbf{\textit{G}}}.
+    Inoltre non ci sono requisiti di linguaggio o di compatibilità con alcun altra API di \emph{AzzurroDigitale}\textsubscript{\textbf{\textit{G}}}.
+    \item È stato presentato il \emph{Proof of Concept}\textsubscript{\textbf{\textit{G}}} allo stato attuale. Sono state viste le funzionalità già implementate e le eventuali criticità che richiedono correzione.
+    Inoltre sono stati discussi alcuni dubbi riguardo la gestione della ricerca di similarità.
+    \item Sono state valutate le funzionalità da approfondire e implementare sul PoC.
+    In particolare si è deciso di dare priorità alle seguenti funzionalità:
+    \begin{itemize}
+        \item Implementazione dell'aggiornamento automatico del database vettoriale.
+        \item Gestione degli errori riguardo la generazione delle risposte (gestione di domanda fuori contesto, informazione non trovata e gestione errore generico).
+        \item Integrazione con Angular.
+    \end{itemize}
+    Sono stati quindi messe in secondo piano, da approfondire in un secondo momento, le seguenti funzionalità:
+    \begin{itemize}
+        \item Visualizzazione dello storico di sessione.
+        \item Visualizzazione dei file da cui il bot ha preso la risposta.
+        \item Accesso a API di \emph{Telegram}\textsubscript{\textit{\textbf{G}}} e \emph{Slack}\textsubscript{\textit{\textbf{G}}}.
+        \item Proporre domande per iniziare o proseguire la conversazione.
+        \item Visualizzazione log di aggiornamento del database vettoriale.
+    \end{itemize}
+    \item Si è discusso sui seguenti requisiti riguardo l'aggiornamento del database vettoriale:
+    \begin{itemize}
+        \item Quando far partire l'input di aggiornamento.
+        \item Come gestire un aggiornamento fallito.
+        \item Come viene data all'utente l'informazione in caso di fallimento e/o successo.
+    \end{itemize}
+    \item È stato proposto di spostare l'incontro del \emph{02/01/2025} al \emph{03/01/2025} e di continuare con incontri bisettimanali anche per la \emph{PB}\textsubscript{\textbf{\textit{G}}}.
+    È stata accettata la proposta di spostare l'incontro ed è stato quindi fissato un nuovo incontro il \emph{03/01/2025} dalle \emph{17:00} alle \emph{18:00}.
+    Riguardo la possibilità di continuare con incontri bisettimanali per la \emph{PB}\textsubscript{\textbf{\textit{G}}}, si è deciso di inviare una richiesta al prof. Vardanega per avere un suo parere in merito.
+\end{itemize}

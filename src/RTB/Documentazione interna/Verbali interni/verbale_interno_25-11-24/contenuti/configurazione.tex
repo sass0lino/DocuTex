@@ -1,0 +1,71 @@
+\usepackage{titling} % Required for inserting the subtitle
+\usepackage{graphicx} % Required for inserting images
+\usepackage{tabularx} % Per l'ambiente tabularx (tabelle)
+\usepackage{calc} % Sempre per le tabelle
+\usepackage[hidelinks]{hyperref} % Per i collegamenti ipertestuali, ad esempio sulla table of contents
+\usepackage[italian]{babel} % Per la lingua italiana nelle scritte automatiche
+\usepackage[table]{xcolor} % Per colorare il testo e le celle delle tabelle
+\usepackage{colortbl} % Per colorare le celle delle tabelle
+\usepackage{lipsum} % Per generare lorem ipsum
+\usepackage[normalem]{ulem} % Per sottolineare il testo
+\usepackage{array} % Per la visualizzazione fluttuante di array di domande e risposte
+\usepackage{ragged2e} % Pacchetto necessario per \justifying che giustifica il testo di tabelle
+\usepackage{tikz} % Per spostare elementi nel documento in modo facile e veloce
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry} % Per i margini della pagina
+\usepackage{fancyhdr} % Per l'intestazione e il piè di pagina
+\usepackage{amsmath} % Per scrivere formule matematiche, in particolare per il pedice G
+\usepackage{comment} % Per commentare blocchi di testo
+\usepackage{titlesec} % Per la definizione di nuove suddivisioni e sottosezioni, come subsubsubsection
+\usepackage{eurosym} % Per il simbolo dell'euro
+\usepackage{pgf-pie} % Per creare grafici a torta
+
+\newcommand{\bulhref}[2]{\href{#1}{\textbf{\uline{#2}}}} % Nuovo comando per sottolineare e ingrassettare i collegamenti ipertestuali a siti e risorse esterne
+\newcommand{\bulref}[1]{\textbf{\uline{\ref{#1}}}} % Nuovo comando per sottolineare i riferimenti a labels (come immagini, tabelle e sezioni) ma senza ipertesto
+\newcommand{\bulhyperlink}[2]{\hyperlink{#1}{\textbf{\uline{#2}}}} % Nuovo comando per sottolineare e ingrassettare i collegamenti ipertestuali a targets interni al documento
+\setlength{\parindent}{0pt} % Rimuove il rientro automatico dei paragrafi
+\usetikzlibrary{calc} % Libreria per il calcolo delle coordinate di TikZ
+\pagestyle{fancy} % Stile della pagina, per l'intestazione e il piè di pagina
+\renewcommand{\footrulewidth}{0.4pt} % Inserimento della linea orizzontale sopra il piè di pagina
+\definecolor{lightgray}{gray}{0.95} % Definizione del colore grigio chiaro
+
+% Per l'intestazione
+\setlength{\headheight}{23.62976pt} % Altezza dell'intestazione
+\addtolength{\topmargin}{-11.62976pt} % Spazio tra il margine superiore e l'intestazione
+
+
+
+
+% Creazione del nuovo comando subsubsubsection
+
+
+\titleclass{\subsubsubsection}{straight}[\subsection]
+
+\newcounter{subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection.\arabic{subsubsubsection}}
+\renewcommand\theparagraph{\thesubsubsubsection.\arabic{paragraph}} % optional; useful if paragraphs are to be numbered
+
+\titleformat{\subsubsubsection}
+  {\normalfont\normalsize\bfseries}{\thesubsubsubsection}{1em}{}
+\titlespacing*{\subsubsubsection}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{5}{\z@}%
+  {3.25ex \@plus1ex \@minus.2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries}}
+\renewcommand\subparagraph{\@startsection{subparagraph}{6}{\parindent}%
+  {3.25ex \@plus1ex \@minus .2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries}}
+\def\toclevel@subsubsubsection{4}
+\def\toclevel@paragraph{5}
+%\def\toclevel@paragraph{6}
+\def\toclevel@subparagraph{6}
+\def\l@subsubsubsection{\@dottedtocline{4}{7em}{4em}}
+\def\l@paragraph{\@dottedtocline{5}{10em}{5em}}
+\def\l@subparagraph{\@dottedtocline{6}{14em}{6em}}
+\makeatother
+
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{5}

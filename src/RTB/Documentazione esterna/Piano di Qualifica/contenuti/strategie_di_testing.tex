@@ -1,0 +1,189 @@
+% Intestazione
+\fancyhead[L]{1 \hspace{0.2cm} Strategie di testing} % Testo a sinistra
+
+
+
+\section{Strategie di testing}
+\label{sec:strategie di testing}
+
+\subsection{Test di sistema}
+\label{sec:Test di sistema}
+I test di sistema descritti di seguito rappresentano la base per la validazione del \emph{Minimum Viable Product}\textsubscript{\textit{\textbf{G}}}. 
+Questi test sono pensati per verificare l’implementazione delle funzionalità previste nel prodotto, 
+con l’obiettivo di garantire che risponda agli standard di un prodotto completo e pronto per il collaudo.
+
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|p{0.15\textwidth}|X|p{0.15\textwidth}|p{0.15\textwidth}|}\hline
+    \rowcolor[HTML]{FFD700}
+    \textbf{Codice} & \textbf{Descrizione} & \textbf{Fonte} & \textbf{Stato} \\ \hline
+    TS1 & Verificare che l'utente possa inserire un'interrogazione in linguaggio naturale 
+    nel sistema. & ROF1 & N-I \\ \hline
+    TS2 & Verificare che all'invio dell'interrogazione al sistema, venga generata una risposta. & ROF2 & N-I \\ \hline
+    TS3 & Verificare che se il sistema fallisce nel generare una risposta per via di un problema interno, venga visualizzato all'utente un messaggio di errore, chiedendo di riprovare più tardi. & ROF3 & N-I \\ \hline
+    TS4 & Verificare che se l'utente inserisce un'interrogazione che non riguarda i contenuti del database associato, il sistema risponda all'utente che la domanda inserita è fuori contesto. & ROF4 & N-I \\ \hline
+    TS5 & Verificare che se il sistema non riesce a trovare le informazioni richieste dall'utente nonostante siano correlate al contesto, venga spiegata la mancanza dell'informazione richiesta. & ROF5 & N-I \\ \hline
+    TS6 & Verificare che l'utente possa visualizzare i file da cui il sistema ha preso i dati per la risposta. & ROF6 & N-I \\ \hline
+    TS7 & Verificare che se l'utente desidera accedere ai file utilizzati per generare la risposta ma ciò non sia possibile, venga visualizzato un messaggio di errore. & RDF7 & N-I \\ \hline
+    TS8 & Verificare che sia presente un pulsante al cui click la risposta del chatbot venga copiata nel dispositivo dell'utente. & RZF8 & N-I \\ \hline
+    TS9 & Verificare che nel caso la risposta contenga uno snippet di codice, sia presente un pulsante che permetta di copiare il singolo snippet nel dispositivo dell'utente. & RDF9 & N-I \\ \hline
+    TS10 & Verificare che sia presente un sistema di archiviazione delle domande e delle risposte in un database relazionale. & RDF10 & N-I \\ \hline
+    TS11 & Verificare che l'utente possa visualizzare lo storico della chat, recuperato dal database relazionale. & RDF11 & N-I \\ \hline
+    TS12 & Verificare che nel caso il sistema fallisca nel recuperare lo storico della chat, venga visualizzato un messaggio di errore all'utente spiegando che non è stato possibile recuperare lo storico. & RDF12 & N-I \\ \hline
+   \end{tabularx}
+\end{table}
+
+\newpage
+
+
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\textwidth}{|p{0.15\textwidth}|X|p{0.15\textwidth}|p{0.15\textwidth}|}\hline
+    \rowcolor[HTML]{FFD700}
+    \textbf{Codice} & \textbf{Descrizione} & \textbf{Fonte} & \textbf{Stato} \\ \hline
+    TS13 & Verificare che uno scheduler si colleghi al sistema e periodicamente aggiorni il database vettoriale con i dati più recenti. & ROF13 & N-I \\ \hline
+    TS14 & Verificare che la risposta venga generata prendendo in considerazione i dati di contesto provenienti da \emph{GitHub}\textsubscript{\textit{\textbf{G}}}, \emph{Jira}\textsubscript{\textit{\textbf{G}}} e \emph{Confluence}\textsubscript{\textit{\textbf{G}}}. & ROF14 & N-I \\ \hline
+    TS15 & Verificare che il sistema possa convertire i dati ottenuti in formato vettoriale. & ROF15 & N-I \\ \hline
+    TS16 & Verificare che il sistema possa aggiornare il database vettoriale con i nuovi dati ottenuti. & ROF16 & N-I \\ \hline
+    TS17 & Verificare che se la conversazione non è ancora avviata, l'utente possa visualizzare e selezionare alcune domande di partenza proposte. & RZF17 & N-I \\ \hline
+    TS18 & Verificare che dopo la visualizzazione di una risposta, all'utente vengano suggerite alcune interrogazioni che è possibile porre al sistema per continuare la conversazione. & RZF18 & N-I \\ \hline
+    TS19 & Verificare che nel caso il sistema vada in errore nel tentativo di proporre altre domande per proseguire la conversazione, venga mostrato un messaggio che comunica l'errore all'utente e invita a fare altre domande. & RZF19 & N-I \\ \hline
+    TS20 & Verificare che il sistema registri data e ora degli aggiornamenti del database vettoriale, in modo da poter scrivere un log di aggiornamento. & RZF20 & N-I \\ \hline
+    TS21 & Verificare che il sistema comunichi se il database vettoriale a cui vengono poste le interrogazioni è aggiornato o meno. & RZF21 & N-I \\ \hline
+    TS22 & Verificare che l'applicazione sia compatibile con la versione più recente di \emph{Google Chrome}\textsubscript{\textit{\textbf{G}}} al momento della \emph{demo}\textsubscript{\textit{\textbf{G}}}. & ROV1 & N-I \\ \hline
+    TS23 & Verificare che il sistema garantisca la piena integrazione con le \emph{API}\textsubscript{\textit{\textbf{G}}} di \emph{Confluence}. & ROV2 & N-I \\ \hline
+    TS24 & Verificare che il sistema garantisca la piena integrazione con le \emph{API} di \emph{Jira}. & ROV3 & N-I \\ \hline
+    TS25 & Verificare che il sistema garantisca la piena integrazione con le \emph{API} di \emph{GitHub}. & ROV4 & N-I \\ \hline
+    \end{tabularx}
+    \caption{Insieme dei test di sistema}
+\end{table}
+\newpage
+
+
+\subsection{Test di accettazione}
+\label{sec:Test di accettazione}
+I test di accettazione descritti di seguito rappresentano la base per la validazione del \emph{Minimum Viable Product}\textsubscript{\textit{\textbf{G}}}. 
+Questi test sono pensati per verificare l’implementazione delle funzionalità previste nel prodotto, 
+con l’obiettivo di garantire che risponda agli standard di un prodotto completo e pronto per il collaudo.
+
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.5} % Per aumentare l'altezza delle righe
+    \begin{tabularx}{\textwidth}{|p{0.1\textwidth}|X|p{0.2\textwidth}|p{0.1\textwidth}|}\hline
+    \rowcolor[HTML]{FFD700}
+    \textbf{Codice} & \textbf{Descrizione} & \textbf{Fonte} & \textbf{Stato} \\ \hline
+    TA1 & Verificare che l'utente possa inserire un interrogazione in linguaggio naturale e visualizzare la risposta generata. & UC1, UC2, UC3, UC4, UC5 & N-I \\ \hline
+    TA2 & Verificare che l'utente possa visualizzare i file da cui il sistema ha preso i dati per la risposta alla domanda con relativi errori nel caso in cui non siano stati rilevati file.  & UC2.1, UC14 & N-I \\ \hline
+    TA3 & Verificare che l'utente possa copiare il testo della risposta generata oppure lo snippet di codice presente nella risposta. & UC6, UC7 & N-I \\ \hline
+    TA4 & Verificare che l'utente possa visualizzare lo storico della chat con relativo errore nel caso non fosse possibile.  & UC8, UC8.1, UC9 & N-I \\ \hline
+    TA5 & Verificare che l'utente possa visualizzare una lista di domande ideali per poter iniziare una conversazione. & UC11, UC11.1 & N-I \\ \hline
+    TA6 & Verificare che l'utente possa visualizzare una lista di domande ideali per poter proseguire una conversazione con relativo errore nel caso non fosse possibile. & UC12, UC12.1, UC13 & N-I \\ \hline
+    TA7 & Verificare che l'utente possa visualizzare un badge che segnala lo stato di aggiornamento del database vettoriale.
+    \begin{itemize}
+        \item Badge colore verde se il database è aggiornato;
+        \item Badge di colore rosso se il database non è aggiornato.
+    \end{itemize} 
+        & UC15, UC16, UC17 & N-I \\ \hline
+    TA8 & Verificare che lo scheduler effettui l'aggiornamento automatico del database vettoriale. & UC10 & N-I \\ \hline
+
+    \end{tabularx}
+    \caption{Insieme dei test di accettazione}
+\end{table}
+
+
+
+\newpage
+\subsection{Checklist}
+\label{sec:checklist}
+Le checklist vengono costantemente aggiornate dai Verificatori durante lo sviluppo del progetto. Gli errori rilevati vengono analizzati e inclusi nella lista, contribuendo a una maggiore efficacia nella correzione e garantendo un livello di qualità sempre più elevato.
+
+\subsubsection{Struttura della documentazione}
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.5} % Per aumentare l'altezza delle righe
+    \begin{tabularx}{\textwidth}{|p{0.3\textwidth}|X|}
+    \hline
+    \rowcolor[HTML]{FFD700}
+    \textbf{Aspetto} & \textbf{Spiegazione} \\ \hline
+    A capo & Per facilitare la lettura, le frasi devono essere mantenute su 
+    una sola riga, evitando interruzioni non necessarie. \\ \hline
+    Ordine non alfabetico & I nomi nei documenti devono essere elencati 
+    in ordine alfabetico per una maggiore chiarezza. \\ \hline
+    Caption Assente & Ogni tabella e immagine deve includere una didascalia. \\ \hline
+    Sezioni Fantasma & Le sezioni vuote devono essere rimosse dal documento. \\ \hline
+    Documento non spezzato & I documenti devono essere creati utilizzando più file \texttt{.tex} collegati 
+    con il comando input nella pagina principale. \\ \hline
+    \end{tabularx}
+    \caption{Struttura documentazione}
+\end{table}
+
+
+
+\subsubsection{Errori ortografici}
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.5} % Per aumentare l'altezza delle righe
+    \begin{tabularx}{\textwidth}{|p{0.3\textwidth}|X|}
+    \hline
+    \rowcolor[HTML]{FFD700}
+    \textbf{Aspetto} & \textbf{Spiegazione} \\ \hline
+    Accenti invertiti & Usare l'accento grave al posto dell'acuto e viceversa. \\ \hline
+    “D” eufonica & La "d" eufonica va inserita solo quando si incontrano due vocali uguali di seguito. \\ \hline
+    Discordanza soggetto-verbo & Il verbo non concorda correttamente con il soggetto utilizzato. \\ \hline
+    Errori di battitura & La maggior parte degli errori sono dovuti a distrazione o digitazione errata. \\ \hline
+    Forma dei verbi  & È preferibile l’utilizzo del presente indicativo, altre forme verbali andranno valutate opportunamente. \\ \hline
+    Forme impersonali & Il soggetto dev’essere sempre esplicito nella frase. \\ \hline
+
+    \end{tabularx}
+    \caption{Errori ortografici}
+\end{table}
+
+
+\subsubsection{Non conformità con le Norme di Progetto}
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.5} % Per aumentare l'altezza delle righe
+    \begin{tabularx}{\textwidth}{|p{0.35\textwidth}|X|}
+    \hline
+    \rowcolor[HTML]{FFD700}
+    \textbf{Aspetto} & \textbf{Spiegazione} \\ \hline
+    Utilizzo scorretto di “:” in grassetto & Evitare l'uso di “:” in grassetto all'interno degli elenchi puntati. \\ \hline
+    Punteggiatura scorretta negli elenchi & Ogni voce dell'elenco deve terminare con “;”, tranne l'ultima che termina con “.”. \\ \hline
+    Minuscolo nei ruoli & I ruoli devono essere scritti con la lettera iniziale maiuscola. \\ \hline
+    Maiuscole nei titoli & La maiuscola deve essere utilizzata solo per la prima lettera del titolo. \\ \hline
+\end{tabularx}
+\end{table}
+    
+
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.5} % Per aumentare l'altezza delle righe
+    \begin{tabularx}{\textwidth}{|p{0.35\textwidth}|X|}
+    \hline
+    \rowcolor[HTML]{FFD700}
+    \textbf{Aspetto} & \textbf{Spiegazione} \\ \hline
+    Mancata segnalazione glossario & Quando viene introdotto un termine del glossario per la prima volta, deve essere segnalato. \\ \hline
+    Non aggiornare il changelog & È obbligatorio aggiornare il registro delle modifiche dopo ogni verifica. \\ \hline
+    Versione documento mancante & Quando un documento viene citato, è necessario indicare la versione attuale, se presente; in caso contrario, va specificata la versione corretta. \\ \hline
+    \end{tabularx}
+    \caption{Non conformità con Norme di Progetto}
+\end{table}
+
+\newpage
+\subsubsection{Analisi dei Requisiti}
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.5} % Per aumentare l'altezza delle righe
+    \begin{tabularx}{\textwidth}{|p{0.35\textwidth}|X|}
+    \hline
+    \rowcolor[HTML]{FFD700}
+    \textbf{Aspetto} & \textbf{Spiegazione} \\ \hline
+    Tracciamento UC - R & Ogni caso d'uso deve essere collegato a uno o più requisiti specifici. \\ \hline
+    Numerazione UC & La numerazione dei Use Case di errore deve essere al medesimo livello del caso di successo corrispondente. \\ \hline
+    Requisiti & I requisiti devono essere formulati nella forma “[soggetto] deve [verbo all'infinito]”. \\ \hline
+    \emph{UML}\textsubscript{\textit{\textbf{G}}} degli UC & Estensioni, inclusioni e specializzazioni di un caso d'uso devono essere inclusi nello stesso diagramma UML del caso d'uso principale. \\ \hline
+    \end{tabularx}
+    \caption{Aspetti di qualità per i casi d'uso}
+\end{table}
