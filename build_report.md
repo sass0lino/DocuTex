@@ -1,9 +1,9 @@
 # Build Report
 
-_Compilazione basata su commit db1917ba9e313f684bd698811ae2095fb8e4d760 (base: db1917b)_
+_Compilazione basata su commit 9dccf9b5f469194db674578cd726287701b77072 (base: 9dccf9b)_
 
 ## Fallimenti
 _Nessun errore di compilazione._
 
 ## Successi
-- ✅ [docs/template.pdf](docs/template.pdf)
+- ✅ [docs/prova/ciao.pdf](docs/prova/ciao.pdf)
