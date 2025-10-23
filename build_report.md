@@ -1,9 +1,7 @@
-# Build Report del 2025-10-23T08:07:57+00:00
-
-> ⚙️ Ricompilazione completa eseguita a causa di checkpoint non valido o assente.
+# Build Report del 2025-10-23T08:15:54+00:00
 
 ## Fallimenti
-_Nessun errore di compilazione._
+- ❌ [src/baci secondo copia.tex](https://github.com/sass0lino/DocuTex/actions/runs/18742018858) → **errore in compilazione**
 
 ## Successi
 - ✅ [docs/Candidatura/Preventivo dei costi ed impegni orari/preventivo_impegni_v1.0.0.pdf](docs/Candidatura/Preventivo%20dei%20costi%20ed%20impegni%20orari/preventivo_impegni_v1.0.0.pdf)
@@ -39,7 +37,5 @@ _Nessun errore di compilazione._
 - ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_21-11-24/verbale_interno_21-11-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_21-11-24/verbale_interno_21-11-24.pdf)
 - ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_25-11-24/verbale_interno_25-11-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_25-11-24/verbale_interno_25-11-24.pdf)
 - ✅ [docs/RTB/Documentazione interna/Verbali interni/verbale_interno_28-11-24/verbale_interno_28-11-24.pdf](docs/RTB/Documentazione%20interna/Verbali%20interni/verbale_interno_28-11-24/verbale_interno_28-11-24.pdf)
-- ✅ [docs/baci secondo copia 2.pdf](docs/baci%20secondo%20copia%202.pdf)
-- ✅ [docs/baci secondo copia.pdf](docs/baci%20secondo%20copia.pdf)
-- ✅ [docs/lettera_presentazione.pdf](docs/lettera_presentazione.pdf)
+- ✅ [docs/lettera_presen.pdf](docs/lettera_presen.pdf)
 - ✅ [docs/vediamo fi/prova.pdf](docs/vediamo%20fi/prova.pdf)
