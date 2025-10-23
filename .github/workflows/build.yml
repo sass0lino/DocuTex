@@ -113,7 +113,7 @@ jobs:
 
             echo "# Report di compilazione" > report.md
             echo "" >> report.md
-            echo "`💡 Nessun file modificato o mancante. Nessuna compilazione eseguita`" >> report.md
+            echo "💡 Nessun file modificato o mancante. Nessuna compilazione eseguita" >> report.md
           else
             echo "Files to compile:"
             cat compile_list.txt
@@ -173,7 +173,7 @@ jobs:
               echo "" >> report.md
             done
           else
-            echo "`💡 Nessun errore di compilazione`" >> report.md
+            echo "💡 Nessun errore di compilazione" >> report.md
           fi
 
           echo "" >> report.md
@@ -186,7 +186,7 @@ jobs:
               echo "" >> report.md
             done
           else
-            echo "`💡 Nessun PDF compilato`" >> report.md
+            echo "💡 Nessun PDF compilato" >> report.md
           fi
 
       - name: Step 4 - Commit Results
