@@ -1,8 +1,17 @@
-# Come compilare
-1) caricate tutti i file `.tex` che volete compilare nella cartella `src/`
-2) la build si attiva in automatico e compila tutto nella cartella `docs/`
-
-Attenzione: potete caricare progetti .tex standalone (monolitici) oppure progetti multi-file. er i progetti multi-file è importante che esista un file .tex principale (cioè il file principale da compilare) e che tutti i file secondari o inclusi siano collocati in un sottocartella denominata esattamente `contenuti/`.
+# Guida all'uso
+1) Per compilare caricate tutti i file `.tex` che volete compilare nella cartella `src/`, la build si attiva in automatico e compila tutto nella cartella `docs/`
+2) La compilazione dei file avviene in root, dunque per la compilazione delle immagini, basta aggiungere all'inizio del proprio file latex, le seguenti direttive:
+   ```
+   \usepackage{graphicx} % Pacchetto classico per le immagini
+   \usepackage{currfile} % Pacchetto per ottenere il percorso del file compilato dinamicamente
+   \graphicspath{{src/immagini/}{\currfiledir contenuti/}{\currfiledir contenuti/immagini/}} % Percorsi dove cercare le immagini
+   ```
+   Quindi continuando con l'esempio del codice sopra, potrai mettere le immagini nella cartella `src/immagini/` oppure nella rispettiva cartella `contenuti/` o `contenuti/immagini/` dello specifico file latex.
+   Ecco un esempio di come si include una immagini in questo sistema:
+   ```
+   \includegraphics[width=0.4\textwidth]{logo.jpg}
+   ```
+3) Potete caricare progetti .tex standalone (monolitici) oppure progetti multi-file. Per i progetti multi-file è importante che esista un file .tex principale (quello da cui partirá la compilazione) mentre tutti i file secondari dovrai collocarli nella rispettiva cartella denominata esattamente `contenuti/`.
 
 # Obiettivi della Build
 
