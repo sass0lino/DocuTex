@@ -11,6 +11,10 @@ on:
       - 'src/**/*.tex'
       - 'docs/**/*.pdf'
 
+concurrency:
+  group: latex-build-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build_latex:
     runs-on: ubuntu-latest
@@ -21,12 +25,43 @@ jobs:
         with:
           fetch-depth: 0
 
+      # 🔹 Step 0: determina l'ultimo commit compilato e fallback con pulizia docs
+      - name: Step 0 - Determine Last Compiled Commit (with docs cleanup fallback)
+        id: lastsha
+        run: |
+          echo "--- Checking for last compiled commit ---"
+          FALLBACK_FULL_REBUILD="false"
+
+          if [ -f ".last_compiled_commit" ]; then
+            LAST_SHA=$(cat .last_compiled_commit)
+            echo "Found .last_compiled_commit with SHA: $LAST_SHA"
+
+            if git cat-file -e "$LAST_SHA" 2>/dev/null; then
+              echo "Checkpoint is valid."
+            else
+              echo "⚠️ Commit not found in history. Removing docs and forcing full rebuild."
+              rm -rf docs || true
+              mkdir -p docs
+              LAST_SHA="0000000000000000000000000000000000000000"
+              FALLBACK_FULL_REBUILD="true"
+            fi
+          else
+            echo "No .last_compiled_commit file found. Removing docs and forcing full rebuild."
+            rm -rf docs || true
+            mkdir -p docs
+            LAST_SHA="0000000000000000000000000000000000000000"
+            FALLBACK_FULL_REBUILD="true"
+          fi
+
+          echo "last_sha=$LAST_SHA" >> $GITHUB_OUTPUT
+          echo "fallback_full_rebuild=$FALLBACK_FULL_REBUILD" >> $GITHUB_OUTPUT
+
       - name: Step 1 - Enforce Consistency (Cleanup)
         id: analysis
         run: |
           echo "--- Enforcing repository consistency ---"
-          BEFORE_SHA="${{ github.event.before }}"
-          AFTER_SHA="${{ github.event.after }}"
+          BEFORE_SHA="${{ steps.lastsha.outputs.last_sha }}"
+          AFTER_SHA="${{ github.sha }}"
 
           # 1. Pulizia PDF orfani
           if [ -d "docs" ]; then
@@ -54,14 +89,17 @@ jobs:
         id: prepare
         run: |
           echo "--- Preparing compile list ---"
-          BEFORE_SHA="${{ github.event.before }}"
-          AFTER_SHA="${{ github.event.after }}"
+          BEFORE_SHA="${{ steps.lastsha.outputs.last_sha }}"
+          AFTER_SHA="${{ github.sha }}"
+          FALLBACK_FULL_REBUILD="${{ steps.lastsha.outputs.fallback_full_rebuild }}"
 
           changed_parents_file="changed_parents.txt"
           > "$changed_parents_file"
 
-          # 🔧 FIX CRUCIALE: ora i file in src/ (come src/hello_world.tex) vengono rilevati
-          if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
+          if [ "$FALLBACK_FULL_REBUILD" == "true" ]; then
+            echo "⚙️ Full rebuild triggered by fallback."
+            changed_files=$(git ls-tree --name-only -r "$AFTER_SHA" | grep '\.tex$' || true)
+          elif [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
             changed_files=$(git ls-tree --name-only -r "$AFTER_SHA" | grep '\.tex$' || true)
           else
             changed_files=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- src | grep '\.tex$' || true)
@@ -81,7 +119,6 @@ jobs:
             done < <(echo "$changed_files") | sort -u > "$changed_parents_file"
           fi
 
-          # 🔍 Scanner: trova tutti i .tex "padre" che non hanno il PDF corrispondente
           missing_pdfs_file="missing_pdfs.txt"
           > "$missing_pdfs_file"
 
@@ -92,14 +129,11 @@ jobs:
             fi
           done
 
-          # ✅ Unisce le due fonti
           cat "$changed_parents_file" "$missing_pdfs_file" | sed '/^$/d' | sort -u > compile_list.txt
 
           if [ ! -s compile_list.txt ]; then
             echo "No .tex files to compile."
             echo "compile_needed=false" >> $GITHUB_OUTPUT
-
-            # 🧹 Pulisce il report precedente
             echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.md
             echo "" >> build_report.md
             echo "_Nessun file modificato o mancante. Nessuna compilazione eseguita._" >> build_report.md
@@ -114,13 +148,15 @@ jobs:
         run: |
           echo "# Build Report del $(date -u --iso-8601=seconds)" > build_report.md
           echo "" >> build_report.md
-
           build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          > build_result.log
 
-          > successes.txt
-          > failures.txt
+          # 🔸 mostra se è stato attivato un rebuild completo
+          if [ "${{ steps.lastsha.outputs.fallback_full_rebuild }}" == "true" ]; then
+            echo "> ⚙️ Ricompilazione completa eseguita a causa di checkpoint non valido o assente." >> build_report.md
+            echo "" >> build_report.md
+          fi
 
-          # 🔄 Rimuove PDF esistenti
           while IFS= read -r texfile; do
             [ -z "$texfile" ] && continue
             pdf_file=$(echo "$texfile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
@@ -151,7 +187,6 @@ jobs:
               done < compile_list.txt
             '
 
-          # 📄 Generazione build_report.md
           echo "## Fallimenti" >> build_report.md
           if grep -q ";Fail" build_result.log; then
             grep ";Fail" build_result.log | while IFS=";" read -r tex status; do
@@ -177,6 +212,9 @@ jobs:
         run: |
           echo "--- Committing results ---"
           git add docs build_report.md
+          echo "${{ github.sha }}" > .last_compiled_commit
+          git add .last_compiled_commit
+
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
