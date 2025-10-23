@@ -211,10 +211,11 @@ jobs:
       - name: Step 4 - Commit Results
         run: |
           echo "--- Committing results ---"
-          git add docs build_report.md
-          echo "${{ github.sha }}" > .last_compiled_commit
-          git add .last_compiled_commit
 
+          # Aggiunge PDF e report
+          git add docs build_report.md
+
+          # Non aggiorniamo ancora .last_compiled_commit qui — prima facciamo il commit reale
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
@@ -223,3 +224,18 @@ jobs:
             git commit -m "Automated LaTeX build"
             git push
           fi
+
+          # ✅ Ora che la build è completata e il commit è sul remoto,
+          # aggiorniamo .last_compiled_commit con l'ultimo SHA effettivo
+          NEW_SHA=$(git rev-parse HEAD)
+          echo "Updating .last_compiled_commit to $NEW_SHA"
+          echo "$NEW_SHA" > .last_compiled_commit
+
+          git add .last_compiled_commit
+          if git diff --staged --quiet; then
+            echo "No new commit for .last_compiled_commit needed."
+          else
+            git commit -m "Update build checkpoint to $NEW_SHA"
+            git push
+          fi
+
