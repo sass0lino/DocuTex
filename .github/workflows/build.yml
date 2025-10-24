@@ -34,6 +34,11 @@ jobs:
             ~/.texlive202*
           key: ${{ runner.os }}-texlive-full
 
+      - name: Ensure latexmk is installed
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends latexmk
+
       - name: Install TeX Live
         if: steps.cache-texlive.outputs.cache-hit != 'true'
         run: |
