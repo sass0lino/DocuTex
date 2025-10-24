@@ -1,4 +1,4 @@
-name: Build LaTeX documents (TeX Live cached)
+name: Build LaTeX documents
 
 permissions:
   contents: write
@@ -8,8 +8,8 @@ on:
     branches:
       - main
     paths:
-        - 'src/**/*.tex'
-        - 'docs/**/*.pdf'
+      - 'src/**/*.tex'
+      - 'docs/**/*.pdf'
 
 concurrency:
   group: latex-build
@@ -20,11 +20,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # -------------------------------
+      # 1. Checkout del repository
+      # -------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # -------------------------------
+      # 2. Cache di TeX Live (soluzione ibrida)
+      # -------------------------------
       - name: Cache TeX Live
         id: cache-texlive
         uses: actions/cache@v4
@@ -32,20 +38,36 @@ jobs:
           path: |
             /usr/share/texlive
             ~/.texlive202*
-          key: ${{ runner.os }}-texlive-full
+          key: ${{ runner.os }}-texlive-full-v1
 
+      # Installa latexmk (binario di supporto)
       - name: Ensure latexmk is installed
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends latexmk
 
-      - name: Install TeX Live
+      # Installa TeX Live completo solo se la cache manca
+      - name: Install TeX Live (full) if cache missing
         if: steps.cache-texlive.outputs.cache-hit != 'true'
         run: |
-          echo "--- Installing TeX Live (first run, may take several minutes) ---"
-          sudo apt-get update
-          sudo apt-get install -y texlive-full latexmk
+          echo "No cache found — installing full TeX Live (this may take several minutes)"
+          sudo apt-get update -qq
+          sudo apt-get install -y texlive-full
 
+      # Reintegra pacchetti base sempre, per evitare errori tipo lmodern.sty
+      - name: Ensure core TeX packages present
+        run: |
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-base \
+            texlive-latex-recommended \
+            texlive-fonts-recommended \
+            texlive-latex-extra \
+            texlive-fonts-extra \
+            texlive-lang-italian
+
+      # -------------------------------
+      # 3. Step 1 - Pulizia e coerenza
+      # -------------------------------
       - name: Step 1 - Enforce Consistency (Cleanup)
         id: analysis
         run: |
@@ -75,11 +97,15 @@ jobs:
             fi
           fi
 
+      # -------------------------------
+      # 4. Step 2 - Analisi modifiche
+      # -------------------------------
       - name: Step 2 - Prepare Compile List (Unification)
         id: prepare
         run: |
           echo "--- Preparing compile list ---"
 
+          # Trova l’ultimo commit di build automatica come checkpoint
           LAST_COMPILED=$(git log --grep="^Automated LaTeX build" -n 1 --pretty=format:%H || echo "")
           if [ -z "$LAST_COMPILED" ]; then
             echo "No previous build commit found. Performing full rebuild."
@@ -110,6 +136,7 @@ jobs:
             done < <(echo "$changed_files") | sort -u > "$changed_parents_file"
           fi
 
+          # Scanner: trova tutti i .tex "padre" che non hanno il PDF corrispondente
           missing_pdfs_file="missing_pdfs.txt"
           > "$missing_pdfs_file"
 
@@ -120,6 +147,7 @@ jobs:
             fi
           done
 
+          # Unisce le due fonti
           cat "$changed_parents_file" "$missing_pdfs_file" | sed '/^$/d' | sort -u > compile_list.txt
 
           echo "LAST_COMPILED=$LAST_COMPILED" >> $GITHUB_ENV
@@ -138,6 +166,9 @@ jobs:
             echo "compile_needed=true" >> $GITHUB_OUTPUT
           fi
 
+      # -------------------------------
+      # 5. Step 3 - Compilazione LaTeX
+      # -------------------------------
       - name: Step 3 - Compile and Generate Build Report
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
@@ -152,6 +183,7 @@ jobs:
           > successes.txt
           > failures.txt
 
+          # Rimuove PDF esistenti per i file da ricompilare
           while IFS= read -r texfile; do
             [ -z "$texfile" ] && continue
             pdf_file=$(echo "$texfile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
@@ -160,6 +192,7 @@ jobs:
 
           mkdir -p tmp_build
 
+          # Compilazione diretta (non Docker)
           while IFS= read -r texfile || [ -n "$texfile" ]; do
             [ -z "$texfile" ] && continue
             echo "Compiling: $texfile"
@@ -175,9 +208,10 @@ jobs:
               echo "::error file=$texfile::LaTeX compilation failed"
               echo "$texfile;Fail" >> build_result.log
             fi
-            rm -rf tmp_build/*
+            rm -rf "tmp_build"/*
           done < compile_list.txt
 
+          # Generazione report
           echo "## Falliti" >> report.md
           if grep -q ";Fail" build_result.log; then
             grep ";Fail" build_result.log | while IFS=";" read -r tex status; do
@@ -201,11 +235,20 @@ jobs:
             echo "💡 Nessun PDF compilato" >> report.md
           fi
 
+      # -------------------------------
+      # 6. Step 4 - Commit risultati
+      # -------------------------------
       - name: Step 4 - Commit Results
         run: |
           echo "--- Committing results ---"
+          
+          # Aggiunge sempre il report
           git add -f report.md
-          if [ -d "docs" ]; then git add docs; fi
+          
+          # Aggiunge docs solo se esiste
+          if [ -d "docs" ]; then
+            git add docs
+          fi
 
           if git diff --staged --quiet; then
             echo "No changes to commit."
