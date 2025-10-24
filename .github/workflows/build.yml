@@ -4,12 +4,12 @@ permissions:
   contents: write
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'src/**/*.tex'
-      - 'docs/**/*.pdf'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**/*.tex'
+      - 'docs/**/*.pdf'
 
 concurrency:
   group: latex-build
