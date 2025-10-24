@@ -1,21 +1,21 @@
 # Guida all'uso
 1) Per compilare i vostri file latex, caricateli tutti nella cartella `src/`. La build si attiva in automatico e compila tutto nella cartella `docs/`.
-2) Questione immagini: la compilazione dei file avviene in root, dunque per la compilazione delle immagini, basta aggiungere all'inizio del proprio file latex, le seguenti direttive:
+2) Potete caricare progetti latex mono-file oppure progetti multi-file. Per i progetti multi-file è importante che esista un file `.tex` principale e una cartella obbligatoriamente chiamata `contenuti/` in cui disporre tutti i file secondari del progetto (questo nome è un vincolo tecnico per far funzionare la build).
+3) Questione immagini: la compilazione dei progetti latex parte dalla root, dunque per la compilazione delle immagini, basta procedere nel seguente modo:
+   - aggiungi all'inizio del file latex principale le seguenti direttive:
    ```
    \usepackage{graphicx} % Pacchetto classico per le immagini
    \usepackage{currfile} % Pacchetto per ottenere il percorso del file compilato dinamicamente
    \graphicspath{{src/immagini/}{\currfiledir contenuti/}{\currfiledir contenuti/immagini/}} % Percorsi dove cercare le immagini
    ```
-   Potrai mettere le immagini nella cartella `src/immagini/` oppure nella rispettiva cartella `contenuti/` o `contenuti/immagini/` dello specifico file latex.
-   Ecco un esempio di come si include una immagine con questo sistema (dopo averla inserita in una delle cartelle che ho scritto sopra chiaramente):
+   - Potrai salvare le immagini condivise da tutti i documenti nella cartella `src/immagini/`, e le immagini specifiche del progetto latex in cui stai lavorando potrai salvarle nella sua cartella `contenuti/` (o `contenuti/immagini/`) dedicata.
+   - Infine usa questo comando nel file latex per mostrare effettivamente l'immagine:
    ```
-   \includegraphics[width=0.4\textwidth]{logo.jpg} % Molto semplice, non serve specificare il percorso
+   \includegraphics{logo.jpg} % Molto semplice, non serve specificare il percorso dell'immagine
    ```
-   Avrai capito che l'idea di questo sistema é di utilizzare la cartella `src/immagini/` per le immagini condivise da tutti i file, e utilizzare le cartelle ad "hoc" (`contenuti/`) dei file latex per le immagini non condivise.
-3) Potete caricare progetti .tex standalone (monolitici) oppure progetti multi-file. Per i progetti multi-file è importante che esista un file .tex principale (quello da cui partirá la compilazione) mentre tutti i file secondari dovrai collocarli nella rispettiva cartella denominata esattamente `contenuti/`.
-4) Se volessimo ricompilare tutti i documenti del repository, basta eliminare tutta la cartella docs.
-5) Dettaglio da evidenziare: la build si attiverá anche se elimini/modifichi/aggiungi un file pdf da `docs/`, senza aver modificato i file latex. Questo perché la build garantisce che tutti i file in docs sono stati generati dalla build stessa, dunque non possono essere "manomessi".
-6) Report sui risultati della buil: potete vedere quali file sono stati compilati, e quali hanno fallito la compilazione nel file `report.md` (si aggiorna con ogni build chiaramente).
+5) Se volessimo ricompilare tutti i documenti del repository, basterebbe eliminare la cartella docs.
+6) Dettaglio da evidenziare: la build si attiverà anche se elimini, modifichi o aggiungi un file .pdf da docs/. Questo accade perché il sistema deve garantire che i PDF in docs/ siano sempre e solo quelli generati dalla build stessa e non modificati a mano (quindi li rigenera o li elimina se necessario).
+7) Report sui risultati di compilazione della build: potete controllare quali file sono stati effettivamente compilati correttamente, e quali hanno fallito la compilazione, nel file `report.md` (si aggiorna ad ogni build chiaramente).
 
 # Obiettivi della Build
 
