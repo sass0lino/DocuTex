@@ -1,7 +1,7 @@
 # Guida all'uso
 1) Per compilare i vostri file latex, caricateli tutti nella cartella `src/`. La build si attiva in automatico e compila tutto nella cartella `docs/`.
 2) Potete caricare progetti latex mono-file oppure progetti multi-file. Per i progetti multi-file è importante che esista un file `.tex` principale e una cartella obbligatoriamente chiamata `contenuti/` in cui disporre tutti i file secondari del progetto (questo nome è un vincolo tecnico per far funzionare la build).
-3) Questione immagini: la compilazione dei progetti latex parte dalla root, dunque per la compilazione delle immagini, basta procedere nel seguente modo:
+3) Questione immagini: la compilazione dei progetti latex parte dalla root, dunque per la compilazione delle immagini basta procedere nel seguente modo:
    - aggiungi all'inizio del file latex principale le seguenti direttive:
    ```
    \usepackage{graphicx} % Pacchetto classico per le immagini
