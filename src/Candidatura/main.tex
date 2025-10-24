@@ -1,0 +1,169 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{currfile}
+\graphicspath{{src/immagini/}{\currfiledir contenuti/}{\currfiledir contenuti/immagini/}}
+
+\usepackage{url}
+\usepackage{longtable} % Per tabelle su più pagine
+
+% Impostazioni della pagina (margini, ecc.)
+\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=3cm]{geometry}
+
+% Intestazione/Piè di pagina (opzionale, ma utile per numero di pagina e logo)
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{} % Svuota l'intestazione
+\fancyfoot[C]{\thepage} % Numero di pagina centrato nel piè di pagina
+\renewcommand{\headrulewidth}{0pt} % Rimuove la linea nell'intestazione
+\renewcommand{\footrulewidth}{0.4pt} % Linea sottile nel piè di pagina
+
+\title{} % Lasciato vuoto per un layout più da lettera/documento tecnico
+\author{} % Lasciato vuoto
+
+\begin{document}
+
+% Inizio della personalizzazione con il logo NightPRO
+
+\begin{figure}[h]
+    \centering
+    % Inserisci qui l'immagine del logo NightPRO. 
+    % Assicurati che il file sia nella stessa cartella e usa il comando corretto.
+    % Esempio: \includegraphics[width=0.4\textwidth]{Chat-GPT-Image-14-ott-2025-18-15-19.jpg}
+    \includegraphics[width=0.4\textwidth]{logo.jpg}
+\end{figure}
+
+\begin{center}
+    \textbf{\Large NightPRO} \\
+    \textit{INNOVATE. OPTIMIZE. SECURE.} \\
+    \vspace{0.5cm}
+    \rule{\linewidth}{0.8pt} % Linea di separazione
+    \vspace{0.5cm}
+    
+    \textbf{Università degli Studi di Padova} \\
+    Laurea: Informatica \\
+    Corso: [Nome del tuo Corso/Laboratorio] \\ % Esempio: "Ingegneria del Software"
+    Anno Accademico: 2025/2026 \\
+    \vspace{0.5cm}
+    
+    \textbf{Documento:} Lettera di Presentazione [o il nome appropriato] \\
+    \textbf{Email Gruppo:} [La tua email di gruppo, e.g., info@nightpro.it] \\
+\end{center}
+
+\vspace{1cm}
+
+% Tabella delle Informazioni sul Documento (Ispirata alla Page 1 del documento SWEg Labs)
+\begin{longtable}{|p{2.5cm}|p{8cm}|}
+    \hline
+    \textbf{Voce} & \textbf{Dettaglio} \\
+    \hline
+    \endhead % Ripetizione dell'intestazione per pagine lunghe
+    
+    \hline
+    \textbf{Versione} & 1.0.0 \\
+    \hline
+    \textbf{Stato} & Bozze/Approvato \\
+    \hline
+    \textbf{Redazione} & Davide Biasuzzi, [Nome altro membro 1], [Nome altro membro 2] \\
+    \hline
+    \textbf{Verifica} & [Nome del Verificatore] \\
+    \hline
+    \textbf{Approvazione} & Tutto il gruppo NightPRO \\
+    \hline
+    \textbf{Proprietario} & NightPRO \\
+    \hline
+    \textbf{Uso} & Esterno/Interno \\
+    \hline
+    \textbf{Destinatari} & [Nome Destinatario/Professore], [Nome Destinatario 2] \\
+    \hline
+\end{longtable}
+
+\newpage
+
+% Registro delle Modifiche (Ispirato alla Page 2 del documento SWEg Labs)
+\section*{Registro delle Modifiche}
+\begin{longtable}{|p{1.5cm}|p{2cm}|p{3cm}|p{6cm}|}
+    \hline
+    \textbf{Vers.} & \textbf{Data} & \textbf{Autore} & \textbf{Descrizione} \\
+    \hline
+    \endhead
+    
+    \hline
+    1.0.0 & 15-10-2025 & Tutto il gruppo & Approvazione del documento base \\
+    \hline
+    0.1.0 & 15-10-2025 & Davide Biasuzzi & Creazione della struttura iniziale in LaTeX \\
+    \hline
+    % Aggiungi altre modifiche qui...
+\end{longtable}
+
+\newpage
+
+% Corpo della Lettera (Ispirata alla Page 3 del documento SWEg Labs)
+\section*{Lettera di Presentazione}
+
+\noindent Egregio/a [Titolo e Cognome del 1° Destinatario], \\
+\noindent Egregio/a [Titolo e Cognome del 2° Destinatario],
+
+\vspace{0.5cm}
+
+Il gruppo \textbf{NightPRO} desidera comunicarvi la sua intenzione a candidarsi ed impegnarsi nella realizzazione del progetto \textbf{[Nome del Vostro Progetto]} (o capitolato \textbf{[Numero/Nome]}).
+
+Siamo un team composto da studenti del corso di Laurea in Informatica dell'Università di Padova, uniti dall'interesse per l'innovazione tecnologica e l'ottimizzazione dei processi, competenze che il nostro capogruppo, \textbf{Davide Biasuzzi} (matricola 2111000 - come da immagine caricata), intende sfruttare anche per l'apertura di una PIVA nel prossimo futuro.
+
+% Inserisci qui il link alla repository (se ne avete una)
+La documentazione prodotta dal team relativa al progetto è consultabile alla repository seguente:
+\url{https://github.com/NightPRO/[Nome della Vostra Repository]}
+
+All'interno della quale è possibile trovare:
+\begin{itemize}
+    \item Lettera di presentazione
+    \item Valutazioni dei vari capitolati/proposte
+    \item Preventivo dei costi e impegno orario totale
+    \item Verbali interni/esterni
+    % Aggiungi altri elementi...
+\end{itemize}
+
+% Qui puoi aggiungere la sezione "Motivazione della Scelta" e "Resoconto degli Incontri"
+% seguendo la struttura del documento originale.
+
+\newpage
+\section*{I Componenti del Gruppo}
+
+\noindent Di seguito i componenti del gruppo \textbf{NightPRO}:
+% Ho inserito il tuo nome e matricola (2111000) dall'immagine che hai caricato,
+% insieme agli altri nomi presenti nella stessa riga di tabella.
+\begin{longtable}{|l|l|l|}
+    \hline
+    \textbf{Nome} & \textbf{Cognome} & \textbf{Matricola} \\
+    \hline
+    \endhead
+    
+    \hline
+    Davide & Biasuzzi & 2111000 \\
+    \hline
+    Leonardo & Bilato & 2071084 \\
+    \hline
+    Francesco & Zanella & 2116442 \\
+    \hline
+    Mihaela-Mariana & Romascu & 2079726 \\
+    \hline
+    Michele & Ogniben & 2042325 \\
+    \hline
+    Samuele & Perozzo & 2110989 \\
+    \hline
+    Giovanni & Ponso & 2000558 \\
+    \hline
+    % Aggiungi altri membri se necessario
+\end{longtable}
+
+\vspace{1cm}
+
+\noindent Cordiali saluti,
+
+\vspace{1cm}
+\noindent \textbf{Il gruppo NightPRO}
+
+\end{document}
