@@ -1,6 +1,6 @@
 # Guida all'uso
-1) Per compilare i vostri file latex, caricateli tutti nella cartella `src/`. La build si attiva in automatico e compila tutto nella cartella `docs/`.
-2) Potete caricare progetti latex mono-file oppure progetti multi-file. Per i progetti multi-file è importante che esista un file `.tex` principale e una cartella obbligatoriamente chiamata `contenuti/` in cui disporre tutti i file secondari del progetto (questo nome è un vincolo tecnico per far funzionare la build).
+1) Per compilare i vostri file latex, caricateli tutti nella cartella `src/`. La build si attiverà in automatico e salverà tutti i rispettivi `.pdf` compilati nella cartella `docs/`, con una struttura di cartelle uguale a quella che abbiamo usato in `src/`.
+2) Potete caricare progetti latex mono-file oppure multi-file. Per i progetti multi-file è importante che esista un file `.tex` principale e una cartella obbligatoriamente chiamata `contenuti/` in cui disporre tutti i file secondari del progetto (questo nome è un vincolo tecnico per far funzionare la build).
 3) Questione immagini: la compilazione dei progetti latex parte dalla root, dunque per la compilazione delle immagini basta procedere nel seguente modo:
    - aggiungi all'inizio del file latex principale le seguenti direttive:
    ```
@@ -8,10 +8,10 @@
    \usepackage{currfile} % Pacchetto per ottenere il percorso del file compilato dinamicamente
    \graphicspath{{src/immagini/}{\currfiledir contenuti/}{\currfiledir contenuti/immagini/}} % Percorsi dove cercare le immagini
    ```
-   - Potrai salvare le immagini condivise da tutti i documenti nella cartella `src/immagini/`, e le immagini specifiche del progetto latex in cui stai lavorando potrai salvarle nella sua cartella `contenuti/` (o `contenuti/immagini/`) dedicata.
-   - Infine usa questo comando nel file latex per mostrare effettivamente l'immagine:
+   - Potrai disporre le immagini condivise da tutti i documenti (come il logo) nella cartella `src/immagini/`, e salvare le immagini specifiche dei progetti nelle rispettive cartelle dedicate (`.../progetto/contenuti/` o `.../progetto/contenuti/immagini/`).
+   - Infine utilizza il seguente comando per includere effettivamente l'immagine:
    ```
-   \includegraphics{logo.jpg} % Molto semplice, non serve specificare il percorso dell'immagine
+   \includegraphics{logo.jpg} % Non serve specificare il percorso dell'immagine
    ```
 5) Se volessimo ricompilare tutti i documenti del repository, basterebbe eliminare la cartella docs.
 6) Dettaglio da evidenziare: la build si attiverà anche se elimini, modifichi o aggiungi un file .pdf da docs/. Questo accade perché il sistema deve garantire che i PDF in docs/ siano sempre e solo quelli generati dalla build stessa e non modificati a mano (quindi li rigenera o li elimina se necessario).
