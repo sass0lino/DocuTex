@@ -1,10 +1,15 @@
-# Report di compilazione del 2025-10-26T22:43:22+00:00
+# Report di compilazione del 2025-10-26T23:27:00+00:00
 
-Compilazione basata sul commit e0c2e4faf8e342eacf3bfce65f0dbd21790d0095 (base: e0c2e4f)
+Compilazione basata sul commit 75e8bb68ad755f5fae8eef76a71cc1c23ef7256e (base: 75e8bb6)
 
 ## Falliti
-❌ [src/Candidatura/Verbali/Verbali Interni/verbale_interno_15-10-25.tex](https://github.com/sass0lino/DocuTex/actions/runs/18824802719)
+❌ [src/Candidatura/Verbali/Verbali Interni/verbale_interno_15-10-25.tex](https://github.com/sass0lino/DocuTex/actions/runs/18825288316)
 
 
 ## Compilati
-💡 Nessun PDF compilato
+✅ [docs/Candidatura/Verbali/Verbali Interni/verbale_interno_14-10-25.pdf](docs/Candidatura/Verbali/Verbali%20Interni/verbale_interno_14-10-25.pdf)
+
+✅ [docs/Candidatura/Verbali/Verbali Interni/verbale_interno_20-10-25.pdf](docs/Candidatura/Verbali/Verbali%20Interni/verbale_interno_20-10-25.pdf)
+
+✅ [docs/Candidatura/mainnn.pdf](docs/Candidatura/mainnn.pdf)
+
