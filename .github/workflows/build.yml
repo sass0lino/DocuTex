@@ -32,9 +32,15 @@ jobs:
           BEFORE_SHA="${{ github.event.before }}"
           AFTER_SHA="${{ github.event.after }}"
 
-          # 1. Pulizia PDF orfani
+          # 1. Pulizia PDF orfani (esclude file firmati)
           if [ -d "docs" ]; then
             find docs -type f -name "*.pdf" | while IFS= read -r pdf_file; do
+              # Salta i file firmati o signed
+              if [[ "$pdf_file" == *"firmato.pdf" || "$pdf_file" == *"signed.pdf" ]]; then
+                echo "Skipping signed PDF: $pdf_file"
+                continue
+              fi
+
               src_file=$(echo "$pdf_file" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
               if [ ! -f "$src_file" ]; then
                 echo "Deleting orphan PDF: $pdf_file"
@@ -43,13 +49,19 @@ jobs:
             done
           fi
 
-          # 2. Pulizia PDF aggiunti a mano
+          # 2. Pulizia PDF aggiunti o modificati a mano (esclude firmati)
           if [[ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
             manually_changed_pdfs=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'docs/**/*.pdf' || true)
             if [ -n "$manually_changed_pdfs" ]; then
-              echo "--> Manually modified PDFs detected. Deleting them:"
+              echo "--> Manually modified PDFs detected. Deleting them (except signed ones):"
               echo "$manually_changed_pdfs" | while IFS= read -r pdf; do
-                [ -n "$pdf" ] && rm -f -- "$pdf"
+                [ -z "$pdf" ] && continue
+                if [[ "$pdf" == *"firmato.pdf" || "$pdf" == *"signed.pdf" ]]; then
+                  echo "Skipping signed PDF: $pdf"
+                  continue
+                fi
+                echo "Deleting manually changed PDF: $pdf"
+                rm -f -- "$pdf"
               done
             fi
           fi
@@ -134,10 +146,14 @@ jobs:
           > successes.txt
           > failures.txt
 
-          # Rimuove PDF esistenti per i file da ricompilare
+          # Rimuove PDF esistenti per i file da ricompilare (esclude firmati)
           while IFS= read -r texfile; do
             [ -z "$texfile" ] && continue
             pdf_file=$(echo "$texfile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+            if [[ "$pdf_file" == *"firmato.pdf" || "$pdf_file" == *"signed.pdf" ]]; then
+              echo "Skipping signed PDF: $pdf_file"
+              continue
+            fi
             [ -f "$pdf_file" ] && rm -f "$pdf_file"
           done < compile_list.txt
 
