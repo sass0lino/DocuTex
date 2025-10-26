@@ -20,54 +20,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # -------------------------------
-      # 1. Checkout del repository
-      # -------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # -------------------------------
-      # 2. Cache di TeX Live (soluzione ibrida)
-      # -------------------------------
-      - name: Cache TeX Live
-        id: cache-texlive
-        uses: actions/cache@v4
-        with:
-          path: |
-            /usr/share/texlive
-            ~/.texlive202*
-          key: ${{ runner.os }}-texlive-full-v1
-
-      # Installa latexmk (binario di supporto)
-      - name: Ensure latexmk is installed
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends latexmk
-
-      # Installa TeX Live completo solo se la cache manca
-      - name: Install TeX Live (full) if cache missing
-        if: steps.cache-texlive.outputs.cache-hit != 'true'
-        run: |
-          echo "No cache found — installing full TeX Live (this may take several minutes)"
-          sudo apt-get update -qq
-          sudo apt-get install -y texlive-full
-
-      # Reintegra pacchetti base sempre, per evitare errori tipo lmodern.sty
-      - name: Ensure core TeX packages present
-        run: |
-          sudo apt-get install -y --no-install-recommends \
-            texlive-latex-base \
-            texlive-latex-recommended \
-            texlive-fonts-recommended \
-            texlive-latex-extra \
-            texlive-fonts-extra \
-            texlive-lang-italian
-
-      # -------------------------------
-      # 3. Step 1 - Pulizia e coerenza
-      # -------------------------------
       - name: Step 1 - Enforce Consistency (Cleanup)
         id: analysis
         run: |
@@ -75,9 +32,15 @@ jobs:
           BEFORE_SHA="${{ github.event.before }}"
           AFTER_SHA="${{ github.event.after }}"
 
-          # 1. Pulizia PDF orfani
+          # 1. Pulizia PDF orfani (esclude file firmati)
           if [ -d "docs" ]; then
             find docs -type f -name "*.pdf" | while IFS= read -r pdf_file; do
+              # Salta i file firmati o signed
+              if [[ "$pdf_file" == *"firmato.pdf" || "$pdf_file" == *"signed.pdf" ]]; then
+                echo "Skipping signed PDF: $pdf_file"
+                continue
+              fi
+
               src_file=$(echo "$pdf_file" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
               if [ ! -f "$src_file" ]; then
                 echo "Deleting orphan PDF: $pdf_file"
@@ -86,20 +49,23 @@ jobs:
             done
           fi
 
-          # 2. Pulizia PDF aggiunti a mano
+          # 2. Pulizia PDF aggiunti o modificati a mano (esclude firmati)
           if [[ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
             manually_changed_pdfs=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'docs/**/*.pdf' || true)
             if [ -n "$manually_changed_pdfs" ]; then
-              echo "--> Manually modified PDFs detected. Deleting them:"
+              echo "--> Manually modified PDFs detected. Deleting them (except signed ones):"
               echo "$manually_changed_pdfs" | while IFS= read -r pdf; do
-                [ -n "$pdf" ] && rm -f -- "$pdf"
+                [ -z "$pdf" ] && continue
+                if [[ "$pdf" == *"firmato.pdf" || "$pdf" == *"signed.pdf" ]]; then
+                  echo "Skipping signed PDF: $pdf"
+                  continue
+                fi
+                echo "Deleting manually changed PDF: $pdf"
+                rm -f -- "$pdf"
               done
             fi
           fi
 
-      # -------------------------------
-      # 4. Step 2 - Analisi modifiche
-      # -------------------------------
       - name: Step 2 - Prepare Compile List (Unification)
         id: prepare
         run: |
@@ -166,9 +132,6 @@ jobs:
             echo "compile_needed=true" >> $GITHUB_OUTPUT
           fi
 
-      # -------------------------------
-      # 5. Step 3 - Compilazione LaTeX
-      # -------------------------------
       - name: Step 3 - Compile and Generate Build Report
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
@@ -183,33 +146,41 @@ jobs:
           > successes.txt
           > failures.txt
 
-          # Rimuove PDF esistenti per i file da ricompilare
+          # Rimuove PDF esistenti per i file da ricompilare (esclude firmati)
           while IFS= read -r texfile; do
             [ -z "$texfile" ] && continue
             pdf_file=$(echo "$texfile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+            if [[ "$pdf_file" == *"firmato.pdf" || "$pdf_file" == *"signed.pdf" ]]; then
+              echo "Skipping signed PDF: $pdf_file"
+              continue
+            fi
             [ -f "$pdf_file" ] && rm -f "$pdf_file"
           done < compile_list.txt
 
           mkdir -p tmp_build
 
-          # Compilazione diretta (non Docker)
-          while IFS= read -r texfile || [ -n "$texfile" ]; do
-            [ -z "$texfile" ] && continue
-            echo "Compiling: $texfile"
-            if latexmk -pdf -interaction=nonstopmode -file-line-error -output-directory="tmp_build" "$texfile"; then
-              filepath=$(dirname "$texfile")
-              filename=$(basename "$texfile" .tex)
-              out_sub=$(echo "$filepath" | sed "s|^src/||; s|^src\$||")
-              out_dir="docs/$out_sub"
-              mkdir -p "$out_dir"
-              mv "tmp_build/$filename.pdf" "$out_dir/"
-              echo "$texfile;Success" >> build_result.log
-            else
-              echo "::error file=$texfile::LaTeX compilation failed"
-              echo "$texfile;Fail" >> build_result.log
-            fi
-            rm -rf "tmp_build"/*
-          done < compile_list.txt
+          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" \
+            ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c '
+              build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+              while IFS= read -r texfile || [ -n "$texfile" ]; do
+                [ -z "$texfile" ] && continue
+                echo "Compiling: $texfile"
+                if latexmk -pdf -interaction=nonstopmode -file-line-error -output-directory="$(pwd)/tmp_build" "$texfile"; then
+
+                  filepath=$(dirname "$texfile")
+                  filename=$(basename "$texfile" .tex)
+                  out_sub=$(echo "$filepath" | sed "s|^src/||; s|^src\$||")
+                  out_dir="$(pwd)/docs/$out_sub"
+                  mkdir -p "$out_dir"
+                  mv "$(pwd)/tmp_build/$filename.pdf" "$out_dir/"
+                  echo "$texfile;Success" >> build_result.log
+                else
+                  echo "::error file=$texfile::LaTeX compilation failed"
+                  echo "$texfile;Fail" >> build_result.log
+                fi
+                rm -rf "$(pwd)/tmp_build"/*
+              done < compile_list.txt
+            '
 
           # Generazione report
           echo "## Falliti" >> report.md
@@ -235,9 +206,6 @@ jobs:
             echo "💡 Nessun PDF compilato" >> report.md
           fi
 
-      # -------------------------------
-      # 6. Step 4 - Commit risultati
-      # -------------------------------
       - name: Step 4 - Commit Results
         run: |
           echo "--- Committing results ---"
