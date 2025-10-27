@@ -1,13 +1,6 @@
 {
   "Candidatura": [
     {
-      "type": "file",
-      "name": " signed",
-      "path": "././docs/Candidatura/ signed.pdf",
-      "version": null,
-      "gulpease": null
-    },
-    {
       "type": "folder",
       "name": "Verbali",
       "children": [
@@ -41,14 +34,13 @@
       ]
     }
   ],
-  "template": [
+  "RTB": [
     {
       "type": "file",
       "name": "template",
-      "path": "././docs/template/template.pdf",
+      "path": "././docs/RTB/template.pdf",
       "version": null,
       "gulpease": null
     }
-  ],
-  "RTB": []
+  ]
 }
