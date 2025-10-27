@@ -11,21 +11,21 @@
             {
               "type": "file",
               "name": "verbale interno 14-10-25",
-              "path": "././docs/Candidatura/Verbali/Verbali Interni/verbale_interno_14-10-25.pdf",
+              "path": "./../docs/Candidatura/Verbali/Verbali Interni/verbale_interno_14-10-25.pdf",
               "version": null,
               "gulpease": null
             },
             {
               "type": "file",
               "name": "verbale interno 20-10-25",
-              "path": "././docs/Candidatura/Verbali/Verbali Interni/verbale_interno_20-10-25.pdf",
+              "path": "./../docs/Candidatura/Verbali/Verbali Interni/verbale_interno_20-10-25.pdf",
               "version": null,
               "gulpease": null
             },
             {
               "type": "file",
               "name": "verbale interno 15-10-25",
-              "path": "././docs/Candidatura/Verbali/Verbali Interni/verbale_interno_15-10-25.pdf",
+              "path": "./../docs/Candidatura/Verbali/Verbali Interni/verbale_interno_15-10-25.pdf",
               "version": null,
               "gulpease": null
             }
@@ -38,7 +38,7 @@
     {
       "type": "file",
       "name": "template",
-      "path": "././docs/RTB/template.pdf",
+      "path": "./../docs/RTB/template.pdf",
       "version": null,
       "gulpease": null
     }
