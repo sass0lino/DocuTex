@@ -25,148 +25,147 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Step 1 - Enforce Consistency (Cleanup)
-        id: analysis
+      # ==========================================================
+      # STEP 1 - Rilevazione modifiche (differenze dall’ultima build)
+      # ==========================================================
+      - name: Step 1 - Detect Changed Files
+        id: detect
         run: |
-          echo "--- Enforcing repository consistency ---"
-          BEFORE_SHA="${{ github.event.before }}"
-          AFTER_SHA="${{ github.event.after }}"
+          echo "--- Detecting modified LaTeX and PDF files ---"
 
-          # 1. Pulizia PDF orfani (esclude file firmati)
-          if [ -d "docs" ]; then
-            find docs -type f -name "*.pdf" | while IFS= read -r pdf_file; do
-              # Salta i file firmati o signed
-              if [[ "$pdf_file" == *"firmato.pdf" || "$pdf_file" == *"signed.pdf" ]]; then
-                echo "Skipping signed PDF: $pdf_file"
-                continue
-              fi
+          LAST_COMPILED=$(git log --grep="^Automated LaTeX build" -n 1 --pretty=format:%H || echo "")
+          if [ -z "$LAST_COMPILED" ]; then
+            echo "No previous build found. Full rebuild will be performed."
+            LAST_COMPILED=$(git rev-list --max-parents=0 HEAD)
+            BASE_DESC="(first commit)"
+          else
+            BASE_DESC="(base: $(echo "$LAST_COMPILED" | cut -c1-7))"
+          fi
+          echo "LAST_COMPILED=$LAST_COMPILED" >> $GITHUB_ENV
+          echo "BASE_DESC=$BASE_DESC" >> $GITHUB_ENV
 
-              src_file=$(echo "$pdf_file" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
-              if [ ! -f "$src_file" ]; then
-                echo "Deleting orphan PDF: $pdf_file"
-                rm -f -- "$pdf_file"
+          echo "--- Comparing changes since $LAST_COMPILED ---"
+
+          changed_latex=$(git diff --name-only --diff-filter=AMR "$LAST_COMPILED" HEAD -- 'src/**/*.tex' || true)
+          changed_pdfs=$(git diff --name-only --diff-filter=AMR "$LAST_COMPILED" HEAD -- 'docs/**/*.pdf' || true)
+
+          > pdfs_to_remove.txt
+
+          if [ -n "$changed_latex" ]; then
+            echo "$changed_latex" | while IFS= read -r file; do
+              [ -z "$file" ] && continue
+              if [[ "$file" == *"/contenuti/"* ]]; then
+                parent_dir=$(echo "$file" | sed 's|/contenuti/.*||')
+                parent_tex=$(find "$parent_dir" -maxdepth 1 -type f -name "*.tex" | head -n 1)
+                [ -n "$parent_tex" ] && echo "$parent_tex" >> pdfs_to_remove.txt
+              else
+                echo "$file" >> pdfs_to_remove.txt
               fi
             done
           fi
 
-          # 2. Pulizia PDF aggiunti o modificati a mano (esclude firmati)
-          if [[ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
-            manually_changed_pdfs=$(git diff --name-only --diff-filter=AMR "$BEFORE_SHA" "$AFTER_SHA" -- 'docs/**/*.pdf' || true)
-            if [ -n "$manually_changed_pdfs" ]; then
-              echo "--> Manually modified PDFs detected. Deleting them (except signed ones):"
-              echo "$manually_changed_pdfs" | while IFS= read -r pdf; do
-                [ -z "$pdf" ] && continue
-                if [[ "$pdf" == *"firmato.pdf" || "$pdf" == *"signed.pdf" ]]; then
-                  echo "Skipping signed PDF: $pdf"
-                  continue
-                fi
-                echo "Deleting manually changed PDF: $pdf"
-                rm -f -- "$pdf"
-              done
-            fi
+          if [ -n "$changed_pdfs" ]; then
+            echo "$changed_pdfs" | while IFS= read -r pdf; do
+              [ -z "$pdf" ] && continue
+              if [[ "$pdf" == *"firmato.pdf" || "$pdf" == *"signed.pdf" ]]; then
+                echo "Skipping signed PDF: $pdf"
+                continue
+              fi
+              src_tex=$(echo "$pdf" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
+              echo "$src_tex" >> pdfs_to_remove.txt
+            done
           fi
 
-      - name: Step 2 - Prepare Compile List (Unification)
+          sort -u pdfs_to_remove.txt -o pdfs_to_remove.txt
+          echo "--- Files to recompile or remove ---"
+          cat pdfs_to_remove.txt || echo "(none)"
+
+      # ==========================================================
+      # STEP 2 - Pulizia: elimina PDF vecchi o orfani
+      # ==========================================================
+      - name: Step 2 - Cleanup
+        run: |
+          echo "--- Cleaning up obsolete or orphaned PDFs ---"
+
+          # Rimuove i PDF corrispondenti ai file modificati
+          if [ -s pdfs_to_remove.txt ]; then
+            while IFS= read -r texfile; do
+              [ -z "$texfile" ] && continue
+              pdf_file=$(echo "$texfile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+              if [[ "$pdf_file" == *"firmato.pdf" || "$pdf_file" == *"signed.pdf" ]]; then
+                echo "Skipping signed PDF: $pdf_file"
+                continue
+              fi
+              if [ -f "$pdf_file" ]; then
+                echo "Deleting outdated PDF: $pdf_file"
+                rm -f "$pdf_file"
+              fi
+            done < pdfs_to_remove.txt
+          fi
+
+          # Rimuove i PDF orfani (senza corrispettivo .tex)
+          if [ -d "docs" ]; then
+            find docs -type f -name "*.pdf" | while IFS= read -r pdf; do
+              if [[ "$pdf" == *"firmato.pdf" || "$pdf" == *"signed.pdf" ]]; then
+                continue
+              fi
+              src_file=$(echo "$pdf" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
+              if [ ! -f "$src_file" ]; then
+                echo "Deleting orphan PDF: $pdf"
+                rm -f "$pdf"
+              fi
+            done
+          fi
+
+      # ==========================================================
+      # STEP 3 - Crea lista dei file da compilare
+      # ==========================================================
+      - name: Step 3 - Build Compile List
         id: prepare
         run: |
           echo "--- Preparing compile list ---"
 
-          # Trova l’ultimo commit di build automatica come checkpoint
-          LAST_COMPILED=$(git log --grep="^Automated LaTeX build" -n 1 --pretty=format:%H || echo "")
-          if [ -z "$LAST_COMPILED" ]; then
-            echo "No previous build commit found. Performing full rebuild."
-            LAST_COMPILED=$(git rev-list --max-parents=0 HEAD)
-            BASE_DESC="(first commit)"
-          else
-            BASE_DESC="(base: $(echo $LAST_COMPILED | cut -c1-7))"
-          fi
+          > compile_list.txt
 
-          echo "Comparing changes since commit: $LAST_COMPILED $BASE_DESC"
-
-          changed_parents_file="changed_parents.txt"
-          > "$changed_parents_file"
-
-          changed_files=$(git diff --name-only --diff-filter=AMR "$LAST_COMPILED" HEAD -- src | grep '\.tex$' || true)
-
-          if [ -n "$changed_files" ]; then
-            echo "Changed .tex files detected:"
-            echo "$changed_files"
-            while IFS= read -r file; do
-              [ -z "$file" ] && continue
-              if [[ "$file" == *"/contenuti/"* ]]; then
-                parent_dir=$(echo "$file" | sed 's|/contenuti/.*||')
-                find "$parent_dir" -maxdepth 1 -type f -name "*.tex"
-              else
-                echo "$file"
-              fi
-            done < <(echo "$changed_files") | sort -u > "$changed_parents_file"
-          fi
-
-          # Scanner: trova tutti i .tex "padre" che non hanno il PDF corrispondente
-          missing_pdfs_file="missing_pdfs.txt"
-          > "$missing_pdfs_file"
-
-          find src -type f -name "*.tex" | grep -v '/contenuti/' | while IFS= read -r tex_file; do
-            pdf_file=$(echo "$tex_file" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
+          # Aggiunge tutti i .tex principali che non hanno PDF corrispondente
+          find src -type f -name "*.tex" | grep -v '/contenuti/' | while IFS= read -r texfile; do
+            pdf_file=$(echo "$texfile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
             if [ ! -f "$pdf_file" ]; then
-              echo "$tex_file" >> "$missing_pdfs_file"
+              echo "$texfile" >> compile_list.txt
             fi
           done
 
-          # Unisce le due fonti
-          cat "$changed_parents_file" "$missing_pdfs_file" | sed '/^$/d' | sort -u > compile_list.txt
-
-          echo "LAST_COMPILED=$LAST_COMPILED" >> $GITHUB_ENV
-          echo "BASE_DESC=$BASE_DESC" >> $GITHUB_ENV
-
-          if [ ! -s compile_list.txt ]; then
-            echo "No .tex files to compile."
-            echo "compile_needed=false" >> $GITHUB_OUTPUT
-
-            echo "# Report di compilazione del $(date -u --iso-8601=seconds)" > report.md
-            echo "" >> report.md
-            echo "💡 Nessun file modificato o mancante. Nessuna compilazione eseguita" >> report.md
-          else
+          if [ -s compile_list.txt ]; then
             echo "Files to compile:"
             cat compile_list.txt
             echo "compile_needed=true" >> $GITHUB_OUTPUT
+          else
+            echo "No files to compile."
+            echo "compile_needed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Step 3 - Compile and Generate Build Report
+      # ==========================================================
+      # STEP 4 - Compilazione e generazione report
+      # ==========================================================
+      - name: Step 4 - Compile and Generate Report
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
           echo "# Report di compilazione del $(date -u --iso-8601=seconds)" > report.md
           echo "" >> report.md
 
           build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-
           echo "Compilazione basata sul commit ${LAST_COMPILED} ${BASE_DESC}" >> report.md
           echo "" >> report.md
 
-          > successes.txt
-          > failures.txt
-
-          # Rimuove PDF esistenti per i file da ricompilare (esclude firmati)
-          while IFS= read -r texfile; do
-            [ -z "$texfile" ] && continue
-            pdf_file=$(echo "$texfile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
-            if [[ "$pdf_file" == *"firmato.pdf" || "$pdf_file" == *"signed.pdf" ]]; then
-              echo "Skipping signed PDF: $pdf_file"
-              continue
-            fi
-            [ -f "$pdf_file" ] && rm -f "$pdf_file"
-          done < compile_list.txt
-
+          > build_result.log
           mkdir -p tmp_build
 
           docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" \
             ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c '
-              build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
               while IFS= read -r texfile || [ -n "$texfile" ]; do
                 [ -z "$texfile" ] && continue
                 echo "Compiling: $texfile"
                 if latexmk -pdf -interaction=nonstopmode -file-line-error -output-directory="$(pwd)/tmp_build" "$texfile"; then
-
                   filepath=$(dirname "$texfile")
                   filename=$(basename "$texfile" .tex)
                   out_sub=$(echo "$filepath" | sed "s|^src/||; s|^src\$||")
@@ -182,7 +181,6 @@ jobs:
               done < compile_list.txt
             '
 
-          # Generazione report
           echo "## Falliti" >> report.md
           if grep -q ";Fail" build_result.log; then
             grep ";Fail" build_result.log | while IFS=";" read -r tex status; do
@@ -206,14 +204,14 @@ jobs:
             echo "💡 Nessun PDF compilato" >> report.md
           fi
 
-      - name: Step 4 - Commit Results
+      # ==========================================================
+      # STEP 5 - Commit finale
+      # ==========================================================
+      - name: Step 5 - Commit Results
         run: |
           echo "--- Committing results ---"
-          
-          # Aggiunge sempre il report
+
           git add -f report.md
-          
-          # Aggiunge docs solo se esiste
           if [ -d "docs" ]; then
             git add docs
           fi
