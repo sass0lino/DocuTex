@@ -1,225 +1,291 @@
-/* --- Impostazioni Globali & Sticky Footer --- */
+/* --- Global Settings & Color Palette --- */
+:root {
+  --blue: #007bff;      /* Primary blue accent */
+  --dark-blue: #0056b3;  /* Darker blue for hover */
+  --black: #1a1a1a;     /* Main background/dark elements */
+  --white: #ffffff;     /* Text on dark, card backgrounds */
+  --grey: #f0f0f0;      /* Light background for body */
+  --light-grey: #e9ecef; /* Borders */
+  --text-grey: #6c757d;  /* Lighter text */
+}
+
 html {
   height: 100%;
+  box-sizing: border-box; /* Easier size calculations */
 }
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
 body {
   min-height: 100%;
   display: flex;
   flex-direction: column;
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  font-size: 16px;
-  background-color: #f4f4f4;
-  color: #333;
+  /* Using a modern system font stack */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-size: 17px; /* Slightly larger base size */
+  background-color: var(--grey); /* Light grey background */
+  color: var(--black);
   line-height: 1.6;
 }
 .page-wrapper {
   flex-grow: 1;
 }
 
-/* --- Tipografia --- */
-h1 { font-size: 1.8rem; color: #333; margin-bottom: 0.5em; }
-h3 { font-size: 1.1rem; color: #555; margin-bottom: 0.3em; }
-a { color: #007bff; text-decoration: none; }
-a:hover { text-decoration: underline; }
+/* --- Typography --- */
+h1 { font-size: 2rem; color: var(--black); margin-bottom: 0.8em; }
+h3 { font-size: 1.25rem; color: var(--black); margin-bottom: 0.5em; font-weight: 600; }
+a { color: var(--blue); text-decoration: none; font-weight: 500; }
+a:hover { color: var(--dark-blue); text-decoration: underline; }
 
-/* --- Header con Flexbox & Allineamento Verticale --- */
+/* --- Header: Dark, Bold --- */
 header {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Allinea verticalmente gli elementi */
-  padding: 0 1em;
-  background-color: #ffffff;
-  border-bottom: 1px solid #ddd;
-  height: 4.5em; /* Leggermente più alto per accomodare meglio */
+  align-items: center;
+  padding: 0 1.5em; /* More horizontal padding */
+  background-color: var(--black); /* Dark background */
+  height: 5em; /* Taller header */
   box-sizing: border-box;
 }
 
 /* Logo Team (SVG) */
 .header-logo-link {
-  height: 2.5em; /* Altezza desiderata per il logo SVG */
+  height: 2.8em; /* Larger logo */
   flex-shrink: 0;
-  display: flex; /* Necessario per far scalare bene SVG */
+  display: flex;
   align-items: center;
 }
 .header-logo-img {
-  height: 100%; /* SVG riempie l'altezza del link */
+  height: 100%;
   width: auto;
   display: block;
+  /* Make SVG white if it's single-color */
+  /* filter: invert(1) brightness(1.5); */ /* Uncomment if your SVG is black */
 }
 
-/* Pulsanti Schede (al centro) */
+/* Tabs (center) */
 #tab-buttons {
   display: flex;
   justify-content: center;
   flex-grow: 1;
   flex-wrap: wrap;
-  gap: 0.5em;
-  /* Rimuove margini extra che potrebbero sfasare l'allineamento */
-  margin: 0; 
-  padding: 0; 
+  gap: 0.8em; /* More space between tabs */
+  margin: 0 1em; /* Space around tabs */
+  padding: 0;
 }
 
 .tab-button {
   font-family: inherit;
-  font-size: 0.95rem; /* Leggermente più piccolo per allinearsi meglio */
-  font-weight: 500;
-  color: #555;
+  font-size: 1.1rem; /* Larger tabs */
+  font-weight: 600; /* Bolder */
+  color: var(--grey); /* Light text on dark header */
   background: none;
   border: none;
-  /* Padding verticale per dare altezza simile ai loghi */
-  padding: 0.6em 1em; 
+  padding: 0.6em 0.8em; /* Balanced padding */
   cursor: pointer;
-  border-bottom: 3px solid transparent; /* Aumentato spessore per visibilità */
-  transition: color 0.2s ease, border-color 0.2s ease;
-  line-height: 1.2; /* Aiuta con l'altezza visiva */
+  border-radius: 6px; /* Slightly rounded */
+  transition: background-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap; /* Prevent wrapping */
 }
 .tab-button:hover {
-  color: #000;
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle hover */
+  color: var(--white);
+  text-decoration: none;
 }
 .tab-button.active {
-  color: #007bff;
-  font-weight: 600;
-  border-bottom-color: #007bff;
+  background-color: var(--blue); /* Blue background for active tab */
+  color: var(--white); /* White text */
 }
 
-/* Logo GitHub (a destra) */
+/* Logo GitHub (right) */
 .github-link {
-  height: 2em; /* Altezza simile al logo team */
+  height: 2em; /* Adjusted size */
   flex-shrink: 0;
-  display: flex; /* Necessario per centrare SVG/IMG */
+  display: flex;
   align-items: center;
 }
 .github-logo {
-  height: 100%; /* Logo riempie l'altezza del link */
+  height: 100%;
   width: auto;
   display: block;
-  opacity: 0.7;
+  filter: invert(1) brightness(0.9); /* Make white */
+  opacity: 0.8;
   transition: opacity 0.2s ease;
 }
 .github-link:hover .github-logo {
   opacity: 1;
 }
 
-/* --- Contenuto Principale --- */
+/* --- Main Content Area --- */
 main {
-  max-width: 60em;
-  margin: 1.5em auto;
-  padding: 0 1em;
+  max-width: 65em; /* Wider content */
+  margin: 2em auto; /* More space around */
+  padding: 0 1.5em;
 }
 
 #tab-content {
-  background: #ffffff;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  padding: 1.5em;
-  min-height: 20vh;
+  background: var(--white); /* White background */
+  border-radius: 8px; /* Rounded corners */
+  /* Subtle shadow */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07); 
+  padding: 2em; /* More padding inside */
+  min-height: 30vh;
 }
 
-/* Stile Schede */
+/* Tab Content Panes */
 .tab-pane { display: none; }
-.tab-pane.active { display: block; }
+.tab-pane.active { display: block; animation: fadeIn 0.4s ease; }
 
-/* Stile Albero di File */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- File/Folder Tree Styling --- */
 .dynamic-content-container ul {
   list-style-type: none;
   padding-left: 0;
   margin: 0;
 }
-.dynamic-content-container li { margin-bottom: 0.3em; }
+.dynamic-content-container li { 
+  margin-bottom: 0.5em; /* Slightly more space */
+}
 
 .folder-toggle {
-  font-size: 1.1rem;
+  font-size: 1.2rem; /* Larger folder name */
   font-weight: 600;
-  color: #333;
+  color: var(--black);
   cursor: pointer;
-  padding: 0.2em 0;
+  padding: 0.4em 0;
+  display: inline-block; /* Allows hover effect on text */
+  transition: color 0.2s ease;
+}
+.folder-toggle:hover {
+  color: var(--blue);
 }
 .folder-toggle::before {
-  content: '▶';
+  content: '▸'; /* Use a cleaner arrow */
   display: inline-block;
-  font-size: 0.7em;
-  margin-right: 0.5em;
-  transition: transform 0.2s ease;
+  font-size: 0.9em;
+  margin-right: 0.6em;
+  transition: transform 0.2s ease-out;
+  color: var(--text-grey); /* Grey arrow */
 }
-.folder-toggle:not(.collapsed)::before { transform: rotate(90deg); }
+.folder-toggle:not(.collapsed)::before {
+  transform: rotate(90deg);
+}
 
 .folder-content {
-  padding-left: 1.2em;
-  border-left: 1px solid #eee;
+  padding-left: 1.5em; /* Indentation */
+  margin-left: 0.4em; /* Align with arrow */
+  border-left: 2px solid var(--light-grey);
   max-height: 1000px;
   overflow: hidden;
-  transition: max-height 0.3s ease-out;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smoother animation */
 }
 .folder-content.collapsed {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.2s ease-in;
+  transition: max-height 0.2s cubic-bezier(0.4, 0, 1, 1);
 }
 
-/* Stile File */
+/* File Item Styling */
 .dynamic-content-container p {
-  background: #f9f9f9;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  padding: 0.5em 1em;
+  background: none; /* Transparent background */
+  border: none;
+  border-radius: 6px;
+  padding: 0.5em 0.8em; /* Adjust padding */
   margin: 0 0 0.3em 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: background-color 0.2s ease;
 }
-.dynamic-content-container p:hover { border-color: #ccc; }
-.dynamic-content-container p a { color: #333; font-weight: 500; }
-.dynamic-content-container p a::before { content: '📄'; margin-right: 0.5em; }
+.dynamic-content-container p:hover {
+  background-color: var(--grey); /* Light grey on hover */
+}
+.dynamic-content-container p a {
+  color: var(--black);
+  font-weight: 500;
+  display: inline-flex; /* Align icon and text */
+  align-items: center;
+}
+.dynamic-content-container p a:hover {
+  color: var(--blue);
+  text-decoration: none;
+}
+/* File icon using SVG for sharpness */
+.dynamic-content-container p a::before {
+  content: '';
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.6em;
+  background-color: currentColor; /* Inherit link color */
+  /* Simple document icon */
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.75 0A1.75 1.75 0 002 1.75v12.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 14.25V4.56L10.44.25H3.75zM12.5 5h-2.25A1.25 1.25 0 019 3.75V1.5h-.057L12.5 5.057V5zM3.5 1.75c0-.138.112-.25.25-.25h6.505L12.5 3.755v10.495A.25.25 0 0112.25 14.5h-8.5a.25.25 0 01-.25-.25V1.75z"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.75 0A1.75 1.75 0 002 1.75v12.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 14.25V4.56L10.44.25H3.75zM12.5 5h-2.25A1.25 1.25 0 019 3.75V1.5h-.057L12.5 5.057V5zM3.5 1.75c0-.138.112-.25.25-.25h6.505L12.5 3.755v10.495A.25.25 0 0112.25 14.5h-8.5a.25.25 0 01-.25-.25V1.75z"/></svg>');
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-size: contain;
+}
 
 .tag-versione {
-  font-size: 0.75rem;
-  color: #777;
-  margin-left: 0.5em;
+  font-size: 0.8rem; /* Smaller tag */
+  color: var(--text-grey);
+  margin-left: 0.8em;
   white-space: nowrap;
+  background-color: var(--light-grey); /* Subtle background */
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
 }
 
 /* --- Footer --- */
 footer {
-  padding: 1em;
+  padding: 1.5em 1em; /* More padding */
   text-align: center;
-  font-size: 0.85rem;
-  color: #777;
+  font-size: 0.9rem; /* Slightly larger footer text */
+  color: var(--text-grey);
   margin-top: auto;
-  border-top: 1px solid #ddd;
-  background-color: #fff;
+  border-top: 1px solid var(--light-grey);
+  background-color: var(--white);
 }
 
 /* --- Media Queries (Mobile) --- */
-@media (max-width: 750px) { /* Aumentato breakpoint per header */
+@media (max-width: 800px) { /* Adjusted breakpoint */
+  body { font-size: 16px; } /* Reset font size for mobile */
   header {
     height: auto;
     flex-direction: column;
-    padding: 0.5em;
-    gap: 0.5em;
+    padding: 0.8em;
+    gap: 0.8em;
   }
   .header-logo-link { height: 2.5em; }
   #tab-buttons {
-    order: 1; /* Tabs sotto logo */
+    order: 1; 
     width: 100%;
     justify-content: center;
-    border-top: 1px solid #eee;
-    padding-top: 0.5em;
+    border-top: 1px solid var(--light-grey);
+    padding-top: 0.8em;
+    margin: 0;
   }
   .tab-button {
-      font-size: 0.9rem; /* Testo più piccolo su mobile */
-      padding: 0.4em 0.8em;
+      font-size: 1rem; /* Slightly larger tabs on mobile */
+      padding: 0.5em 0.8em;
   }
   .github-link {
-    position: absolute;
-    top: calc( (4.5em - 24px) / 2 ); /* Centra verticalmente rispetto all'header originale */
-    right: 1em;
+    position: absolute; /* Keep GitHub logo top-right */
+    top: calc(50% - 12px); /* Center vertically in the original header area */
+    right: 1.5em;
     height: 24px;
   }
   main {
-    margin: 1em auto;
-    padding: 0 0.5em;
+    margin: 1.5em auto;
+    padding: 0 1em;
   }
-  #tab-content { padding: 1em; }
+  #tab-content { padding: 1.5em; }
 }
