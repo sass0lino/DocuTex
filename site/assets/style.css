@@ -53,13 +53,14 @@ header {
 }
 
 #header-logo {
-  margin: 0;
-  height: 4em;
-  line-height: 4em;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  text-decoration: none;
+  display: inline-block;
+  height: 3em; /* Altezza logo */
+  line-height: 0;
+}
+#header-logo img {
+  height: 100%;
+  width: auto;
+  display: block;
 }
 
 .content-wrapper {
@@ -115,7 +116,6 @@ header {
   min-height: 5em; 
 }
 
-/* --- LOGICA DI VISUALIZZAZIONE CHIAVE --- */
 .tab-pane {
   display: none; /* Nascosto di default */
   animation: fadeIn 0.3s ease;
@@ -123,17 +123,17 @@ header {
 .tab-pane.active {
   display: block; /* Mostrato solo se attivo */
 }
-/* --- FINE LOGICA VISUALIZZAZIONE --- */
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Stile Albero di File (invariato) */
+/* Stile Albero di File */
 .dynamic-content-container ul {
-  list-style-type: none;
-  padding-left: 0;
+  list-style-type: none; /* Nasconde puntini */
+  padding-left: 0;      /* Rimuove indentazione */
+  margin: 0;            /* Rimuove margini */
 }
 .dynamic-content-container li {
   margin-bottom: 0.25em;
@@ -217,14 +217,38 @@ header {
   white-space: nowrap;
 }
 
+/* Footer */
 footer {
-  padding: 1.5em 1em;
+  padding: 1em;
   text-align: center;
   font-size: 0.85rem;
   color: var(--light-text);
   margin-top: 1.5em;
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+}
+.footer-content {
+  max-width: 60em;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.github-link {
+  display: inline-block;
+}
+.github-logo {
+  height: 24px;
+  width: 24px;
+  vertical-align: middle;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+.github-link:hover .github-logo {
+  opacity: 1;
 }
 
+/* Media Queries (Mobile) */
 @media (max-width: 600px) {
   .content-wrapper {
     margin: 1em auto;
@@ -250,5 +274,10 @@ footer {
 
   #tab-content {
     padding: 1em;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    gap: 0.5em;
   }
 }
