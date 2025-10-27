@@ -1,0 +1,264 @@
+/* Import dei font da Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+/* Variabili CSS globali (Temi) */
+:root {
+  --sectionLinkColor: #ffd101; /* Giallo accento */
+  --background: #1a1a1a; /* Sfondo scuro */
+  --bgHeaderLinksLastUpdate: #2d2d2d; /* Sfondo header/blocchi */
+  --txtcolor: white; /* Testo principale */
+  --tagLastUpdateColor: gray; /* Testo secondario (tag) */
+}
+
+body,
+html {
+  /* Evita che l'header copra i titoli quando si clicca un link ancora */
+  scroll-padding-top: 4em; 
+  margin: 0;
+  padding: 0;
+  font-family: "Lexend", Roboto, sans-serif;
+  font-size: 1.2em;
+  font-weight: bold;
+  background-color: var(--background);
+  color: var(--txtcolor);
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.4rem; }
+
+a {
+  color: var(--sectionLinkColor);
+  text-decoration: underline;
+  border-radius: 3px;
+}
+
+/* Accessibilità: Stile per il focus (navigazione da tastiera) */
+a:focus {
+  outline: 2px solid var(--sectionLinkColor);
+  outline-offset: 2px;
+}
+
+a span.monospace {
+  font-family: "Roboto Mono", monospace;
+}
+
+/* --- Header e Navigazione --- */
+header {
+  padding: 0 1em;
+  position: fixed; /* Header fisso in alto */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 7em;
+  background-color: var(--bgHeaderLinksLastUpdate);
+  transition-duration: 1s; /* Animazione altezza */
+}
+
+/* Classe aggiunta da JS con lo scroll */
+header.scrolled {
+  height: 4em;
+}
+
+#header-logo {
+  margin: 1em 0em;
+  height: 5em;
+  transition-duration: 1s;
+  text-decoration: none;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--sectionLinkColor);
+}
+
+/* Classe aggiunta da JS con lo scroll */
+#header-logo.scrolled-logo {
+  margin: 0.5em 0em;
+  height: 3em;
+  font-size: 1.8rem;
+  line-height: 1.8em; /* Per centrare il testo rimpicciolito */
+}
+
+nav {
+  max-width: 40em;
+  margin: auto;
+  padding: 0em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bgHeaderLinksLastUpdate);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* Stile per la navigazione <ul> creata da JS */
+#nav-navigation {
+  display: flex;
+  list-style-type: none; /* Rimuove i pallini */
+  margin: 0;
+  padding: 0;
+  margin-left: 1em;
+}
+
+#nav-navigation li {
+  padding: 0 0.5em; /* Spazio tra i link */
+}
+
+#nav-navigation a {
+  text-decoration: none;
+  color: var(--background);
+  padding: 7px 15px;
+  display: inline-block;
+  margin: 0px;
+  border-radius: 1.5em; /* Stile a "pillola" */
+  background-color: var(--sectionLinkColor);
+}
+
+/* Stile hover e focus per i link di navigazione */
+#nav-navigation a:hover,
+#nav-navigation a:focus {
+  background-color: #fbe26d;
+  color: #201d0e;
+  outline: none; /* L'outline è gestito dal cambio colore */
+}
+
+/* --- Contenuto Principale --- */
+
+/* Classe aggiunta da JS solo alla prima sezione dinamica */
+.firstSection {
+  padding-top: 7em;
+}
+
+section {
+  max-width: 40em;
+  margin: auto;
+  padding: 1em 3em;
+}
+
+section h1,
+section h2 {
+  text-align: left;
+  border-radius: 1em;
+  color: var(--sectionLinkColor);
+}
+
+/* --- Stili per liste <ul> e <li> generate da JS --- */
+.dynamic-content-container ul {
+  list-style-type: none;
+  padding-left: 1.5em;
+  border-left: 2px solid var(--bgHeaderLinksLastUpdate);
+}
+
+.dynamic-content-container li {
+  margin-bottom: 0.5em;
+}
+
+/* Titoli delle sottocartelle (es. "Documenti Esterni") */
+.dynamic-content-container h3 {
+  color: #ccc;
+  font-size: 1.3rem;
+  margin-bottom: 0.5em;
+  margin-top: 1em;
+}
+
+/* Stile "pillola" per i link ai file */
+.dynamic-content-container p {
+  background: linear-gradient(to right, var(--sectionLinkColor) 0.8%, transparent 0.8%);
+  background-color: var(--bgHeaderLinksLastUpdate);
+  border-radius: 8px;
+  padding: 0.5em 1em;
+  transition: background-color 0.3s;
+  margin: 0;
+}
+
+.dynamic-content-container p:hover {
+  background-color: #333333;
+}
+
+/* Accessibilità: Applica lo stile hover se il link interno ha il focus */
+.dynamic-content-container p:has(a:focus) {
+  background-color: #333333;
+}
+
+.dynamic-content-container p a {
+  color: var(--txtcolor);
+  text-decoration: none;
+  display: block; /* Rende l'intero blocco <p> cliccabile */
+  width: 100%;
+}
+
+.dynamic-content-container p a:focus {
+  outline: none; /* L'outline lo gestisce il genitore p:has() */
+}
+
+/* Stile per i tag (versione, Gulpease) */
+.tag-versione {
+  font-size: 0.9em;
+  color: var(--tagLastUpdateColor);
+  margin-left: 1em;
+}
+
+/* --- Sezioni Statiche e Footer --- */
+#link-github {
+  word-break: break-word; /* Manda a capo i link lunghi */
+}
+
+footer {
+  padding: 2em;
+  text-align: center;
+  font-size: 0.8em;
+  color: var(--tagLastUpdateColor);
+  background-color: var(--bgHeaderLinksLastUpdate);
+  margin-top: 3em;
+}
+
+/* --- Media Queries (Adattamento Mobile) --- */
+@media (max-width: 67em) {
+  body,
+  html {
+    scroll-padding-top: 0em;
+  }
+  
+  /* Disabilita l'animazione scroll su mobile */
+  #header-logo.scrolled-logo {
+    margin: 1em 0em;
+    height: 5em;
+    font-size: 2.5rem;
+    line-height: normal;
+  }
+  .firstSection { padding-top: 0em; }
+  header {
+    height: 18.5em; /* Altezza fissa per contenere tutto */
+    position: relative; /* Rimuove il "fixed" */
+    transition: 0s;
+  }
+  header.scrolled {
+    height: 18.5em;
+    transition: 0s;
+  }
+  
+  /* Navigazione in colonna */
+  nav {
+    flex-direction: column;
+    position: relative;
+  }
+  section { padding: 0.5em; }
+  
+  #nav-navigation {
+    flex-direction: column;
+    align-items: center;
+    margin-left: 0em;
+  }
+  #nav-navigation li { margin: 0.5em 0em; }
+}
+
+@media (max-width: 29em) {
+  #header-logo {
+    max-width: 100%;
+    height: auto;
+  }
+  section h1 { font-size: 2rem; }
+}
