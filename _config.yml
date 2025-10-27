@@ -1,2 +1,2 @@
 theme: null
-include: ["site/"]
+include: ["/site"]
