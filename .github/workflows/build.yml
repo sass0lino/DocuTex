@@ -25,9 +25,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # ==========================================================
-      # STEP 1 - Rilevazione modifiche (differenze dall’ultima build)
-      # ==========================================================
       - name: Step 1 - Detect Changed Files
         id: detect
         run: |
@@ -67,10 +64,6 @@ jobs:
           if [ -n "$changed_pdfs" ]; then
             echo "$changed_pdfs" | while IFS= read -r pdf; do
               [ -z "$pdf" ] && continue
-              if [[ "$pdf" == *"firmato.pdf" || "$pdf" == *"signed.pdf" ]]; then
-                echo "Skipping signed PDF: $pdf"
-                continue
-              fi
               src_tex=$(echo "$pdf" | sed 's|^docs/|src/|; s|\.pdf$|\.tex|')
               echo "$src_tex" >> pdfs_to_remove.txt
             done
@@ -80,22 +73,14 @@ jobs:
           echo "--- Files to recompile or remove ---"
           cat pdfs_to_remove.txt || echo "(none)"
 
-      # ==========================================================
-      # STEP 2 - Pulizia: elimina PDF vecchi o orfani
-      # ==========================================================
       - name: Step 2 - Cleanup
         run: |
           echo "--- Cleaning up obsolete or orphaned PDFs ---"
 
-          # Rimuove i PDF corrispondenti ai file modificati
           if [ -s pdfs_to_remove.txt ]; then
             while IFS= read -r texfile; do
               [ -z "$texfile" ] && continue
               pdf_file=$(echo "$texfile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
-              if [[ "$pdf_file" == *"firmato.pdf" || "$pdf_file" == *"signed.pdf" ]]; then
-                echo "Skipping signed PDF: $pdf_file"
-                continue
-              fi
               if [ -f "$pdf_file" ]; then
                 echo "Deleting outdated PDF: $pdf_file"
                 rm -f "$pdf_file"
@@ -103,7 +88,6 @@ jobs:
             done < pdfs_to_remove.txt
           fi
 
-          # Rimuove i PDF orfani (senza corrispettivo .tex)
           if [ -d "docs" ]; then
             find docs -type f -name "*.pdf" | while IFS= read -r pdf; do
               if [[ "$pdf" == *"firmato.pdf" || "$pdf" == *"signed.pdf" ]]; then
@@ -117,9 +101,6 @@ jobs:
             done
           fi
 
-      # ==========================================================
-      # STEP 3 - Crea lista dei file da compilare
-      # ==========================================================
       - name: Step 3 - Build Compile List
         id: prepare
         run: |
@@ -127,7 +108,6 @@ jobs:
 
           > compile_list.txt
 
-          # Aggiunge tutti i .tex principali che non hanno PDF corrispondente
           find src -type f -name "*.tex" | grep -v '/contenuti/' | while IFS= read -r texfile; do
             pdf_file=$(echo "$texfile" | sed 's|^src/|docs/|; s|\.tex$|\.pdf|')
             if [ ! -f "$pdf_file" ]; then
@@ -144,9 +124,6 @@ jobs:
             echo "compile_needed=false" >> $GITHUB_OUTPUT
           fi
 
-      # ==========================================================
-      # STEP 4 - Compilazione e generazione report
-      # ==========================================================
       - name: Step 4 - Compile and Generate Report
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
@@ -204,9 +181,6 @@ jobs:
             echo "💡 Nessun PDF compilato" >> report.md
           fi
 
-      # ==========================================================
-      # STEP 5 - Commit finale
-      # ==========================================================
       - name: Step 5 - Commit Results
         run: |
           echo "--- Committing results ---"
