@@ -1,0 +1,67 @@
+{
+  "Candidatura": [
+    {
+      "type": "file",
+      "name": " signed",
+      "path": "././docs/Candidatura/ signed.pdf",
+      "version": null,
+      "gulpease": null
+    },
+    {
+      "type": "file",
+      "name": "mainn",
+      "path": "././docs/Candidatura/mainn.pdf",
+      "version": null,
+      "gulpease": null
+    },
+    {
+      "type": "folder",
+      "name": "Verbali",
+      "children": [
+        {
+          "type": "folder",
+          "name": "Verbali Interni",
+          "children": [
+            {
+              "type": "file",
+              "name": "verbale interno 14-10-25",
+              "path": "././docs/Candidatura/Verbali/Verbali Interni/verbale_interno_14-10-25.pdf",
+              "version": null,
+              "gulpease": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 20-10-25",
+              "path": "././docs/Candidatura/Verbali/Verbali Interni/verbale_interno_20-10-25.pdf",
+              "version": null,
+              "gulpease": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 15-10-25",
+              "path": "././docs/Candidatura/Verbali/Verbali Interni/verbale_interno_15-10-25.pdf",
+              "version": null,
+              "gulpease": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 14-10-25 copia",
+              "path": "././docs/Candidatura/Verbali/Verbali Interni/verbale_interno_14-10-25 copia.pdf",
+              "version": null,
+              "gulpease": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "template": [
+    {
+      "type": "file",
+      "name": "template",
+      "path": "././docs/template/template.pdf",
+      "version": null,
+      "gulpease": null
+    }
+  ]
+}
