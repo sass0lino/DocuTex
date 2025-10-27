@@ -8,41 +8,43 @@ body {
   flex-direction: column;
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; /* Font di sistema */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   font-size: 16px;
-  background-color: #f4f4f4; /* Sfondo grigio chiaro */
-  color: #333; /* Testo scuro */
+  background-color: #f4f4f4;
+  color: #333;
   line-height: 1.6;
 }
 .page-wrapper {
-  flex-grow: 1; /* Spinge il footer in basso */
+  flex-grow: 1;
 }
 
-/* --- Tipografia Semplice --- */
+/* --- Tipografia --- */
 h1 { font-size: 1.8rem; color: #333; margin-bottom: 0.5em; }
 h3 { font-size: 1.1rem; color: #555; margin-bottom: 0.3em; }
 a { color: #007bff; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* --- Header con Flexbox --- */
+/* --- Header con Flexbox & Allineamento Verticale --- */
 header {
   display: flex;
-  justify-content: space-between; /* Spinge logo sx, github dx, tabs in mezzo */
-  align-items: center; /* Allinea verticalmente */
-  padding: 0.5em 1em; /* Padding ridotto */
-  background-color: #ffffff; /* Sfondo bianco */
-  border-bottom: 1px solid #ddd; /* Bordo sottile */
-  height: 4em; /* Altezza fissa */
+  justify-content: space-between;
+  align-items: center; /* Allinea verticalmente gli elementi */
+  padding: 0 1em;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ddd;
+  height: 4.5em; /* Leggermente più alto per accomodare meglio */
   box-sizing: border-box;
 }
 
-/* Logo Team (a sinistra) */
+/* Logo Team (SVG) */
 .header-logo-link {
-  height: 3em; /* Altezza logo */
-  flex-shrink: 0; /* Non rimpicciolire */
+  height: 2.5em; /* Altezza desiderata per il logo SVG */
+  flex-shrink: 0;
+  display: flex; /* Necessario per far scalare bene SVG */
+  align-items: center;
 }
 .header-logo-img {
-  height: 100%;
+  height: 100%; /* SVG riempie l'altezza del link */
   width: auto;
   display: block;
 }
@@ -50,23 +52,28 @@ header {
 /* Pulsanti Schede (al centro) */
 #tab-buttons {
   display: flex;
-  justify-content: center; /* Centra i pulsanti */
-  flex-grow: 1; /* Occupa lo spazio disponibile */
-  flex-wrap: wrap; /* Manda a capo se non ci stanno */
-  gap: 0.5em; /* Spazio tra i pulsanti */
+  justify-content: center;
+  flex-grow: 1;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  /* Rimuove margini extra che potrebbero sfasare l'allineamento */
+  margin: 0; 
+  padding: 0; 
 }
 
 .tab-button {
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 0.95rem; /* Leggermente più piccolo per allinearsi meglio */
   font-weight: 500;
   color: #555;
   background: none;
   border: none;
-  padding: 0.5em 1em;
+  /* Padding verticale per dare altezza simile ai loghi */
+  padding: 0.6em 1em; 
   cursor: pointer;
-  border-bottom: 2px solid transparent; /* Spazio per la linea attiva */
+  border-bottom: 3px solid transparent; /* Aumentato spessore per visibilità */
   transition: color 0.2s ease, border-color 0.2s ease;
+  line-height: 1.2; /* Aiuta con l'altezza visiva */
 }
 .tab-button:hover {
   color: #000;
@@ -74,16 +81,18 @@ header {
 .tab-button.active {
   color: #007bff;
   font-weight: 600;
-  border-bottom-color: #007bff; /* Linea blu sotto attivo */
+  border-bottom-color: #007bff;
 }
 
 /* Logo GitHub (a destra) */
 .github-link {
-  height: 28px;
-  flex-shrink: 0; /* Non rimpicciolire */
+  height: 2em; /* Altezza simile al logo team */
+  flex-shrink: 0;
+  display: flex; /* Necessario per centrare SVG/IMG */
+  align-items: center;
 }
 .github-logo {
-  height: 100%;
+  height: 100%; /* Logo riempie l'altezza del link */
   width: auto;
   display: block;
   opacity: 0.7;
@@ -95,8 +104,8 @@ header {
 
 /* --- Contenuto Principale --- */
 main {
-  max-width: 60em; /* Larghezza massima contenuto */
-  margin: 1.5em auto; /* Centra e dà spazio sopra/sotto */
+  max-width: 60em;
+  margin: 1.5em auto;
   padding: 0 1em;
 }
 
@@ -109,57 +118,49 @@ main {
 }
 
 /* Stile Schede */
-.tab-pane {
-  display: none;
-}
-.tab-pane.active {
-  display: block;
-}
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
 
-/* Stile Albero di File (molto minimale) */
+/* Stile Albero di File */
 .dynamic-content-container ul {
   list-style-type: none;
   padding-left: 0;
   margin: 0;
 }
-.dynamic-content-container li {
-  margin-bottom: 0.3em;
-}
+.dynamic-content-container li { margin-bottom: 0.3em; }
 
 .folder-toggle {
   font-size: 1.1rem;
   font-weight: 600;
   color: #333;
   cursor: pointer;
-  padding: 0.2em 0; /* Poco padding */
+  padding: 0.2em 0;
 }
 .folder-toggle::before {
-  content: '▶'; /* Triangolo chiuso */
+  content: '▶';
   display: inline-block;
   font-size: 0.7em;
   margin-right: 0.5em;
   transition: transform 0.2s ease;
 }
-.folder-toggle:not(.collapsed)::before {
-  transform: rotate(90deg); /* Triangolo aperto */
-}
+.folder-toggle:not(.collapsed)::before { transform: rotate(90deg); }
 
 .folder-content {
   padding-left: 1.2em;
-  border-left: 1px solid #eee; /* Bordo leggero */
+  border-left: 1px solid #eee;
   max-height: 1000px;
   overflow: hidden;
   transition: max-height 0.3s ease-out;
 }
 .folder-content.collapsed {
   max-height: 0;
-  overflow: hidden; /* Nasconde completamente */
+  overflow: hidden;
   transition: max-height 0.2s ease-in;
 }
 
 /* Stile File */
 .dynamic-content-container p {
-  background: #f9f9f9; /* Sfondo leggermente grigio */
+  background: #f9f9f9;
   border: 1px solid #eee;
   border-radius: 4px;
   padding: 0.5em 1em;
@@ -168,17 +169,9 @@ main {
   justify-content: space-between;
   align-items: center;
 }
-.dynamic-content-container p:hover {
-  border-color: #ccc;
-}
-.dynamic-content-container p a {
-  color: #333;
-  font-weight: 500;
-}
-.dynamic-content-container p a::before {
-  content: '📄';
-  margin-right: 0.5em;
-}
+.dynamic-content-container p:hover { border-color: #ccc; }
+.dynamic-content-container p a { color: #333; font-weight: 500; }
+.dynamic-content-container p a::before { content: '📄'; margin-right: 0.5em; }
 
 .tag-versione {
   font-size: 0.75rem;
@@ -193,32 +186,34 @@ footer {
   text-align: center;
   font-size: 0.85rem;
   color: #777;
-  margin-top: auto; /* Necessario per sticky footer */
+  margin-top: auto;
   border-top: 1px solid #ddd;
   background-color: #fff;
 }
 
 /* --- Media Queries (Mobile) --- */
-@media (max-width: 700px) {
+@media (max-width: 750px) { /* Aumentato breakpoint per header */
   header {
-    height: auto; /* Altezza flessibile */
-    flex-direction: column; /* Impila logo, tabs, github */
+    height: auto;
+    flex-direction: column;
     padding: 0.5em;
-    gap: 0.5em; /* Spazio tra gli elementi impilati */
+    gap: 0.5em;
   }
-  .header-logo-link {
-    height: 2.5em; /* Logo più piccolo */
-  }
+  .header-logo-link { height: 2.5em; }
   #tab-buttons {
-    order: 1; /* Mette i tabs dopo il logo */
-    width: 100%; /* Occupa tutta la larghezza */
+    order: 1; /* Tabs sotto logo */
+    width: 100%;
     justify-content: center;
-    border-top: 1px solid #eee; /* Linea sopra i tabs */
+    border-top: 1px solid #eee;
     padding-top: 0.5em;
   }
+  .tab-button {
+      font-size: 0.9rem; /* Testo più piccolo su mobile */
+      padding: 0.4em 0.8em;
+  }
   .github-link {
-    position: absolute; /* Posiziona il logo github in alto a dx */
-    top: 0.8em;
+    position: absolute;
+    top: calc( (4.5em - 24px) / 2 ); /* Centra verticalmente rispetto all'header originale */
     right: 1em;
     height: 24px;
   }
@@ -226,7 +221,5 @@ footer {
     margin: 1em auto;
     padding: 0 0.5em;
   }
-  #tab-content {
-    padding: 1em;
-  }
+  #tab-content { padding: 1em; }
 }

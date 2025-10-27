@@ -130,8 +130,7 @@ function buildHtmlFromTree(nodes) {
     } else if (node.type === 'folder') {
       html += `
         <li>
-          <h3 class="folder-toggle">${node.name}</h3>
-          <div class="folder-content collapsed"> ${buildHtmlFromTree(node.children)} 
+          <h3 class="folder-toggle collapsed">${node.name}</h3> <div class="folder-content collapsed"> ${buildHtmlFromTree(node.children)} 
           </div>
         </li>
       `;
@@ -149,8 +148,7 @@ function addCollapseListeners() {
   const toggles = document.querySelectorAll('.folder-toggle');
   
   toggles.forEach(toggle => {
-    // Aggiunge la classe iniziale per assicurarsi che sia chiuso
-    toggle.classList.add('collapsed'); 
+    // Rimosso .add('collapsed') qui, lo aggiungiamo in buildHtmlFromTree
 
     toggle.addEventListener('click', () => {
       const content = toggle.nextElementSibling;
@@ -161,11 +159,5 @@ function addCollapseListeners() {
         console.warn("Elemento 'folder-content' non trovato dopo il toggle:", toggle);
       }
     });
-    
-    // Assicura che anche il contenuto inizi chiuso
-    const content = toggle.nextElementSibling;
-    if (content && content.classList.contains('folder-content')) {
-       content.classList.add('collapsed');
-    }
   });
 }
