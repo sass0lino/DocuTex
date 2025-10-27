@@ -10,8 +10,8 @@
    ```
    - Potrai disporre le immagini condivise da tutti i documenti (come il logo) nella cartella `src/immagini/`, e salvare le immagini specifiche dei progetti nelle rispettive cartelle dedicate (`.../progetto/contenuti/` o `.../progetto/contenuti/immagini/`).
    - Infine utilizza il seguente comando per includere l'immagine: `\includegraphics{logo.jpg}` (non serve specificare il percorso)
-5) Se volessimo ricompilare tutti i documenti del repository, basterebbe eliminare la cartella docs.
-6) Attenzione: se modificate una immagine mantenendo lo stesso nome del file (e senza modificare nulla nel rispettivo latex), la ricompilazione non avviene in automatico, dunque bisognerá forzarla eliminando i file pdf che vogliamo ricompilare.
+5) Attenzione: se modificate una immagine mantenendo lo stesso nome del file immagine, la ricompilazione non avverrá in automatico, dunque bisognerá forzarla eliminando il file pdf che vogliamo ricompilare.
+6) Potete caricare i file pdf firmati, caricandoli a mano in `docs/` dopo averli rinominati con un nome che termina con `*firmato.pdf` oppure `*signed.pdf` (esempio: `verbale_firmato.pdf`). Questi file infatti pur essendo "orfani" verranno ignorati (e quindi non eliminati) durante il controllo di integritá tra `src/` e `docs/` grazie al loro nome specifico.
 7) Dettaglio da evidenziare: la build si attiverà anche se elimini, modifichi o aggiungi un file .pdf da docs/. Questo accade perché il sistema deve garantire che i PDF in docs/ siano sempre e solo quelli generati dalla build stessa e non modificati a mano (quindi li rigenera o li elimina se necessario).
 8) Report sui risultati di compilazione della build: potete controllare quali file sono stati effettivamente compilati correttamente, e quali hanno fallito la compilazione, nel file `report.md` (si aggiorna ad ogni build chiaramente).
 
@@ -19,54 +19,41 @@
 
 L’obiettivo della build implementata con github action è di compilare automaticamente i progetti latex caricati nel repository, mantenendo **coerenza e consistenza** tra i file sorgenti latex e i rispettivi pdf.
 Nello specifico la build garantisce che:
-- `src/` e `docs/` sono perfettamente allineati;  
+- `src/` e `docs/` siano perfettamente allineati;  
 - ogni file pdf presente in `docs/` é generato esclusivamente dalla build di github action
 - i documenti latex che falliscono la compilazione non avranno il rispettivo documento pdf (nemmeno la versione precedente alla build)
-- non esistono PDF orfani o obsoleti;  
+- non esistono PDF orfani o obsoleti;
+
+Attenzione: tutto ció non vale per i file firmati, dovranno essere gestiti manualmente.
 
 # Struttura logica del processo
 
-### **STEP 1 – Pulizia e Consistenza**
-Scopo: rimuovere ogni elemento non coerente o non generato dal sistema:
-1. Elimina i **PDF orfani**, ossia presenti in `docs/` ma senza `.tex` corrispondente.  
-2. Rimuove i **PDF aggiunti o modificati manualmente** dagli utenti.  
+### Step 1 – Rilevazione modifiche
+- Viene individuato l’ultimo commit creato dalla build automatica (`LAST_COMPILED`) e confrontato con `HEAD`.
+- Dal diff si ottiene una lista unica di PDF da rigenerare, composta da:
+  - tutti i `.tex` modificati/aggiunti/rinominati (se un file è in una cartella `contenuti/`, si considera il relativo file padre nella stessa directory);
+  - tutti i `.pdf` in `docs/` modificati/aggiunti/rinominati manualmente.
 
-### **STEP 2 – Analisi delle Differenze e Preparazione della Lista di Compilazione**
-Scopo: creazione della `compile_list.txt` dei file da compilare:
-1. Determina l’**ultimo commit automatico di build** (`Automated LaTeX build`), che rappresenta lo stato coerente più recente.
-2. Confronta (`git diff`) i cambiamenti rispetto a quel commit:
-   - trova tutti i file `.tex` **modificati, aggiunti o rinominati**;  
-   - se un file modificato è in una cartella `contenuti/`, risale al suo file “padre”.
-3. Esegue uno **scanner di integrità** per individuare i `.tex` “padre” che **non hanno un PDF corrispondente** in `docs/`.  
-4. I risultati dei punti 2 e 3 vengono **uniti nella lista finale** (`compile_list.txt`) dei file da compilare.
+### Step 2 – Pulizia
+- Si eliminano i PDF corrispondenti agli elementi identificati nello Step 1 (se esistono).
+- Si eliminano i PDF orfani (`.pdf` presenti in `docs/` senza il rispettivo `.tex` in `src/`).
+  - Eccezione: i file che terminano con `firmato.pdf` o `signed.pdf` non vengono eliminati se orfani.
 
-### **STEP 3 – Compilazione Automatica e Generazione del Report**
-Scopo: ricompilare i file identificati e aggiornare il report del repository:
-1. Elimina i PDF esistenti relativi ai file che verranno ricompilati.  
-2. Compila i `.tex` all’interno di un container Docker (`texlive-full`)  per garantire un ambiente stabile e identico per tutti (se la lista dei file da compilare è vuota (cioè tutto è già coerente), la build non scarica l'immagine docker per la compilazione dei file latex dato che sarebbe solo una perdita di tempo).
-3. Per ogni file `.tex`:
-   - se la compilazione riesce → sposta il PDF in `docs/`;
-   - se fallisce → registra l’errore nel log della build.  
-4. Genera un file `build_report.md` con:
-   - una riga iniziale che indica **il commit di base** usato per la compilazione:
-     ```
-     Compilazione basata su commit 7a4e1c2 (base: 7a4e1c2)
-     ```
-   - l’elenco dei file falliti (❌) con link alla build GitHub;
-   - l’elenco dei file compilati (✅) con link diretto ai PDF;
+### Step 3 – Creazione della lista di compilazione
+- Scansionando `src/` si genera un lista di file `.tex` da compilare (detta `compile_list.txt`), composta da tutti i file `.tex` in `src/` a cui manca il rispettivo `.pdf` in `docs/`. Nella scansione si escludono i file nelle cartelle `contenuti/`.
 
-### **STEP 4 – Commit Automatico dei Risultati**
-Scopo: salvare lo stato aggiornato e coerente del repository:
-1. Se sono stati generati o aggiornati PDF, crea un commit automatico: `Automated LaTeX build (base: <SHA>)` dove `<SHA>` è il commit della precedente build automatica ritenuta coerente.  
-2. Questo commit diventa il nuovo **punto di riferimento** per la prossima build (in pratica, ogni commit “Automated LaTeX build”rappresenta uno **snapshot coerente** tra `src/` e `docs/`).
+### Step 4 – Compilazione e report
+- I file in `compile_list.txt` vengono compilati con `latexmk` dentro l’immagine Docker `ghcr.io/xu-cheng/texlive-full:latest`.
+- Viene generato/aggiornato il `report.md` con:
+  - ✅ elenco dei `.pdf` compilati correttamente (con link ai file);
+  - ❌ elenco dei documenti che hanno fallito (con link alla build).
+- Se la lista è vuota, il report indicherá che non è stata necessaria alcuna compilazione.
+
+### Step 5 – Commit finale
+- Se sono stati generati o aggiornati PDF, il builder crea un commit automatico: `Automated LaTeX build (base: <SHA>)` dove `<SHA>` è il commit della precedente build automatica ritenuta coerente.  
+- Questo commit diventa il nuovo punto di riferimento per la prossima build (in pratica, ogni commit “Automated LaTeX build”rappresenta uno snapshot coerente tra `src/` e `docs/`
 
 # Informazioni di compilazione
-- **Compilatore:** `latexmk`  
-- **Ambiente:** Docker `ghcr.io/xu-cheng/texlive-full`
-
-# Da sistemare
-- commenti del file yaml
-- implementare l'autocompilazione anche in caso di modifica di immagini
-- generalizzare il sistema di build dei progetti multi-file eliminando il vincolo della cartella `contenuti/`
-
+- Compilatore: `latexmk`  
+- Ambiente: Docker `ghcr.io/xu-cheng/texlive-full`
 
