@@ -110,7 +110,7 @@ def build_file_tree(directory):
 
 
 if __name__ == "__main__":
-    directory_docs = './docs' 
+    directory_docs = '../docs' 
     output_json_file = './docs_tree.json' 
 
     print(f"Avvio scansione della cartella: {directory_docs}")
