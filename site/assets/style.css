@@ -1,53 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+/* Import del font "Inter" e "Roboto Mono" (definiti in index.html) */
 
+/* Palette di colori "Tecnica/Accademica"
+*/
 :root {
-  --primary-color: #007bff;
-  --text-color: #212529;
-  --light-text: #6c757d;
-  --background: #f8f9fa;
-  --card-bg: #ffffff;
-  --border-color: #dee2e6;
+  --primary-color: #2c3e50; /* Blu scuro desaturato */
+  --accent-color: #3498db;  /* Blu più acceso per i link */
+  --text-color: #333333;    /* Testo (quasi nero) */
+  --light-text: #7f8c8d;    /* Testo secondario (grigio) */
+  --background: #ecf0f1;  /* Sfondo (grigio chiarissimo) */
+  --card-bg: #ffffff;      /* Sfondo delle card (bianco) */
+  --border-color: #bdc3c7; /* Bordo sottile */
 }
 
+/* Impostazioni globali
+  Usa "Inter" come font di base.
+  Riduce l'altezza di linea e la dimensione del font per un look più denso.
+*/
 body,
 html {
   scroll-padding-top: 5em;
   scroll-behavior: smooth;
   margin: 0;
   padding: 0;
-  font-family: "Lexend", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 1.1em;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px; /* Dimensione base più compatta */
   font-weight: 400;
   background-color: var(--background);
   color: var(--text-color);
-  line-height: 1.6;
+  line-height: 1.5; /* Più denso (invece di 1.6) */
 }
 
-h1 { font-size: 2.2rem; }
-h2 { font-size: 1.8rem; }
-h3 { font-size: 1.3rem; }
+/* Tipografia */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--primary-color);
+  margin-block-start: 1em; /* Spazio ridotto sopra i titoli */
+  margin-block-end: 0.5em; /* Spazio ridotto sotto i titoli */
 }
 
+h1 { font-size: 2rem; }   /* Ridotto */
+h2 { font-size: 1.6rem; } /* Ridotto */
+h3 { font-size: 1.2rem; } /* Ridotto */
+
 a {
-  color: var(--primary-color);
+  color: var(--accent-color);
   text-decoration: none;
+  font-weight: 500;
   transition: color 0.2s ease;
 }
 a:hover {
   text-decoration: underline;
 }
 a:focus {
-  outline: 2px solid var(--primary-color);
+  outline: 2px solid var(--accent-color);
   outline-offset: 2px;
 }
 a span.monospace {
   font-family: "Roboto Mono", monospace;
 }
 
+/* --- Header e Navigazione --- */
 header {
   padding: 0 1em;
   position: fixed;
@@ -57,11 +69,11 @@ header {
   z-index: 100;
   height: 4em;
   background-color: var(--card-bg);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease;
 }
 header.scrolled {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 #header-logo {
@@ -74,14 +86,13 @@ header.scrolled {
   text-decoration: none;
 }
 #header-logo.scrolled-logo {
-  margin: 0;
+  /* Questa classe ora è inutile, ma la lasciamo per compatibilità */
   height: 4em;
-  font-size: 1.5rem;
   line-height: 4em;
 }
 
 nav {
-  max-width: 45em;
+  max-width: 50em; /* Un po' più largo */
   margin: auto;
   padding: 0;
   display: flex;
@@ -101,13 +112,14 @@ nav {
   padding: 0;
 }
 #nav-navigation li {
-  padding: 0 0.75em;
+  padding: 0 0.5em; /* Link più vicini */
 }
 #nav-navigation a {
   text-decoration: none;
   color: var(--light-text);
   font-weight: 500;
-  padding: 0.5em 0;
+  font-size: 0.95rem; /* Testo navigazione più piccolo */
+  padding: 0.5em 0.25em;
   position: relative;
   transition: color 0.2s ease;
 }
@@ -115,9 +127,10 @@ nav {
   color: var(--text-color);
   text-decoration: none;
 }
+/* Stile per lo Scroll-Spy */
 #nav-navigation a.active {
   color: var(--primary-color);
-  font-weight: 700;
+  font-weight: 600;
 }
 #nav-navigation a.active::after {
   content: '';
@@ -125,64 +138,86 @@ nav {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 3px;
+  height: 2px; /* Sottolineatura più sottile */
   background-color: var(--primary-color);
 }
 
+/* --- Contenuto Principale --- */
 .firstSection {
-  padding-top: 6em;
+  padding-top: 5em; /* Spazio ridotto */
+}
+
+main {
+  /* Layout "tecnico" a 2 colonne su desktop */
+  max-width: 70em;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 3fr 1fr; /* Colonna principale 3/4, contatti 1/4 */
+  gap: 2em; /* Spazio tra le colonne */
+  padding: 1em;
 }
 
 section {
-  max-width: 45em;
-  margin: auto;
-  padding: 2em 1em;
-  border-bottom: 1px solid var(--border-color);
+  max-width: 100%; /* Rimuove il max-width precedente */
+  padding: 1em; /* Spazio ridotto */
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1em;
 }
 section:last-of-type {
   border-bottom: none;
+}
+/* La sezione contatti la mettiamo in "sticky" (si blocca) */
+#contatti {
+  position: sticky;
+  top: 5em; /* Si blocca 1em sotto l'header */
 }
 
 section h1 {
   color: var(--primary-color);
   border-bottom: 2px solid var(--border-color);
   padding-bottom: 0.5em;
-  margin-bottom: 1em;
+  margin-top: 0; /* Rimuove spazio sopra il titolo della card */
+  margin-bottom: 0.75em;
 }
 
+/* --- Albero di File --- */
 .dynamic-content-container ul {
   list-style-type: none;
   padding-left: 0;
 }
 .dynamic-content-container li {
-  margin-bottom: 0.5em;
+  margin-bottom: 0.25em; /* Spazio ridotto */
 }
 
+/* Cartella Cliccabile */
 .folder-toggle {
   color: var(--text-color);
-  font-size: 1.3rem;
+  font-size: 1.1rem; /* Ridotto */
   font-weight: 600;
   cursor: pointer;
-  padding: 0.5em;
+  padding: 0.4em 0.5em; /* Spazio ridotto */
   border-radius: 5px;
   transition: background-color 0.2s ease;
 }
 .folder-toggle:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--background);
 }
 .folder-toggle::before {
   content: '▼';
   display: inline-block;
-  font-size: 0.8em;
-  margin-right: 0.75em;
-  transition: transform 0.3s ease;
+  font-size: 0.7em;
+  margin-right: 0.5em;
+  transition: transform 0.2s ease;
 }
 .folder-toggle.collapsed::before {
   transform: rotate(-90deg);
 }
 
+/* Contenitore Collassabile */
 .folder-content {
-  padding-left: 1.5em;
+  padding-left: 1.2em; /* Indentazione ridotta */
   border-left: 2px solid var(--border-color);
   max-height: 1000px;
   overflow: hidden;
@@ -193,21 +228,21 @@ section h1 {
   transition: max-height 0.2s ease-in;
 }
 
+/* "Card" dei file */
 .dynamic-content-container p {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-  border-radius: 8px;
-  padding: 0.75em 1em;
-  margin: 0;
+  border-radius: 5px;
+  padding: 0.6em 1em; /* Spazio ridotto */
+  margin: 0 0 0.25em 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 .dynamic-content-container p:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  border-color: var(--accent-color);
+  background: #fafafa;
 }
 
 .dynamic-content-container p a {
@@ -223,67 +258,83 @@ section h1 {
   outline: none;
 }
 .dynamic-content-container p:has(a:focus) {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
 }
 
 .tag-versione {
-  font-size: 0.8em;
+  font-size: 0.75rem; /* Ridotto */
   color: var(--light-text);
   background-color: var(--background);
   padding: 0.2em 0.5em;
   border-radius: 4px;
-  margin-left: 1em;
+  margin-left: 0.5em;
   white-space: nowrap;
 }
 
+/* --- Contatti e Footer --- */
 #link-github {
-  word-break: break-word;
+  word-break: break-all; /* Forza a capo i link lunghi */
 }
 
 footer {
-  padding: 2em 1em;
+  grid-column: 1 / -1; /* Occupa entrambe le colonne */
+  padding: 1.5em 1em;
   text-align: center;
-  font-size: 0.9em;
+  font-size: 0.85rem;
   color: var(--light-text);
   background-color: var(--card-bg);
   border-top: 1px solid var(--border-color);
-  margin-top: 3em;
+  margin-top: 1em;
 }
 
-@media (max-width: 67em) {
+/* --- Media Queries (Mobile) --- */
+@media (max-width: 700px) {
   body, html {
     scroll-padding-top: 0em;
-    font-size: 1em;
+    font-size: 16px; /* Mantiene leggibilità su mobile */
   }
   .firstSection { padding-top: 1em; }
   
   header {
     height: auto;
-    position: relative;
+    position: relative; /* Rimuove il "fixed" su mobile */
   }
   nav {
     flex-direction: column;
     position: relative;
-    padding-bottom: 1em;
+    padding-bottom: 0.5em;
   }
   #header-logo {
     height: 3.5em;
     line-height: 3.5em;
   }
   #nav-navigation {
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row; /* Mantiene i link in riga */
+    flex-wrap: wrap; /* Manda a capo se non ci stanno */
+    justify-content: center;
     width: 100%;
     margin-left: 0em;
   }
   #nav-navigation li {
-    margin: 0.2em 0em;
+    margin: 0.1em 0.25em;
   }
   #nav-navigation a.active::after {
-    display: none;
+    display: none; /* Nasconde la barra blu su mobile */
+  }
+  
+  /* Layout a 1 colonna su mobile */
+  main {
+    grid-template-columns: 1fr; /* Colonna singola */
+    padding: 0.5em;
+    gap: 1em;
   }
   section {
-    padding: 1.5em 1em;
+    padding: 1em;
+  }
+  /* Rimuove lo sticky su mobile */
+  #contatti {
+    position: relative;
+    top: auto;
   }
 }

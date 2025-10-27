@@ -8,6 +8,7 @@ document.addEventListener("scroll", function() {
   } else {
     header.classList.remove("scrolled");
   }
+  // Rimuove la logica del logo (non più usata)
   const logo = document.querySelector("#header-logo");
   logo.classList.remove("scrolled-logo");
 });
@@ -22,7 +23,6 @@ document.addEventListener("DOMContentLoaded", function() {
   const firstStaticLink = navContainer.querySelector('li');
   const firstStaticSection = mainContainer.querySelector('section');
 
-  // Legge il file JSON (che si trova in 'site/docs_tree.json')
   fetch('./docs_tree.json')
     .then(response => {
       if (!response.ok) throw new Error(`Errore di rete: ${response.statusText}`);
@@ -138,6 +138,7 @@ function addCollapseListeners() {
       content.classList.toggle('collapsed');
     });
     
+    // Inizia con le cartelle chiuse
     toggle.classList.add('collapsed');
     toggle.nextElementSibling.classList.add('collapsed');
   });
@@ -147,7 +148,7 @@ function addCollapseListeners() {
 /* PARTE 5: Funzione per "Scroll-Spy"                  */
 /* =================================================== */
 function addScrollSpy() {
-  const sections = document.querySelectorAll('section[id]');
+  const sections = document.querySelectorAll('main section[id]');
   const navLinks = document.querySelectorAll('a.nav-link');
 
   const onScroll = () => {
