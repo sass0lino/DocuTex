@@ -14,6 +14,7 @@
 6) Potete caricare i file pdf firmati, caricandoli a mano in `docs/` dopo averli rinominati con un nome che termina con `*firmato.pdf` oppure `*signed.pdf` (esempio: `verbale_firmato.pdf`). Questi file infatti pur essendo "orfani" verranno ignorati (e quindi non eliminati) durante il controllo di integritá tra `src/` e `docs/` grazie al loro nome specifico.
 7) Dettaglio da evidenziare: la build si attiverà anche se elimini, modifichi o aggiungi un file .pdf da docs/. Questo accade perché il sistema deve garantire che i PDF in docs/ siano sempre e solo quelli generati dalla build stessa e non modificati a mano (quindi li rigenera o li elimina se necessario).
 8) Report sui risultati di compilazione della build: potete controllare quali file sono stati effettivamente compilati correttamente, e quali hanno fallito la compilazione, nel file `report.md` (si aggiorna ad ogni build chiaramente).
+9) Evitiamo di utilizzare rebase in favore del merge per creare meno problemi.
 
 # Obiettivi della Build
 
@@ -56,4 +57,3 @@ Attenzione: tutto ció non vale per i file firmati, dovranno essere gestiti manu
 # Informazioni di compilazione
 - Compilatore: `latexmk`  
 - Ambiente: Docker `ghcr.io/xu-cheng/texlive-full`
-
