@@ -1,10 +1,12 @@
-# Report di compilazione del 2025-10-27T00:51:47+00:00
+# Report di compilazione del 2025-10-27T00:56:06+00:00
 
-Compilazione basata sul commit b5dbb175c0d550bf9ef1931919f83eea250ad8f2 (base: b5dbb17)
+Compilazione basata sul commit a80cba19798cb2b81cc1cbd1455cc001c4ac5692 (base: a80cba1)
 
 ## Falliti
 💡 Nessun errore di compilazione
 
 ## Compilati
-✅ [docs/Candidatura/Verbali/Verbali Interni/verbale_interno_15-10-25.pdf](docs/Candidatura/Verbali/Verbali%20Interni/verbale_interno_15-10-25.pdf)
+✅ [docs/template/template.pdf](docs/template/template.pdf)
+
+✅ [docs/Candidatura/mainn.pdf](docs/Candidatura/mainn.pdf)
 
