@@ -1,0 +1,46 @@
+{
+  "Candidatura": [
+    {
+      "type": "folder",
+      "name": "Verbali",
+      "children": [
+        {
+          "type": "folder",
+          "name": "Verbali Interni",
+          "children": [
+            {
+              "type": "file",
+              "name": "verbale interno 14-10-25",
+              "path": "./../docs/Candidatura/Verbali/Verbali Interni/verbale_interno_14-10-25.pdf",
+              "version": null,
+              "gulpease": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 20-10-25",
+              "path": "./../docs/Candidatura/Verbali/Verbali Interni/verbale_interno_20-10-25.pdf",
+              "version": null,
+              "gulpease": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 15-10-25",
+              "path": "./../docs/Candidatura/Verbali/Verbali Interni/verbale_interno_15-10-25.pdf",
+              "version": null,
+              "gulpease": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "RTB": [
+    {
+      "type": "file",
+      "name": "template",
+      "path": "./../docs/RTB/template.pdf",
+      "version": null,
+      "gulpease": null
+    }
+  ]
+}
