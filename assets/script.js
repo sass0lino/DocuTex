@@ -1,34 +1,29 @@
 /* =================================================== */
-/* PARTE 1: Effetto Scroll per l'Header (INVARIATO)    */
+/* PARTE 1: Effetto Scroll per l'Header (Ora solo ombra) */
 /* =================================================== */
-
 document.addEventListener("scroll", function() {
-  var header = document.querySelector("header");
-  var logo = document.querySelector("#header-logo");
-  
-  if (window.scrollY > 100) {
+  const header = document.querySelector("header");
+  const logo = document.querySelector("#header-logo");
+  // L'header.scrolled aggiunge solo un'ombra (vedi CSS)
+  if (window.scrollY > 10) {
     header.classList.add("scrolled");
-    logo.classList.add("scrolled-logo");
   } else {
     header.classList.remove("scrolled");
-    logo.classList.remove("scrolled-logo");
   }
+  // Rimuoviamo l'animazione del logo, non serve più
+  logo.classList.remove("scrolled-logo");
 });
 
 
 /* =================================================== */
 /* PARTE 2: Costruzione Dinamica della Pagina          */
 /* =================================================== */
-
 document.addEventListener("DOMContentLoaded", function() {
   
-  // Trova i contenitori principali
   const navContainer = document.getElementById("nav-navigation");
   const mainContainer = document.getElementById("main-content");
-  
-  // Trova i primi elementi statici (per inserire i nuovi *prima* di loro)
-  const firstStaticLink = navContainer.querySelector('li'); // "Contatti"
-  const firstStaticSection = mainContainer.querySelector('section'); // "contatti"
+  const firstStaticLink = navContainer.querySelector('li');
+  const firstStaticSection = mainContainer.querySelector('section');
 
   fetch('./docs_tree.json')
     .then(response => {
@@ -36,46 +31,35 @@ document.addEventListener("DOMContentLoaded", function() {
       return response.json();
     })
     .then(treeData => {
-      // Prende i nomi delle cartelle (es. "01_Capitolati") e li ordina
       const folderNames = Object.keys(treeData).sort();
       
       if (folderNames.length === 0) {
-        const msg = document.createElement('p');
-        msg.textContent = 'Nessun documento trovato nella cartella docs/.';
-        mainContainer.insertBefore(msg, firstStaticSection);
+        // ... (gestione errore)
         return;
       }
 
-      // Itera su ogni cartella principale trovata nel JSON
       folderNames.forEach((folderName, index) => {
-        
-        // Pulisce il nome per usarlo come link e ID
-        // es. "01_Analisi_Requisiti" -> "Analisi Requisiti"
         const cleanName = folderName.replace(/^[0-9]+_/, '').replace(/_/g, ' ');
-        // es. "Analisi Requisiti" -> "analisi-requisiti"
         const id = cleanName.toLowerCase().replace(/\s+/g, '-'); 
 
-        // --- 1. Costruisci il link di Navigazione ---
+        // 1. Costruisci il link di Navigazione
         const navLi = document.createElement('li');
-        navLi.innerHTML = `<a href="#${id}">${cleanName}</a>`;
-        // Inserisce il nuovo link prima di "Contatti"
+        // Aggiungiamo una classe per lo scroll-spy
+        navLi.innerHTML = `<a href="#${id}" class="nav-link">${cleanName}</a>`; 
         if (firstStaticLink) {
           navContainer.insertBefore(navLi, firstStaticLink);
         } else {
-          navContainer.appendChild(navLi); // Fallback se non ci sono link statici
+          navContainer.appendChild(navLi);
         }
         
-        // --- 2. Costruisci la Sezione <section> ---
+        // 2. Costruisci la Sezione <section>
         const section = document.createElement('section');
         section.id = id;
         section.setAttribute('aria-labelledby', `h1-${id}`);
-        
-        // Applica la classe speciale solo alla prima sezione
         if (index === 0) {
           section.classList.add('firstSection');
         }
         
-        // Crea l'HTML interno per la sezione
         section.innerHTML = `
           <h1 id="h1-${id}">${folderName.replace(/_/g, ' ')}</h1>
           <div class="dynamic-content-container" role="region" aria-live="polite">
@@ -83,32 +67,28 @@ document.addEventListener("DOMContentLoaded", function() {
           </div>
         `;
         
-        // Inserisce la nuova sezione prima di "contatti"
         if (firstStaticSection) {
           mainContainer.insertBefore(section, firstStaticSection);
         } else {
-          mainContainer.appendChild(section); // Fallback
+          mainContainer.appendChild(section);
         }
       });
+      
+      // --- NUOVO: Attiva le funzioni "fighe" ---
+      addCollapseListeners();
+      addScrollSpy();
+
     })
     .catch(error => {
+      // ... (gestione errore)
       console.error("Impossibile caricare la struttura dei documenti:", error);
-      const err = document.createElement('p');
-      err.textContent = 'Errore nel caricamento dei documenti.';
-      mainContainer.insertBefore(err, firstStaticSection);
     });
 });
 
 
 /* =================================================== */
-/* PARTE 3: Funzione Helper Ricorsiva (INVARIATA)      */
+/* PARTE 3: Funzione Helper Ricorsiva (MODIFICATA)     */
 /* =================================================== */
-
-/**
- * Funzione ricorsiva che costruisce l'HTML semantico (con <ul> e <li>)
- * a partire dall'albero di file/cartelle.
- * @param {Array} nodes - Un array di oggetti (file o cartelle)
- */
 function buildHtmlFromTree(nodes) {
   if (!nodes || nodes.length === 0) return "";
 
@@ -125,16 +105,21 @@ function buildHtmlFromTree(nodes) {
         <li>
           <p>
             <a href="${node.path}" target="_blank">${node.name}</a>
-            ${node.version ? `<span class="tag-versione">${node.version}</span>` : ''}
-            ${node.gulpease ? `<span class="tag-versione">Gulpease: ${node.gulpease}</span>` : ''}
+            <span>
+              ${node.version ? `<span class="tag-versione">${node.version}</span>` : ''}
+              ${node.gulpease ? `<span class="tag-versione">Gulpease: ${node.gulpease}</span>` : ''}
+            </span>
           </p>
         </li>
       `;
     } else if (node.type === 'folder') {
+      // --- MODIFICATO: Aggiunte classi per JS ---
       html += `
         <li>
-          <h3>${node.name}</h3>
-          ${buildHtmlFromTree(node.children)} 
+          <h3 class="folder-toggle">${node.name}</h3>
+          <div class="folder-content">
+            ${buildHtmlFromTree(node.children)} 
+          </div>
         </li>
       `;
     }
@@ -142,4 +127,58 @@ function buildHtmlFromTree(nodes) {
 
   html += '</ul>';
   return html;
+}
+
+
+/* =================================================== */
+/* PARTE 4: NUOVA FUNZIONE (Abilita cartelle collassabili) */
+/* =================================================== */
+function addCollapseListeners() {
+  // Trova tutti i titoli delle cartelle
+  const toggles = document.querySelectorAll('.folder-toggle');
+  
+  toggles.forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      // Trova il contenitore (il div fratello)
+      const content = toggle.nextElementSibling;
+      
+      // Aggiungi/rimuovi la classe per animare la freccia e il contenuto
+      toggle.classList.toggle('collapsed');
+      content.classList.toggle('collapsed');
+    });
+    
+    // BONUS: Chiudiamo tutte le cartelle all'inizio per un look più pulito
+    toggle.classList.add('collapsed');
+    toggle.nextElementSibling.classList.add('collapsed');
+  });
+}
+
+/* =================================================== */
+/* PARTE 5: NUOVA FUNZIONE (Abilita "Scroll-Spy")      */
+/* =================================================== */
+function addScrollSpy() {
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('a.nav-link');
+
+  const onScroll = () => {
+    let current = '';
+
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.clientHeight;
+      // Il 150 è un offset per far scattare l'attivo un po' prima
+      if (window.scrollY >= sectionTop - 150) { 
+        current = section.getAttribute('id');
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${current}`) {
+        link.classList.add('active');
+      }
+    });
+  };
+
+  window.addEventListener('scroll', onScroll);
 }
