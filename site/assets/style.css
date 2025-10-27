@@ -1,8 +1,8 @@
-/* Import del font "Inter" e "Roboto Mono" (definiti in index.html) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap');
 
 :root {
-  --primary-color: #2c3e50; /* Blu scuro desaturato */
-  --accent-color: #3498db;  /* Blu più acceso per i link */
+  --primary-color: #2c3e50;
+  --accent-color: #3498db;
   --text-color: #333333;
   --light-text: #7f8c8d;
   --background: #ecf0f1;
@@ -22,15 +22,14 @@ html {
   line-height: 1.5;
 }
 
+h1 { font-size: 2rem; }
+h3 { font-size: 1.2rem; }
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   color: var(--primary-color);
   margin-block-start: 1em;
   margin-block-end: 0.5em;
 }
-
-h1 { font-size: 2rem; }
-h3 { font-size: 1.2rem; }
 
 a {
   color: var(--accent-color);
@@ -44,7 +43,6 @@ a:focus {
   outline-offset: 2px;
 }
 
-/* --- Header Semplificato --- */
 header {
   padding: 0 1em;
   height: 4em;
@@ -64,17 +62,16 @@ header {
   text-decoration: none;
 }
 
-/* Contenitore principale */
 .content-wrapper {
-  max-width: 60em; /* Larghezza massima del contenuto */
-  margin: 1.5em auto; /* Spazio sopra/sotto e centrato */
+  max-width: 60em;
+  margin: 1.5em auto;
   padding: 0 1em;
 }
 
-/* --- Stile dei Pulsanti delle Schede --- */
+/* Stile Pulsanti Schede */
 #tab-buttons {
   display: flex;
-  flex-wrap: wrap; /* Manda a capo i pulsanti su mobile */
+  flex-wrap: wrap;
   border-bottom: 2px solid var(--border-color);
   margin-bottom: 1em;
 }
@@ -96,45 +93,44 @@ header {
   color: var(--text-color);
 }
 
-/* Stile del pulsante ATTIVO */
 .tab-button.active {
   color: var(--primary-color);
 }
 .tab-button.active::after {
   content: '';
   position: absolute;
-  bottom: -2px; /* Si allinea con il bordo del contenitore */
+  bottom: -2px;
   left: 0;
   width: 100%;
   height: 2px;
   background-color: var(--primary-color);
 }
 
-/* --- Stile dei Contenuti delle Schede --- */
+/* Stile Contenuto Schede */
 #tab-content {
   background: var(--card-bg);
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   padding: 1.5em;
+  min-height: 5em; 
 }
 
-/* Pannello di contenuto */
+/* --- LOGICA DI VISUALIZZAZIONE CHIAVE --- */
 .tab-pane {
   display: none; /* Nascosto di default */
   animation: fadeIn 0.3s ease;
 }
-
-/* Pannello ATTIVO (visibile) */
 .tab-pane.active {
-  display: block;
+  display: block; /* Mostrato solo se attivo */
 }
+/* --- FINE LOGICA VISUALIZZAZIONE --- */
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- Stile Albero di File (invariato) --- */
+/* Stile Albero di File (invariato) */
 .dynamic-content-container ul {
   list-style-type: none;
   padding-left: 0;
@@ -221,7 +217,6 @@ header {
   white-space: nowrap;
 }
 
-/* --- Footer --- */
 footer {
   padding: 1.5em 1em;
   text-align: center;
@@ -230,14 +225,12 @@ footer {
   margin-top: 1.5em;
 }
 
-/* --- Media Queries (Mobile) --- */
 @media (max-width: 600px) {
   .content-wrapper {
     margin: 1em auto;
     padding: 0 0.5em;
   }
   
-  /* I pulsanti ora occupano tutto lo spazio */
   .tab-button {
     width: 100%;
     text-align: left;
@@ -248,7 +241,6 @@ footer {
     margin-bottom: 1em;
   }
   .tab-button.active::after {
-    /* Nasconde la barra blu, non serve */
     display: none;
   }
   .tab-button.active {
