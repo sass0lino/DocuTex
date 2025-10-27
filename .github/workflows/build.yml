@@ -26,7 +26,6 @@ jobs:
           fetch-depth: 0
 
       - name: Step 1 - Detect Changed Files
-        id: detect
         run: |
           # check del più recente commit di build automatico presente in repo, se non esiste considera il primo commit del repo per il diff
           echo "--- Detecting modified LaTeX and PDF files ---"
@@ -127,6 +126,8 @@ jobs:
             # sebbene il report dovrebbe essere generato nello step 4, per comoditá e immediatezza, nel caso non ci fosse nulla da compilare (questo caso), lo generiamo subito
             echo "# Report di compilazione del $(date -u --iso-8601=seconds)" > report.md
             echo "" >> report.md
+            echo "Compilazione basata sul commit ${LAST_COMPILED} ${BASE_DESC}" >> report.md
+            echo "" >> report.md
             echo "💡 Nessun file modificato o mancante. Nessuna compilazione eseguita." >> report.md
           fi
 
@@ -189,7 +190,7 @@ jobs:
 
       - name: Step 5 - Commit Results
         run: |
-          # commit del report.md e dei pdf generati (se non sono state effettuate modifiche, ossia l'area di staging é vuota, allora il commit non avviene)
+          # commit del report.md e dei pdf generati (se non sono state effettuate modifiche, ossia l'area di staging é vuota, allora il commit non avviene)(non accadrá mai)
           echo "--- Committing results ---"
           git add -f report.md
           if [ -d "docs" ]; then
