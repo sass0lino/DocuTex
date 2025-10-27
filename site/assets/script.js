@@ -1,27 +1,27 @@
 /* =================================================== */
-/* PARTE 1: Effetto Scroll per l'Header                 */
-/* =================================================== */
-document.addEventListener("scroll", function() {
-  const header = document.querySelector("header");
-  if (window.scrollY > 10) {
-    header.classList.add("scrolled");
-  } else {
-    header.classList.remove("scrolled");
-  }
-  // Rimuove la logica del logo (non più usata)
-  const logo = document.querySelector("#header-logo");
-  logo.classList.remove("scrolled-logo");
-});
-
-/* =================================================== */
-/* PARTE 2: Costruzione Dinamica della Pagina          */
+/* PARTE 1: Costruzione Dinamica delle Schede          */
 /* =================================================== */
 document.addEventListener("DOMContentLoaded", function() {
   
-  const navContainer = document.getElementById("nav-navigation");
-  const mainContainer = document.getElementById("main-content");
-  const firstStaticLink = navContainer.querySelector('li');
-  const firstStaticSection = mainContainer.querySelector('section');
+  const tabButtonsContainer = document.getElementById("tab-buttons");
+  const tabContentContainer = document.getElementById("tab-content");
+  
+  // Dati statici per le sezioni "Contatti"
+  const staticTabs = {
+    "Contatti": `
+      <section id="contatti" aria-labelledby="h1-contatti">
+        <p>Pagina del progetto: 
+          <a id="link-github" href="https://github.com/sass0lino/DocuTex" target="_blank">https://github.com/sass0lino/DocuTex</a>
+        </p>
+        <p>Email: <a href="mailto:swe.nightpro@gmail.com" target="_blank">swe.nightpro@gmail.com</a></p>
+        <p>Membri del gruppo:</p>
+        <ul>
+          <li><a href="https://github.com/frazane04" target="_blank">Franceso Zanella</a></li>
+          <li><a href="https://github.com/towsatt" target="_blank">Leonardo Bilato</a></li>
+        </ul>
+      </section>
+    `
+  };
 
   fetch('./docs_tree.json')
     .then(response => {
@@ -29,63 +29,85 @@ document.addEventListener("DOMContentLoaded", function() {
       return response.json();
     })
     .then(treeData => {
-      const folderNames = Object.keys(treeData).sort();
+      const allTabs = { ...treeData, ...staticTabs };
+      const tabNames = Object.keys(allTabs);
       
-      if (folderNames.length === 0) {
-        const msg = document.createElement('p');
-        msg.textContent = 'Nessun documento trovato nella cartella docs/.';
-        mainContainer.insertBefore(msg, firstStaticSection);
+      if (tabNames.length === 0) {
+        tabContentContainer.innerHTML = "<p>Nessun documento trovato.</p>";
         return;
       }
 
-      folderNames.forEach((folderName, index) => {
-        const cleanName = folderName.replace(/^[0-9]+_/, '').replace(/_/g, ' ');
-        const id = cleanName.toLowerCase().replace(/\s+/g, '-'); 
+      tabNames.forEach((tabName, index) => {
+        // Pulisce il nome per usarlo come ID
+        const cleanName = tabName.replace(/^[0-9]+_/, '').replace(/_/g, ' ');
+        const id = tabName.toLowerCase().replace(/[^a-z0-9]/g, '-'); // ID sicuro
 
-        // 1. Costruisci il link di Navigazione
-        const navLi = document.createElement('li');
-        navLi.innerHTML = `<a href="#${id}" class="nav-link">${cleanName}</a>`; 
-        if (firstStaticLink) {
-          navContainer.insertBefore(navLi, firstStaticLink);
-        } else {
-          navContainer.appendChild(navLi);
-        }
+        // --- 1. Crea il Pulsante della Scheda ---
+        const button = document.createElement('button');
+        button.className = 'tab-button';
+        button.textContent = cleanName;
+        button.setAttribute('data-tab-target', `#${id}`);
+        tabButtonsContainer.appendChild(button);
+
+        // --- 2. Crea il Pannello di Contenuto della Scheda ---
+        const pane = document.createElement('div');
+        pane.className = 'tab-pane';
+        pane.id = id;
         
-        // 2. Costruisci la Sezione <section>
-        const section = document.createElement('section');
-        section.id = id;
-        section.setAttribute('aria-labelledby', `h1-${id}`);
+        // Se è una scheda statica (Contatti) o dinamica (file)
+        if (staticTabs[tabName]) {
+          pane.innerHTML = staticTabs[tabName];
+        } else {
+          pane.innerHTML = buildHtmlFromTree(allTabs[tabName]);
+        }
+        tabContentContainer.appendChild(pane);
+
+        // Attiva la prima scheda di default
         if (index === 0) {
-          section.classList.add('firstSection');
-        }
-        
-        section.innerHTML = `
-          <h1 id="h1-${id}">${folderName.replace(/_/g, ' ')}</h1>
-          <div class="dynamic-content-container" role="region" aria-live="polite">
-            ${buildHtmlFromTree(treeData[folderName])}
-          </div>
-        `;
-        
-        if (firstStaticSection) {
-          mainContainer.insertBefore(section, firstStaticSection);
-        } else {
-          mainContainer.appendChild(section);
+          button.classList.add('active');
+          pane.classList.add('active');
         }
       });
       
+      // Attiva i listener per le cartelle collassabili
       addCollapseListeners();
-      addScrollSpy();
+      
+      // Attiva i listener per i pulsanti delle schede
+      addTabListeners();
     })
     .catch(error => {
       console.error("Impossibile caricare la struttura dei documenti:", error);
-      const err = document.createElement('p');
-      err.textContent = 'Errore nel caricamento dei documenti.';
-      mainContainer.insertBefore(err, firstStaticSection);
+      tabContentContainer.innerHTML = "<p>Errore nel caricamento dei documenti.</p>";
     });
 });
 
 /* =================================================== */
-/* PARTE 3: Funzione Helper Ricorsiva (per <ul>/<li>)   */
+/* PARTE 2: NUOVA Funzione per gestire le Schede       */
+/* =================================================== */
+function addTabListeners() {
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const targetPaneId = button.getAttribute('data-tab-target');
+      
+      // 1. Disattiva tutti i pulsanti e pannelli
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      tabPanes.forEach(pane => pane.classList.remove('active'));
+      
+      // 2. Attiva il pulsante cliccato
+      button.classList.add('active');
+      
+      // 3. Attiva il pannello corrispondente
+      document.querySelector(targetPaneId).classList.add('active');
+    });
+  });
+}
+
+
+/* =================================================== */
+/* PARTE 3: Funzione Helper Ricorsiva (INVARIATA)      */
 /* =================================================== */
 function buildHtmlFromTree(nodes) {
   if (!nodes || nodes.length === 0) return "";
@@ -95,7 +117,7 @@ function buildHtmlFromTree(nodes) {
     return a.type === 'folder' ? -1 : 1; 
   });
 
-  let html = '<ul>';
+  let html = '<ul class="dynamic-content-container">';
 
   for (const node of nodes) {
     if (node.type === 'file') {
@@ -126,7 +148,7 @@ function buildHtmlFromTree(nodes) {
 }
 
 /* =================================================== */
-/* PARTE 4: Funzione per cartelle collassabili         */
+/* PARTE 4: Funzione per cartelle collassabili (INVARIATA) */
 /* =================================================== */
 function addCollapseListeners() {
   const toggles = document.querySelectorAll('.folder-toggle');
@@ -140,32 +162,8 @@ function addCollapseListeners() {
     
     // Inizia con le cartelle chiuse
     toggle.classList.add('collapsed');
-    toggle.nextElementSibling.classList.add('collapsed');
+    if (toggle.nextElementSibling) {
+      toggle.nextElementSibling.classList.add('collapsed');
+    }
   });
-}
-
-/* =================================================== */
-/* PARTE 5: Funzione per "Scroll-Spy"                  */
-/* =================================================== */
-function addScrollSpy() {
-  const sections = document.querySelectorAll('main section[id]');
-  const navLinks = document.querySelectorAll('a.nav-link');
-
-  const onScroll = () => {
-    let current = '';
-    sections.forEach(section => {
-      const sectionTop = section.offsetTop;
-      if (window.scrollY >= sectionTop - 150) { 
-        current = section.getAttribute('id');
-      }
-    });
-
-    navLinks.forEach(link => {
-      link.classList.remove('active');
-      if (link.getAttribute('href') === `#${current}`) {
-        link.classList.add('active');
-      }
-    });
-  };
-  window.addEventListener('scroll', onScroll);
 }
