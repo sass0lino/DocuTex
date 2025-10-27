@@ -116,7 +116,7 @@ jobs:
             fi
           done
 
-          # se compile_list.txt é vuota salviamo in $GITHUB_OUTPUT il flag compile_needed=false cosí da poter saltare lo step 4 se non necessario (dato che é quello più dispendioso in termini di tempo)
+          # se compile_list.txt é vuota salviamo in $GITHUB_OUTPUT il flag compile_needed=false cosí da poter saltare direttamente allo step 5
           if [ -s compile_list.txt ]; then
             echo "Files to compile:"
             cat compile_list.txt
@@ -124,19 +124,16 @@ jobs:
           else
             echo "No files to compile."
             echo "compile_needed=false" >> $GITHUB_OUTPUT
+            # sebbene il report dovrebbe essere generato nello step 4, per comoditá e immediatezza, nel caso non ci fosse nulla da compilare (questo caso), lo generiamo subito
+            echo "# Report di compilazione del $(date -u --iso-8601=seconds)" > report.md
+            echo "" >> report.md
+            echo "💡 Nessun file modificato o mancante. Nessuna compilazione eseguita." >> report.md
           fi
 
       - name: Step 4 - Compile and Generate Report
         if: steps.prepare.outputs.compile_needed == 'true'
         run: |
-          # se ci sono file da compilare allora parte questa sezione di del builder altrimenti no...
-          
-          # generazione del report.md (per ora viene solo generato)
-          echo "# Report di compilazione del $(date -u --iso-8601=seconds)" > report.md
-          echo "" >> report.md
-          build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          echo "Compilazione basata sul commit ${LAST_COMPILED} ${BASE_DESC}" >> report.md
-          echo "" >> report.md
+          # questa sezione del builder parte solo se ci sono file da compilare)
 
           # setup ambiente di compilazione e file utili + compilazione file
           > build_result.log
@@ -162,7 +159,12 @@ jobs:
               done < compile_list.txt
             '
             
-          # reseconto compilazione in report.md
+          # creazione del report
+          echo "# Report di compilazione del $(date -u --iso-8601=seconds)" > report.md
+          echo "" >> report.md
+          build_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          echo "Compilazione basata sul commit ${LAST_COMPILED} ${BASE_DESC}" >> report.md
+          echo "" >> report.md
           echo "## Falliti" >> report.md
           if grep -q ";Fail" build_result.log; then
             grep ";Fail" build_result.log | while IFS=";" read -r tex status; do
