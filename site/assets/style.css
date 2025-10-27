@@ -1,0 +1,305 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap');
+
+:root {
+  --primary-color: #2c3e50;
+  --accent-color: #3498db;
+  --text-color: #333333;
+  --light-text: #7f8c8d;
+  --background: #ecf0f1;
+  --card-bg: #ffffff;
+  --border-color: #bdc3c7;
+  --banner-height: 120px; /* Altezza del banner (puoi cambiarla) */
+}
+
+/* --- Impostazioni Globali & Sticky Footer --- */
+html {
+  height: 100%; /* Necessario per sticky footer */
+}
+body {
+  min-height: 100%; /* Necessario per sticky footer */
+  display: flex;
+  flex-direction: column; /* Impila header/content/footer verticalmente */
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  background-color: var(--background);
+  color: var(--text-color);
+  line-height: 1.5;
+}
+.page-wrapper {
+  flex-grow: 1; /* Fa espandere questo div per spingere il footer in basso */
+}
+
+/* --- Tipografia --- */
+h1 { font-size: 1.8rem; } /* Titoli più piccoli dentro le schede */
+h3 { font-size: 1.1rem; }
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-block-start: 0.8em;
+  margin-block-end: 0.4em;
+}
+
+a {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+a:hover { text-decoration: underline; }
+a:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* --- Header / Banner --- */
+.banner-header {
+  width: 100%;
+  height: var(--banner-height);
+  background-image: url('./assets/images/logo.jpg'); /* USA IL TUO LOGO */
+  background-size: cover; /* Zoomma per coprire */
+  background-position: center center; /* Centra l'immagine */
+  position: relative; /* Per posizionare il contenuto */
+  display: flex; /* Centra verticalmente il contenuto */
+  align-items: flex-end; /* Allinea in basso (tabs e logo) */
+  padding: 0 1em; /* Spazio laterale */
+  box-sizing: border-box; /* Include padding nell'altezza */
+}
+/* Aggiunge un overlay scuro per leggibilità testo */
+.banner-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.1)); /* Sfumatura dal basso */
+}
+
+.banner-content {
+  position: relative; /* Sopra l'overlay */
+  width: 100%;
+  max-width: 60em; /* Stessa larghezza del contenuto sotto */
+  margin: 0 auto; /* Centra */
+  display: flex;
+  justify-content: space-between; /* Spinge tabs a sx, logo a dx */
+  align-items: flex-end; /* Allinea in basso */
+  padding-bottom: 5px; /* Piccolo spazio dal bordo inferiore */
+}
+
+/* Stile Pulsanti Schede nel Banner */
+#tab-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 0; /* Rimuove spazio sotto */
+  border-bottom: none; /* Rimuove bordo */
+}
+
+.tab-button {
+  font-size: 1rem; /* Più piccolo nel banner */
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8); /* Testo bianco semi-trasparente */
+  background: none;
+  border: none;
+  padding: 0.5em 1em; /* Padding ridotto */
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+  margin-right: 5px; /* Spazio tra i pulsanti */
+  border-radius: 4px 4px 0 0; /* Angoli arrotondati solo sopra */
+}
+
+.tab-button:hover {
+  color: #ffffff; /* Bianco pieno su hover */
+  background-color: rgba(255, 255, 255, 0.1); /* Sfondo leggero */
+}
+
+.tab-button.active {
+  color: #ffffff; /* Bianco pieno */
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.15); /* Sfondo leggermente più scuro */
+}
+/* Rimuove la barra sotto */
+.tab-button.active::after {
+  display: none;
+}
+
+/* Stile Logo GitHub nel Banner */
+.github-link {
+  display: inline-block;
+  margin-bottom: 5px; /* Allinea con i tabs */
+}
+.github-logo {
+  height: 28px; /* Logo più grande */
+  width: 28px;
+  filter: invert(1) brightness(0.9); /* Rende il logo bianco e meno brillante */
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+.github-link:hover .github-logo {
+  opacity: 1;
+}
+
+/* --- Contenuto Principale --- */
+.content-wrapper {
+  max-width: 60em;
+  margin: 1.5em auto;
+  padding: 0 1em;
+}
+
+#tab-content {
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 1.5em;
+  min-height: 20vh; /* Altezza minima */
+}
+
+.tab-pane {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+.tab-pane.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Stile Albero di File (invariato) --- */
+.dynamic-content-container ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+.dynamic-content-container li {
+  margin-bottom: 0.25em;
+}
+
+.folder-toggle {
+  color: var(--text-color);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.4em 0.5em;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+.folder-toggle:hover {
+  background-color: var(--background);
+}
+.folder-toggle::before {
+  content: '▼';
+  display: inline-block;
+  font-size: 0.7em;
+  margin-right: 0.5em;
+  transition: transform 0.2s ease;
+}
+.folder-toggle.collapsed::before {
+  transform: rotate(-90deg);
+}
+
+.folder-content {
+  padding-left: 1.2em;
+  border-left: 2px solid var(--border-color);
+  max-height: 1000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+.folder-content.collapsed {
+  max-height: 0;
+  transition: max-height 0.2s ease-in;
+}
+
+.dynamic-content-container p {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  padding: 0.6em 1em;
+  margin: 0 0 0.25em 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: border-color 0.2s ease;
+}
+.dynamic-content-container p:hover {
+  border-color: var(--accent-color);
+  background: #fafafa;
+}
+
+.dynamic-content-container p a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.dynamic-content-container p a::before {
+  content: '📄';
+  margin-right: 0.75em;
+}
+.dynamic-content-container p a:focus {
+  outline: none;
+}
+.dynamic-content-container p:has(a:focus) {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+}
+
+.tag-versione {
+  font-size: 0.75rem;
+  color: var(--light-text);
+  background-color: var(--background);
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  margin-left: 0.5em;
+  white-space: nowrap;
+}
+
+/* --- Footer --- */
+footer {
+  padding: 1em;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--light-text);
+  margin-top: auto; /* Necessario per sticky footer con flex */
+  background-color: transparent; /* Sfondo trasparente */
+  border-top: none; /* Rimuove bordo */
+}
+/* Rimuove il div .footer-content che non serve più */
+
+/* --- Media Queries (Mobile) --- */
+@media (max-width: 600px) {
+  .banner-header {
+    height: auto; /* Altezza basata sul contenuto */
+    min-height: var(--banner-height); /* Mantiene altezza minima */
+    padding-bottom: 0.5em;
+  }
+  .banner-content {
+    flex-direction: column; /* Impila tabs sopra logo */
+    align-items: center; /* Centra */
+    gap: 0.5em;
+  }
+  #tab-buttons {
+    order: 1; /* Tabs sotto il logo */
+    justify-content: center; /* Centra i tabs */
+  }
+  .github-link {
+    order: 0; /* Logo sopra i tabs */
+    margin-bottom: 0;
+  }
+  .tab-button {
+    font-size: 0.9rem;
+    padding: 0.4em 0.8em;
+  }
+  
+  .content-wrapper {
+    margin: 1em auto;
+    padding: 0 0.5em;
+  }
+  #tab-content {
+    padding: 1em;
+  }
+}
