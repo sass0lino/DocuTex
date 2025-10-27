@@ -1,19 +1,16 @@
 /* =================================================== */
-/* PARTE 1: Effetto Scroll per l'Header (Ora solo ombra) */
+/* PARTE 1: Effetto Scroll per l'Header                 */
 /* =================================================== */
 document.addEventListener("scroll", function() {
   const header = document.querySelector("header");
-  const logo = document.querySelector("#header-logo");
-  // L'header.scrolled aggiunge solo un'ombra (vedi CSS)
   if (window.scrollY > 10) {
     header.classList.add("scrolled");
   } else {
     header.classList.remove("scrolled");
   }
-  // Rimuoviamo l'animazione del logo, non serve più
+  const logo = document.querySelector("#header-logo");
   logo.classList.remove("scrolled-logo");
 });
-
 
 /* =================================================== */
 /* PARTE 2: Costruzione Dinamica della Pagina          */
@@ -25,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const firstStaticLink = navContainer.querySelector('li');
   const firstStaticSection = mainContainer.querySelector('section');
 
+  // Legge il file JSON (che si trova in 'site/docs_tree.json')
   fetch('./docs_tree.json')
     .then(response => {
       if (!response.ok) throw new Error(`Errore di rete: ${response.statusText}`);
@@ -34,7 +32,9 @@ document.addEventListener("DOMContentLoaded", function() {
       const folderNames = Object.keys(treeData).sort();
       
       if (folderNames.length === 0) {
-        // ... (gestione errore)
+        const msg = document.createElement('p');
+        msg.textContent = 'Nessun documento trovato nella cartella docs/.';
+        mainContainer.insertBefore(msg, firstStaticSection);
         return;
       }
 
@@ -44,7 +44,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // 1. Costruisci il link di Navigazione
         const navLi = document.createElement('li');
-        // Aggiungiamo una classe per lo scroll-spy
         navLi.innerHTML = `<a href="#${id}" class="nav-link">${cleanName}</a>`; 
         if (firstStaticLink) {
           navContainer.insertBefore(navLi, firstStaticLink);
@@ -74,20 +73,19 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       });
       
-      // --- NUOVO: Attiva le funzioni "fighe" ---
       addCollapseListeners();
       addScrollSpy();
-
     })
     .catch(error => {
-      // ... (gestione errore)
       console.error("Impossibile caricare la struttura dei documenti:", error);
+      const err = document.createElement('p');
+      err.textContent = 'Errore nel caricamento dei documenti.';
+      mainContainer.insertBefore(err, firstStaticSection);
     });
 });
 
-
 /* =================================================== */
-/* PARTE 3: Funzione Helper Ricorsiva (MODIFICATA)     */
+/* PARTE 3: Funzione Helper Ricorsiva (per <ul>/<li>)   */
 /* =================================================== */
 function buildHtmlFromTree(nodes) {
   if (!nodes || nodes.length === 0) return "";
@@ -107,13 +105,11 @@ function buildHtmlFromTree(nodes) {
             <a href="${node.path}" target="_blank">${node.name}</a>
             <span>
               ${node.version ? `<span class="tag-versione">${node.version}</span>` : ''}
-              ${node.gulpease ? `<span class="tag-versione">Gulpease: ${node.gulpease}</span>` : ''}
             </span>
           </p>
         </li>
       `;
     } else if (node.type === 'folder') {
-      // --- MODIFICATO: Aggiunte classi per JS ---
       html += `
         <li>
           <h3 class="folder-toggle">${node.name}</h3>
@@ -129,32 +125,26 @@ function buildHtmlFromTree(nodes) {
   return html;
 }
 
-
 /* =================================================== */
-/* PARTE 4: NUOVA FUNZIONE (Abilita cartelle collassabili) */
+/* PARTE 4: Funzione per cartelle collassabili         */
 /* =================================================== */
 function addCollapseListeners() {
-  // Trova tutti i titoli delle cartelle
   const toggles = document.querySelectorAll('.folder-toggle');
   
   toggles.forEach(toggle => {
     toggle.addEventListener('click', () => {
-      // Trova il contenitore (il div fratello)
       const content = toggle.nextElementSibling;
-      
-      // Aggiungi/rimuovi la classe per animare la freccia e il contenuto
       toggle.classList.toggle('collapsed');
       content.classList.toggle('collapsed');
     });
     
-    // BONUS: Chiudiamo tutte le cartelle all'inizio per un look più pulito
     toggle.classList.add('collapsed');
     toggle.nextElementSibling.classList.add('collapsed');
   });
 }
 
 /* =================================================== */
-/* PARTE 5: NUOVA FUNZIONE (Abilita "Scroll-Spy")      */
+/* PARTE 5: Funzione per "Scroll-Spy"                  */
 /* =================================================== */
 function addScrollSpy() {
   const sections = document.querySelectorAll('section[id]');
@@ -162,11 +152,8 @@ function addScrollSpy() {
 
   const onScroll = () => {
     let current = '';
-
     sections.forEach(section => {
       const sectionTop = section.offsetTop;
-      const sectionHeight = section.clientHeight;
-      // Il 150 è un offset per far scattare l'attivo un po' prima
       if (window.scrollY >= sectionTop - 150) { 
         current = section.getAttribute('id');
       }
@@ -179,6 +166,5 @@ function addScrollSpy() {
       }
     });
   };
-
   window.addEventListener('scroll', onScroll);
 }
