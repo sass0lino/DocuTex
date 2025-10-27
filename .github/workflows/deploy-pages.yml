@@ -1,0 +1,53 @@
+name: Build and Deploy Website
+
+# Si attiva quando il workflow "Build LaTeX documents" finisce
+on:
+  workflow_run:
+    workflows: ["Build LaTeX documents"] # Assicurati che 'name:' del tuo file .yml sia questo
+    types:
+      - completed
+
+# Permessi
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    # Esegui solo se il workflow precedente ha avuto successo
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      # 1. Scarica il codice (con i nuovi PDF in 'docs/')
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Imposta Python (velocissimo, è già installato)
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      # 3. Esegui lo script Python (che è in 'site/')
+      - name: Run build_site.py
+        run: python site/build_site.py
+
+      # 4. Copia i PDF nella cartella 'site' per il deploy
+      - name: Prepare artifact
+        run: |
+          mkdir -p site/docs
+          cp -r docs/* site/docs/
+          
+      # 5. Carica la cartella 'site/' (che ora contiene tutto)
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './site' # Carica la cartella 'site'
+
+      # 6. Esegui il deploy su GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
