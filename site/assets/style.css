@@ -169,7 +169,7 @@ main {
 .dynamic-content-container p a:hover { text-decoration: none; }
 
 /* --- ICONA PDF --- */
-.dynamic-content-container p a[href$=".pdf"]::before {
+.dynamic-content-container p a[href$=".pdf"]:not(.download-button)::before {
   content: '';
   display: inline-block;
   width: 16px;
@@ -177,6 +177,7 @@ main {
   background-image: url("./images/pdf-icon.svg");
   background-size: contain;
   background-repeat: no-repeat;
+  margin-right: 0.4em;
 }
 
 /* --- ICONA DOWNLOAD --- */
@@ -196,6 +197,7 @@ main {
   opacity: 1;
   transform: scale(1.1);
 }
+
 
 /* --- FOOTER --- */
 footer {

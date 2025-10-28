@@ -12,27 +12,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('./docs_tree.json');
       docsTree = await res.json();
       buildNavigation();
-      showSection('Tutti'); // mostra "Tutti" all’avvio
+      showSection('Tutto'); // 👈 apre la sezione "Tutto" di default
     } catch (err) {
       container.innerHTML = `<p style="color:#555;">Impossibile caricare docs_tree.json</p>`;
     }
   }
 
-  // Crea barra navigazione
+  // Crea la barra di navigazione dinamicamente
   function buildNavigation() {
     nav.innerHTML = '';
 
-    // Aggiungi sezione "Tutti" manualmente
+    // Aggiungi "Tutto" come prima voce
     const allLi = document.createElement('li');
     const allA = document.createElement('a');
     allA.href = '#';
-    allA.dataset.section = 'Tutti';
-    allA.textContent = 'Tutti';
+    allA.dataset.section = 'Tutto';
+    allA.textContent = 'Tutto';
     allA.classList.add('active', 'show-arrow');
     allLi.appendChild(allA);
     nav.appendChild(allLi);
 
-    // Poi le sezioni del JSON
+    // Poi tutte le sezioni del JSON
     Object.keys(docsTree).forEach(name => {
       const li = document.createElement('li');
       const a = document.createElement('a');
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Mostra sezione selezionata
+  // Mostra la sezione scelta
   function showSection(name) {
     currentSection = name;
 
@@ -69,9 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const rootContent = document.createElement('div');
     rootContent.className = 'folder-content';
 
-    // sezione "Tutti" -> mostra tutti i file
-    if (name === 'Tutti') {
-      rootContent.appendChild(buildAllFilesView());
+    // Se "Tutto", mostra la struttura completa
+    if (name === 'Tutto') {
+      Object.keys(docsTree).forEach(section => {
+        const sub = document.createElement('div');
+        sub.appendChild(buildTree(docsTree[section]));
+        rootContent.appendChild(sub);
+      });
     } else {
       rootContent.appendChild(buildTree(docsTree[name]));
     }
@@ -80,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     container.appendChild(rootWrapper);
   }
 
-  // Ricorsione classica per cartelle
+  // Ricorsione per costruire struttura cartelle e file
   function buildTree(items) {
     const wrapper = document.createElement('div');
     wrapper.className = 'dynamic-content-container';
@@ -112,49 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     wrapper.appendChild(ul);
     return wrapper;
-  }
-
-  // --- NUOVA FUNZIONE ---
-  // Mostra tutti i file di tutte le sezioni
-  function buildAllFilesView() {
-    const allWrapper = document.createElement('div');
-    allWrapper.className = 'dynamic-content-container';
-    const ul = document.createElement('ul');
-
-    const allFiles = [];
-
-    function traverse(obj, path = []) {
-      Object.entries(obj).forEach(([key, value]) => {
-        value.forEach(item => {
-          if (item.type === 'folder') {
-            traverse({ [item.name]: item.children || [] }, [...path, item.name]);
-          } else if (item.type === 'file') {
-            allFiles.push({
-              name: item.name,
-              path: item.path,
-              fullPath: [...path, item.name].join(' / '),
-              version: item.version
-            });
-          }
-        });
-      });
-    }
-
-    traverse(docsTree);
-
-    allFiles.forEach(file => {
-      const li = document.createElement('li');
-      li.innerHTML = `
-        <p>
-          <a href="${file.path}" target="_blank">${file.fullPath}</a>
-          ${file.version ? `<span class="tag-versione">${file.version}</span>` : ''}
-          <a class="download-button" href="${file.path}" download title="Scarica file"></a>
-        </p>`;
-      ul.appendChild(li);
-    });
-
-    allWrapper.appendChild(ul);
-    return allWrapper;
   }
 
   // Toggle cartelle
