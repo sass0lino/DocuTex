@@ -40,7 +40,7 @@ header {
   z-index: 100;
   background-color: var(--white);
   border-bottom: 1px solid var(--black);
-  height: clamp(5em, 7vw, 6.2em); /* più alto per accomodare logo più grande */
+  height: clamp(5.5em, 8vw, 7em); /* più alto */
 }
 
 nav {
@@ -53,31 +53,33 @@ nav {
   align-items: center;
 }
 
-/* Logo Team (sinistra) — aumentato del 50% */
+/* Logo Team (ora a destra, molto più grande) */
 #header-logo {
-  height: clamp(4.8em, 6vw, 5.5em); /* ↑ del 50% */
+  height: clamp(5em, 8vw, 6.5em); /* ↑ ancora più grande */
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  margin-left: auto; /* spinge a destra */
 }
 .header-logo-img {
   height: 100%;
   width: auto;
   display: block;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 #header-logo:hover .header-logo-img {
-  opacity: 0.8; /* piccolo feedback visivo al passaggio */
+  opacity: 0.8;
+  transform: scale(1.03);
 }
 
-/* Navigation Links */
+/* Navigation Links (ora ancorati a sinistra) */
 #nav-navigation {
   display: flex;
   list-style-type: none;
   margin: 0;
   padding: 0;
+  justify-content: flex-start; /* allineati a sinistra */
   flex-grow: 1;
-  justify-content: center;
   flex-wrap: wrap;
   gap: 0 1em;
 }
@@ -113,17 +115,18 @@ main {
   padding: 0 1em;
 }
 
-/* Style for each section */
+/* --- Sezioni principali (cartelle) --- */
+/* Rimuovo box esterno attorno alle cartelle */
 section {
-  background: var(--white);
-  border: 1px solid var(--black);
+  background: none;
+  border: none;
   border-radius: 0;
   box-shadow: none;
   padding: 1em 1.5em;
   margin-bottom: 1.5em;
 }
 section:last-of-type {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 /* --- File Tree Styling --- */
@@ -145,7 +148,7 @@ section:last-of-type {
   margin-bottom: 0.5em;
 }
 .folder-toggle:hover {
-    background-color: #eee;
+  background-color: #eee;
 }
 .folder-toggle::before {
   content: '▶';
@@ -214,9 +217,9 @@ section:last-of-type {
 
 /* --- Footer --- */
 footer {
-  padding: 1em;
+  padding: 0.6em; /* più compatto */
   text-align: center;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #555;
   margin-top: auto;
   border-top: 1px solid var(--black);
@@ -233,14 +236,17 @@ footer {
   }
   nav {
       flex-wrap: wrap;
-      justify-content: center;
+      justify-content: space-between;
       gap: 0.5em 1em;
   }
-  #header-logo { height: clamp(4em, 7vw, 5em); order: -1; }
+  #header-logo {
+      height: clamp(4em, 9vw, 5.8em);
+      order: 2;
+  }
   #nav-navigation {
       width: 100%;
       order: 1;
-      justify-content: center;
+      justify-content: flex-start;
       border-top: 1px solid var(--black);
       padding-top: 0.5em;
       margin-top: 0.5em;
