@@ -12,47 +12,53 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('./docs_tree.json');
       docsTree = await res.json();
       buildNavigation();
-      const first = Object.keys(docsTree)[0];
-      if (first) showSection(first);
+      showSection('Tutti'); // mostra "Tutti" all’avvio
     } catch (err) {
       container.innerHTML = `<p style="color:#555;">Impossibile caricare docs_tree.json</p>`;
     }
   }
 
-  // Crea la barra di navigazione dinamicamente
+  // Crea barra navigazione
   function buildNavigation() {
     nav.innerHTML = '';
-    Object.keys(docsTree).forEach((name, i) => {
+
+    // Aggiungi sezione "Tutti" manualmente
+    const allLi = document.createElement('li');
+    const allA = document.createElement('a');
+    allA.href = '#';
+    allA.dataset.section = 'Tutti';
+    allA.textContent = 'Tutti';
+    allA.classList.add('active', 'show-arrow');
+    allLi.appendChild(allA);
+    nav.appendChild(allLi);
+
+    // Poi le sezioni del JSON
+    Object.keys(docsTree).forEach(name => {
       const li = document.createElement('li');
       const a = document.createElement('a');
       a.href = '#';
       a.dataset.section = name;
       a.textContent = name;
-      if (i === 0) a.classList.add('active', 'show-arrow');
       li.appendChild(a);
       nav.appendChild(li);
     });
   }
 
-  // Mostra la sezione scelta
+  // Mostra sezione selezionata
   function showSection(name) {
     currentSection = name;
 
-    // aggiorna link attivi
     document.querySelectorAll('#nav-navigation a').forEach(a => {
       const isActive = a.dataset.section === name;
       a.classList.toggle('active', isActive);
       a.classList.toggle('show-arrow', isActive);
     });
 
-    // aggiorna placeholder ricerca
     searchInput.placeholder = `Cerca in ${name}…`;
 
-    // reset contenuto
     container.innerHTML = '';
     noResults.hidden = true;
 
-    // crea cartella root collassabile
     const rootWrapper = document.createElement('section');
     rootWrapper.className = 'doc-section active-section';
 
@@ -63,13 +69,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const rootContent = document.createElement('div');
     rootContent.className = 'folder-content';
 
-    rootContent.appendChild(buildTree(docsTree[name]));
+    // sezione "Tutti" -> mostra tutti i file
+    if (name === 'Tutti') {
+      rootContent.appendChild(buildAllFilesView());
+    } else {
+      rootContent.appendChild(buildTree(docsTree[name]));
+    }
 
     rootWrapper.append(rootToggle, rootContent);
     container.appendChild(rootWrapper);
   }
 
-  // Costruzione ricorsiva della struttura file/cartelle
+  // Ricorsione classica per cartelle
   function buildTree(items) {
     const wrapper = document.createElement('div');
     wrapper.className = 'dynamic-content-container';
@@ -101,6 +112,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     wrapper.appendChild(ul);
     return wrapper;
+  }
+
+  // --- NUOVA FUNZIONE ---
+  // Mostra tutti i file di tutte le sezioni
+  function buildAllFilesView() {
+    const allWrapper = document.createElement('div');
+    allWrapper.className = 'dynamic-content-container';
+    const ul = document.createElement('ul');
+
+    const allFiles = [];
+
+    function traverse(obj, path = []) {
+      Object.entries(obj).forEach(([key, value]) => {
+        value.forEach(item => {
+          if (item.type === 'folder') {
+            traverse({ [item.name]: item.children || [] }, [...path, item.name]);
+          } else if (item.type === 'file') {
+            allFiles.push({
+              name: item.name,
+              path: item.path,
+              fullPath: [...path, item.name].join(' / '),
+              version: item.version
+            });
+          }
+        });
+      });
+    }
+
+    traverse(docsTree);
+
+    allFiles.forEach(file => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <p>
+          <a href="${file.path}" target="_blank">${file.fullPath}</a>
+          ${file.version ? `<span class="tag-versione">${file.version}</span>` : ''}
+          <a class="download-button" href="${file.path}" download title="Scarica file"></a>
+        </p>`;
+      ul.appendChild(li);
+    });
+
+    allWrapper.appendChild(ul);
+    return allWrapper;
   }
 
   // Toggle cartelle
