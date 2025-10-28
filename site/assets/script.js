@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('./docs_tree.json');
       docsTree = await res.json();
       buildNavigation();
-      showSection('Tutto');
+      showSection('Home');
     } catch (err) {
       container.innerHTML = `<p style="color:#555;">Errore nel caricamento dei documenti.</p>`;
       console.error('Errore caricamento docs_tree.json:', err);
@@ -25,12 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function buildNavigation() {
     nav.innerHTML = '';
 
-    // sezione "Tutto" che mostra tutte le cartelle
+    // sezione "Home" che mostra tutte le cartelle
     const allLi = document.createElement('li');
     const allA = document.createElement('a');
     allA.href = '#';
-    allA.dataset.section = 'Tutto';
-    allA.textContent = 'Tutto';
+    allA.dataset.section = 'Home';
+    allA.textContent = 'Home';
     allA.classList.add('active', 'show-arrow');
     allLi.appendChild(allA);
     nav.appendChild(allLi);
@@ -62,12 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // aggiorna il placeholder della search
-    searchInput.placeholder = name === 'Tutto' ? 'Cerca…' : `Cerca in ${name}…`;
+    searchInput.placeholder = name === 'Home' ? 'Cerca…' : `Cerca in ${name}…`;
 
     container.innerHTML = '';
 
-    // nella sezione "Tutto" mettiamo la search tra titolo e contenuto
-    if (name === 'Tutto') {
+    // nella sezione "Home" mettiamo la search tra titolo e contenuto
+    if (name === 'Home') {
       const title = document.createElement('h1');
       title.className = 'repo-title';
       title.textContent = 'Documentazione di Progetto';
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // rimuovi tutti i percorsi mostrati precedentemente
     document.querySelectorAll('.file-path').forEach(path => path.remove());
 
-    // se la query è vuota mostra tutto normalmente
+    // se la query è vuota mostra Home normalmente
     if (query === '') {
       const allItems = container.querySelectorAll('li');
       allItems.forEach(li => li.style.display = '');
