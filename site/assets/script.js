@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Carica il file JSON principale
   async function loadDocsTree() {
     try {
-      const res = await fetch('./site/docs_tree.json');
+      const res = await fetch('./docs_tree.json');
       docsTree = await res.json();
       buildNavigation();
       const firstSection = Object.keys(docsTree)[0];
