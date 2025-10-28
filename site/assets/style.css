@@ -37,7 +37,7 @@ nav {
   justify-content: space-between;
 }
 
-/* Logo a sinistra */
+/* logo ancorato a sinistra */
 #header-logo {
   height: clamp(4.8em, 7vw, 6em);
   display: flex;
@@ -45,17 +45,19 @@ nav {
   justify-content: flex-start;
   order: -1;
 }
+
 .header-logo-img {
   height: 100%;
   width: auto;
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
+
 #header-logo:hover .header-logo-img {
   opacity: 0.8;
   transform: scale(1.03);
 }
 
-/* Sezioni a destra */
+/* sezioni ancorate a destra */
 #nav-navigation {
   list-style: none;
   display: flex;
@@ -64,7 +66,6 @@ nav {
   padding: 0;
 }
 
-/* Link sezioni */
 #nav-navigation a {
   color: var(--black);
   text-decoration: none;
@@ -76,14 +77,18 @@ nav {
   min-width: 4.5em;
   text-align: center;
 }
+
 #nav-navigation a:hover {
   background: rgba(255, 255, 255, 0.4);
 }
+
 #nav-navigation a.active {
   background: rgba(255, 255, 255, 0.6);
   box-shadow: 0 0 8px rgba(150, 100, 255, 0.4);
   font-weight: 600;
 }
+
+/* freccia giù che copre il testo della sezione attiva */
 #nav-navigation a.show-arrow::after {
   content: '↓';
   position: absolute;
@@ -93,7 +98,19 @@ nav {
   font-size: 1.2rem;
   color: var(--black);
 }
-#nav-navigation a.show-arrow { color: transparent; }
+
+#nav-navigation a.show-arrow { 
+  color: transparent; 
+}
+
+/* nella sezione "Tutto" non mostriamo la freccia */
+#nav-navigation a[data-section="Tutto"].show-arrow {
+  color: var(--black);
+}
+
+#nav-navigation a[data-section="Tutto"].show-arrow::after {
+  display: none;
+}
 
 /* --- MAIN CONTENT --- */
 main {
@@ -111,14 +128,52 @@ main {
   padding-bottom: 0.3em;
 }
 
+/* --- SEARCH --- */
+#search-container {
+  padding: 0;
+  border: none;
+  background: transparent;
+  margin-bottom: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* nella sezione "Tutto" la search va sotto il titolo */
+#search-container.below-title {
+  order: 1;
+  margin-top: 1em;
+}
+
+#document-search {
+  width: 100%;
+  max-width: 40em;
+  padding: 0.6em 1em;
+  border: 1px solid var(--black);
+  border-radius: 0;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#document-search:focus {
+  outline: none;
+  border-color: var(--black);
+  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--black);
+}
+
 /* --- FILE TREE --- */
 .dynamic-content-container ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
-.dynamic-content-container li { margin-bottom: 0.3em; }
 
+.dynamic-content-container li { 
+  margin-bottom: 0.3em; 
+}
+
+/* toggle per le cartelle collassabili */
 .folder-toggle {
   font-size: 1.1rem;
   font-weight: 600;
@@ -129,6 +184,7 @@ main {
   border-bottom: 1px dashed var(--black);
   margin-bottom: 0.5em;
 }
+
 .folder-toggle::before {
   content: '▶';
   display: inline-block;
@@ -136,7 +192,10 @@ main {
   margin-right: 0.5em;
   transition: transform 0.2s ease;
 }
-.folder-toggle:not(.collapsed)::before { transform: rotate(90deg); }
+
+.folder-toggle:not(.collapsed)::before { 
+  transform: rotate(90deg); 
+}
 
 .folder-content {
   padding-left: 1.2em;
@@ -144,8 +203,14 @@ main {
   overflow: hidden;
   transition: max-height 0.3s ease-out;
 }
-.folder-content.collapsed { max-height: 0; overflow: hidden; transition: max-height 0.2s ease-in; }
 
+.folder-content.collapsed { 
+  max-height: 0; 
+  overflow: hidden; 
+  transition: max-height 0.2s ease-in; 
+}
+
+/* wrapper per file con nome e percorso */
 .dynamic-content-container p {
   padding: 0.3em 0;
   margin: 0 0 0.2em 0;
@@ -153,14 +218,31 @@ main {
   justify-content: space-between;
   align-items: center;
 }
-.dynamic-content-container p a {
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+  flex: 1;
+}
+
+.file-name {
   color: var(--black);
-  font-weight: 400;
+  font-weight: 500;
   text-decoration: underline;
 }
-.dynamic-content-container p a:hover { text-decoration: none; }
 
-/* Icone */
+.file-name:hover { 
+  text-decoration: none; 
+}
+
+.file-path {
+  font-size: 0.85em;
+  color: #666;
+  font-style: italic;
+}
+
+/* icona pdf prima del nome file */
 .dynamic-content-container p a[href$=".pdf"]:not(.download-button)::before {
   content: '';
   display: inline-block;
@@ -170,7 +252,10 @@ main {
   background-size: contain;
   background-repeat: no-repeat;
   margin-right: 0.4em;
+  vertical-align: middle;
 }
+
+/* bottone download a destra */
 .download-button {
   width: 16px;
   height: 16px;
@@ -181,8 +266,13 @@ main {
   margin-left: 1em;
   opacity: 0.7;
   transition: opacity 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
 }
-.download-button:hover { opacity: 1; transform: scale(1.1); }
+
+.download-button:hover { 
+  opacity: 1; 
+  transform: scale(1.1); 
+}
 
 /* --- FOOTER --- */
 footer {
@@ -195,32 +285,6 @@ footer {
   background: var(--white);
 }
 
-/* --- SEARCH --- */
-#search-container {
-  padding: 0;
-  border: none;
-  background: transparent;
-  margin-bottom: 2em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-#document-search {
-  width: 100%;
-  max-width: 40em;
-  padding: 0.6em 1em;
-  border: 1px solid var(--black);
-  border-radius: 0;
-  font-size: 1rem;
-  font-family: inherit;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-#document-search:focus {
-  outline: none;
-  border-color: var(--black);
-  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--black);
-}
-
 /* --- MOBILE --- */
 @media (max-width: 750px) {
   nav {
@@ -230,16 +294,18 @@ footer {
     padding: 0.8em 0.5em;
   }
 
+  /* logo sempre sopra su mobile */
+  #header-logo {
+    order: -1;
+    margin-bottom: 0.8em;
+  }
+
+  /* sezioni sotto il logo su mobile */
   #nav-navigation {
     order: 1;
     justify-content: center;
     width: 100%;
     flex-wrap: wrap;
     gap: 0.4em 0.8em;
-  }
-
-  #header-logo {
-    order: -1;
-    margin-bottom: 0.8em;
   }
 }
