@@ -1,114 +1,95 @@
-document.addEventListener("DOMContentLoaded", function() {
-  const tabButtonsContainer = document.getElementById("tab-buttons");
-  const tabContentContainer = document.getElementById("tab-content");
+// ===============================
+// DocuTex File Tree Viewer
+// ===============================
 
-  if (!tabButtonsContainer || !tabContentContainer) {
-    console.error("Errore critico: Impossibile trovare #tab-buttons o #tab-content.");
-    return;
-  }
-
-  fetch('./docs_tree.json')
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("./docs_tree.json")
     .then(res => {
-      if (!res.ok) throw new Error("Impossibile trovare docs_tree.json");
+      if (!res.ok) throw new Error("Impossibile caricare docs_tree.json");
       return res.json();
     })
-    .then(data => createTabs(data))
+    .then(data => renderDocsTree(data))
     .catch(err => {
-      console.error("Errore nel caricamento struttura documenti:", err);
-      tabContentContainer.innerHTML = `<p class="error-msg">${err.message}</p>`;
+      document.getElementById("docs-container").innerHTML =
+        `<p class="error">❌ Errore: ${err.message}</p>`;
     });
 });
 
-function createTabs(treeData) {
-  const tabButtonsContainer = document.getElementById("tab-buttons");
-  const tabContentContainer = document.getElementById("tab-content");
+function renderDocsTree(treeData) {
+  const container = document.getElementById("docs-container");
+  container.innerHTML = "";
 
-  tabButtonsContainer.innerHTML = '';
-  tabContentContainer.innerHTML = '';
+  for (const [section, items] of Object.entries(treeData)) {
+    const sectionEl = document.createElement("div");
+    sectionEl.classList.add("section");
 
-  const tabNames = Object.keys(treeData).sort();
+    const title = document.createElement("h3");
+    title.textContent = section;
+    sectionEl.appendChild(title);
 
-  if (tabNames.length === 0) {
-    tabContentContainer.innerHTML = "<p>Nessun documento disponibile.</p>";
-    return;
+    const list = document.createElement("ul");
+    buildTree(items, list);
+    sectionEl.appendChild(list);
+
+    container.appendChild(sectionEl);
   }
+}
 
-  tabNames.forEach((tabName, i) => {
-    const cleanName = tabName.replace(/^[0-9]+_/, '').replace(/_/g, ' ');
-    const id = `tab-${tabName.toLowerCase().replace(/[^a-z0-9]/g, '-') || i}`;
+function buildTree(items, parentEl) {
+  items.forEach(item => {
+    const li = document.createElement("li");
 
-    const button = document.createElement('button');
-    button.className = 'tab-button';
-    button.textContent = cleanName;
-    button.dataset.tabTarget = `#${id}`;
-    tabButtonsContainer.appendChild(button);
+    if (item.type === "folder") {
+      const folderHeader = document.createElement("div");
+      folderHeader.classList.add("folder-header");
+      folderHeader.innerHTML = `<span class="arrow">▶</span>${item.name}`;
 
-    const pane = document.createElement('div');
-    pane.className = 'tab-pane';
-    pane.id = id;
-    pane.innerHTML = buildHtmlFromTree(treeData[tabName]);
-    tabContentContainer.appendChild(pane);
+      const childrenContainer = document.createElement("ul");
+      childrenContainer.classList.add("folder-content");
+      buildTree(item.children || [], childrenContainer);
 
-    if (i === 0) {
-      button.classList.add('active');
-      pane.classList.add('active');
+      folderHeader.addEventListener("click", () => {
+        childrenContainer.classList.toggle("open");
+        folderHeader.querySelector(".arrow").textContent =
+          childrenContainer.classList.contains("open") ? "▼" : "▶";
+      });
+
+      li.appendChild(folderHeader);
+      li.appendChild(childrenContainer);
     }
-  });
 
-  addTabListeners();
-  addCollapseListeners();
-}
+    if (item.type === "file") {
+      const fileEl = document.createElement("div");
+      fileEl.classList.add("file-item");
 
-function addTabListeners() {
-  const buttons = document.querySelectorAll('.tab-button');
-  const panes = document.querySelectorAll('.tab-pane');
+      const link = document.createElement("a");
+      link.href = item.path;
+      link.textContent = item.name;
+      link.target = "_blank";
 
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      buttons.forEach(b => b.classList.remove('active'));
-      panes.forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.querySelector(btn.dataset.tabTarget).classList.add('active');
-    });
-  });
-}
+      const actions = document.createElement("div");
+      actions.classList.add("file-actions");
 
-function buildHtmlFromTree(nodes) {
-  if (!nodes || !nodes.length) return "";
+      const openBtn = document.createElement("button");
+      openBtn.textContent = "Apri";
+      openBtn.title = "Apri PDF";
+      openBtn.onclick = () => window.open(item.path, "_blank");
 
-  nodes.sort((a, b) => (a.type === b.type ? a.name.localeCompare(b.name) : a.type === 'folder' ? -1 : 1));
+      const downloadBtn = document.createElement("button");
+      downloadBtn.textContent = "⬇";
+      downloadBtn.title = "Scarica PDF";
+      downloadBtn.onclick = () => {
+        const a = document.createElement("a");
+        a.href = item.path;
+        a.download = item.name + ".pdf";
+        a.click();
+      };
 
-  let html = '<ul class="file-tree">';
-  for (const node of nodes) {
-    if (node.type === 'file') {
-      html += `
-        <li class="file-item">
-          <a href="${node.path}" target="_blank" class="file-link">${node.name}</a>
-          <button class="download-btn" title="Scarica PDF" onclick="window.open('${node.path}')">↓</button>
-          ${node.version ? `<span class="tag-version">${node.version}</span>` : ''}
-        </li>
-      `;
-    } else if (node.type === 'folder') {
-      html += `
-        <li class="folder">
-          <div class="folder-header">
-            <span class="folder-toggle collapsed">📂 ${node.name}</span>
-          </div>
-          <div class="folder-content collapsed">${buildHtmlFromTree(node.children)}</div>
-        </li>
-      `;
+      actions.append(openBtn, downloadBtn);
+      fileEl.append(link, actions);
+      li.appendChild(fileEl);
     }
-  }
-  html += '</ul>';
-  return html;
-}
 
-function addCollapseListeners() {
-  document.querySelectorAll('.folder-toggle').forEach(toggle => {
-    toggle.addEventListener('click', () => {
-      const content = toggle.parentElement.nextElementSibling;
-      toggle.classList.toggle('collapsed');
-      content.classList.toggle('collapsed');
-    });
+    parentEl.appendChild(li);
   });
 }

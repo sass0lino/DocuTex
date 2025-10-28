@@ -1,40 +1,39 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Documentazione ufficiale del progetto DocuTex.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DocuTex - Documentazione</title>
-
-  <link rel="stylesheet" href="./assets/style.css">
+  <meta name="description" content="Visualizzatore della documentazione del progetto DocuTex.">
+  
+  <link rel="icon" type="image/svg+xml" href="./assets/images/logo.svg" />
+  <link rel="stylesheet" href="./assets/style.css" />
   <script defer src="./assets/script.js"></script>
-  <link rel="icon" href="./assets/images/logo.svg" type="image/svg+xml">
 </head>
 
 <body>
-  <div class="page-wrapper">
+  <header class="header">
+    <div class="header-left">
+      <img src="./assets/images/logo.svg" alt="DocuTex logo" class="logo" />
+      <h1>DocuTex</h1>
+    </div>
 
-    <header>
-      <a href="#" class="header-logo-link" aria-label="DocuTex - Home">
-        <img src="./assets/images/logo.svg" alt="Logo DocuTex" class="header-logo-img">
-        <span class="header-title">DocuTex</span>
-      </a>
-      
-      <div id="tab-buttons"></div>
-      
-      <a href="https://github.com/sass0lino/DocuTex" target="_blank" class="github-link" aria-label="Visita il repository GitHub">
-        <img src="./assets/images/logo_github.svg" alt="Logo GitHub" class="github-logo">
-      </a>
-    </header>
+    <a href="https://github.com/sass0lino/DocuTex" target="_blank" class="github-link" title="Vai al repository GitHub">
+      <img src="./assets/images/logo_github.svg" alt="GitHub logo" />
+    </a>
+  </header>
 
-    <main id="main-content">
-      <div id="tab-content"></div>
-    </main>
+  <main class="content">
+    <h2>Documentazione del progetto</h2>
+    <p>Consulta qui tutti i file PDF generati dal progetto <strong>DocuTex</strong>.</p>
 
-  </div>
+    <div id="docs-container" class="docs-container">
+      <p class="loading">Caricamento documenti...</p>
+    </div>
+  </main>
 
-  <footer>
-    <p>© 2025 DocuTex Team — <a href="https://github.com/sass0lino/DocuTex" target="_blank">GitHub</a></p>
+  <footer class="footer">
+    <p>© 2025 DocuTex — <a href="https://github.com/sass0lino/DocuTex" target="_blank">Repository GitHub</a></p>
   </footer>
 </body>
 </html>
