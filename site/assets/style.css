@@ -40,7 +40,7 @@ header {
   z-index: 100;
   background-color: var(--white);
   border-bottom: 1px solid var(--black);
-  height: clamp(4.8em, 6.5vw, 5.8em); /* leggermente più alto */
+  height: clamp(5em, 7vw, 6.2em); /* più alto per accomodare logo più grande */
 }
 
 nav {
@@ -53,9 +53,9 @@ nav {
   align-items: center;
 }
 
-/* Logo Team (sinistra) — più grande */
+/* Logo Team (sinistra) — aumentato del 50% */
 #header-logo {
-  height: clamp(3.2em, 4vw, 3.8em);
+  height: clamp(4.8em, 6vw, 5.5em); /* ↑ del 50% */
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -64,6 +64,10 @@ nav {
   height: 100%;
   width: auto;
   display: block;
+  transition: opacity 0.2s ease;
+}
+#header-logo:hover .header-logo-img {
+  opacity: 0.8; /* piccolo feedback visivo al passaggio */
 }
 
 /* Navigation Links */
@@ -101,21 +105,6 @@ nav {
   border-bottom-color: var(--black);
 }
 #nav-navigation a.active::after { display: none; }
-
-/* GitHub Link (destra) — leggermente più grande */
-.github-link {
-  height: clamp(2em, 2.8vw, 2.5em);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.github-logo {
-  height: 100%;
-  width: auto;
-  display: block;
-  opacity: 1;
-}
-.github-link:hover .github-logo { opacity: 0.7; }
 
 /* --- Main Content --- */
 main {
@@ -247,7 +236,7 @@ footer {
       justify-content: center;
       gap: 0.5em 1em;
   }
-  #header-logo { height: clamp(3em, 5vw, 3.6em); order: -1; }
+  #header-logo { height: clamp(4em, 7vw, 5em); order: -1; }
   #nav-navigation {
       width: 100%;
       order: 1;
@@ -258,9 +247,6 @@ footer {
       gap: 0.5em 0.8em;
   }
   #nav-navigation a.active { border-bottom-color: transparent; }
-  .github-link {
-      height: clamp(1.8em, 3.5vw, 2.2em);
-  }
   main {
       margin: 1.5em auto;
       padding: 0 1em;
