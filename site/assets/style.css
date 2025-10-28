@@ -1,8 +1,8 @@
 :root {
   --black: #000;
   --white: #fff;
-  --cyber-violet: #7b00ff;
-  --cyber-glow: rgba(255, 255, 255, 0.3);
+  --cyber-violet: #d4b8ff; /* Lilla chiaro */
+  --cyber-glow: rgba(180, 120, 255, 0.3);
 }
 
 html, body { height: 100%; margin: 0; padding: 0; }
@@ -18,14 +18,14 @@ body {
 }
 .page-wrapper { flex-grow: 1; }
 
-/* --- HEADER CYBERPUNK --- */
+/* --- HEADER --- */
 header {
   position: sticky;
   top: 0;
   z-index: 100;
   background: var(--cyber-violet);
-  border-bottom: 1px solid var(--black);
-  box-shadow: 0 2px 8px var(--cyber-glow);
+  border-bottom: 1px solid #999;
+  box-shadow: 0 2px 6px var(--cyber-glow);
 }
 nav {
   max-width: 65em;
@@ -59,7 +59,7 @@ nav {
   justify-content: flex-start;
 }
 #nav-navigation a {
-  color: var(--white);
+  color: var(--black);
   text-decoration: none;
   font-weight: 500;
   padding: .5em .8em;
@@ -67,12 +67,12 @@ nav {
   transition: all .25s ease;
 }
 #nav-navigation a:hover {
-  color: var(--white);
-  background: rgba(255,255,255,0.15);
+  color: var(--black);
+  background: rgba(255,255,255,0.3);
 }
 #nav-navigation a.active {
-  background: rgba(255,255,255,0.25);
-  box-shadow: 0 0 8px var(--white);
+  background: rgba(255,255,255,0.6);
+  box-shadow: 0 0 8px rgba(150, 100, 255, 0.4);
   font-weight: 600;
 }
 
@@ -179,19 +179,23 @@ main {
   background-repeat: no-repeat;
 }
 
-/* --- META INFORMAZIONI FILE --- */
-.tag-versione {
-  font-size: 0.75rem;
-  color: #555;
-  margin-left: 0.5em;
-}
+/* --- ICONA DOWNLOAD --- */
 .download-button {
-  font-size: .8em;
-  color: #555;
-  text-decoration: underline;
+  width: 16px;
+  height: 16px;
+  background-image: url("./images/download.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  display: inline-block;
   margin-left: 1em;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  text-decoration: none;
 }
-.download-button:hover { color: var(--black); text-decoration: none; }
+.download-button:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
 
 /* --- FOOTER --- */
 footer {
@@ -217,7 +221,7 @@ footer {
     order: -1;
     height: auto;
     max-height: 5.5em;
-    margin: 0 auto 0.4em auto; /* distanza ridotta */
+    margin: 0 auto 0.4em auto;
   }
   #header-logo img {
     width: auto;
@@ -232,5 +236,6 @@ footer {
     gap: 0.4em 0.8em;
     border-top: none; /* rimuove linea tra logo e sezioni */
     padding-top: 0;
+    margin-bottom: 0.8em; /* più spazio sotto le sezioni */
   }
 }
