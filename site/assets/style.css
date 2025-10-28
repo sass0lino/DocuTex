@@ -1,144 +1,114 @@
-/* --- Global Settings & Black/White Palette --- */
 :root {
-  --black: #000000;
-  --white: #ffffff;
+  --black: #000;
+  --white: #fff;
 }
 
-html { height: 100%; }
+html, body { height: 100%; margin: 0; padding: 0; }
 body {
-  min-height: 100%;
   display: flex;
   flex-direction: column;
-  margin: 0;
-  padding: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif;
   font-size: 16px;
-  background-color: var(--white);
   color: var(--black);
+  background: var(--white);
   line-height: 1.6;
-  scroll-padding-top: 5em; 
   scroll-behavior: smooth;
 }
 .page-wrapper { flex-grow: 1; }
-
-/* --- Typography --- */
-h1 { font-size: 1.8rem; color: var(--black); margin-bottom: 0.5em; border-bottom: 1px solid var(--black); padding-bottom: 0.3em;}
-h3 { font-size: 1.1rem; color: var(--black); margin-bottom: 0.3em; font-weight: 600; }
-a { color: var(--black); text-decoration: underline; font-weight: 500; }
-a:hover { text-decoration: none; }
-a:focus {
-  outline: 2px solid var(--black);
-  outline-offset: 2px;
-}
 
 /* --- Header --- */
 header {
   position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   z-index: 100;
-  background-color: var(--white);
+  background: var(--white);
   border-bottom: 1px solid var(--black);
-  height: clamp(5.5em, 8vw, 7em); /* più alto per accomodare logo grande */
+  height: clamp(5.5em, 8vw, 7em);
 }
-
 nav {
   max-width: 65em;
-  height: 100%;
   margin: 0 auto;
   padding: 0 1em;
+  height: 100%;
   display: flex;
-  justify-content: space-between; /* nav a sinistra, logo a destra */
+  justify-content: space-between;
   align-items: center;
 }
-
-/* Logo a destra — grande */
 #header-logo {
-  height: clamp(5em, 8vw, 6.5em); /* logo ben visibile */
+  height: clamp(5em, 8vw, 6.5em);
   display: flex;
   align-items: center;
-  flex-shrink: 0;
-  margin-left: auto; /* ancora a destra */
+  margin-left: auto;
 }
 .header-logo-img {
   height: 100%;
   width: auto;
   display: block;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity .2s ease, transform .2s ease;
 }
-#header-logo:hover .header-logo-img {
-  opacity: 0.85;
-  transform: scale(1.03);
-}
+#header-logo:hover .header-logo-img { opacity: .8; transform: scale(1.03); }
 
-/* Navigation Links — ancorati a sinistra */
+/* --- Navigation --- */
 #nav-navigation {
+  list-style: none;
   display: flex;
-  list-style-type: none;
+  gap: 0 1em;
   margin: 0;
   padding: 0;
-  justify-content: flex-start; /* sinistra */
-  flex-grow: 1;
-  flex-wrap: wrap;
-  gap: 0 1em;
+  justify-content: flex-start;
 }
 #nav-navigation a {
-  text-decoration: none;
   color: var(--black);
+  text-decoration: none;
   font-weight: 500;
-  font-size: 1rem;
-  padding: 0.5em 0.25em;
-  position: relative;
-  transition: color 0.2s ease;
-  white-space: nowrap;
-  border-bottom: 2px solid transparent; /* spazio per linea attiva */
+  border-bottom: 2px solid transparent;
+  padding: .5em .25em;
+  transition: color .2s ease;
 }
 #nav-navigation a:hover { color: #555; }
-#nav-navigation a.active {
-  font-weight: 600;
-  border-bottom-color: var(--black);
-}
+#nav-navigation a.active { font-weight: 600; border-bottom-color: var(--black); }
 
-/* --- Sezioni principali (una visibile alla volta) --- */
-.doc-section {
-  display: none;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-.doc-section.active-section {
-  display: block;
-  opacity: 1;
-}
-
-/* --- Main Content --- */
+/* --- Main --- */
 main {
   max-width: 60em;
   margin: 2em auto;
   padding: 0 1em;
 }
-
-/* --- Rimozione box attorno alle cartelle principali --- */
-/* Prima le section avevano bordo/box: lo rimuoviamo */
 section {
   background: none;
   border: none;
-  border-radius: 0;
-  box-shadow: none;
   padding: 1em 1.5em;
   margin-bottom: 1.5em;
 }
-section:last-of-type { margin-bottom: 0; }
 
-/* --- File Tree Styling (Uniform Collapse) --- */
-.dynamic-content-container ul {
-  list-style-type: none;
-  padding-left: 0;
-  margin: 0;
+/* --- Search --- */
+#search-container {
+  background: none;
+  border: none;
+  margin-bottom: 1em;
+  display: flex;
+  justify-content: center;
 }
-.dynamic-content-container li { margin-bottom: 0.3em; }
+#document-search {
+  width: 100%;
+  max-width: 40em;
+  padding: 0.6em 1em;
+  border: 1px solid var(--black);
+  font-size: 1rem;
+}
+#document-search:focus {
+  outline: none;
+  border-color: var(--black);
+  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--black);
+}
+#no-results {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+  margin-top: 1em;
+}
 
-/* Folder toggle */
+/* --- Folder Tree --- */
 .folder-toggle {
   font-size: 1.1rem;
   font-weight: 600;
@@ -146,155 +116,75 @@ section:last-of-type { margin-bottom: 0; }
   cursor: pointer;
   padding: 0.2em 0;
   display: block;
-  border-bottom: 1px dashed var(--black); /* linea tratteggiata sotto il nome cartella */
+  border-bottom: 1px dashed var(--black);
   margin-bottom: 0.5em;
 }
 .folder-toggle:hover { background-color: #eee; }
 .folder-toggle::before {
-  content: '▶'; /* chiusa */
+  content: '▶';
   display: inline-block;
   font-size: 0.7em;
   margin-right: 0.5em;
-  transition: transform 0.2s ease;
+  transition: transform .2s ease;
 }
-.folder-toggle:not(.collapsed)::before { transform: rotate(90deg); } /* aperta */
+.folder-toggle:not(.collapsed)::before { transform: rotate(90deg); }
 
 .folder-content {
   padding-left: 1.2em;
-  max-height: 1000px;
   overflow: hidden;
-  transition: max-height 0.3s ease-out;
+  max-height: 1000px;
+  transition: max-height .3s ease-out;
 }
 .folder-content.collapsed {
   max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.2s ease-in;
+  transition: max-height .2s ease-in;
 }
 
-/* File Item Styling */
+.dynamic-content-container ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dynamic-content-container li { margin-bottom: .3em; }
+
 .dynamic-content-container p {
-  background: none;
-  border: none;
-  border-radius: 0;
-  padding: 0.3em 0;
-  margin: 0 0 0.2em 0;
+  margin: 0 0 .2em 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.dynamic-content-container p:hover { background: none; }
-.dynamic-content-container p a { 
-  color: var(--black); 
-  font-weight: 400; /* normale per i file */
-  text-decoration: underline;
-}
+.dynamic-content-container p a { color: var(--black); text-decoration: underline; }
 .dynamic-content-container p a:hover { text-decoration: none; }
-.dynamic-content-container p a::before { content: ''; margin-right: 0.5em; } /* solo spaziatura */
 
 .tag-versione {
   font-size: 0.75rem;
   color: #555;
   margin-left: 0.5em;
-  white-space: nowrap;
 }
-
-/* Download button (link semplice) */
 .download-button {
-  font-size: 0.8em;
+  font-size: .8em;
   color: #555;
   text-decoration: underline;
   margin-left: 1em;
-  white-space: nowrap;
 }
-.download-button:hover {
-  color: var(--black);
-  text-decoration: none;
-}
-.download-button::before { content: ''; margin: 0; }
+.download-button:hover { color: var(--black); text-decoration: none; }
 
 /* --- Footer --- */
 footer {
-  padding: 0.6em; /* più compatto */
+  padding: .6em;
   text-align: center;
-  font-size: 0.8rem;
+  font-size: .8rem;
   color: #555;
-  margin-top: auto;
   border-top: 1px solid var(--black);
-  background-color: var(--white);
 }
 
-/* --- Media Queries (Mobile) --- */
+/* --- Mobile --- */
 @media (max-width: 750px) {
-  body { font-size: 15px; scroll-padding-top: 0; }
-
-  header {
-    position: relative;
-    height: auto;
-    padding: 0.8em 1em;
-  }
-
-  nav {
-    /* Logo deve andare SOPRA alle sezioni */
-    flex-direction: column-reverse; /* inverti: prima lista, poi logo -> con column-reverse il logo sale sopra */
-    align-items: center;
-    gap: 0.6em 1em;
-  }
-
+  nav { flex-direction: column-reverse; align-items: center; }
+  #header-logo { margin-left: 0; margin-bottom: 0.8em; }
   #nav-navigation {
-    width: 100%;
     justify-content: center;
     border-top: 1px solid var(--black);
-    padding-top: 0.5em;
-    margin-top: 0.5em;
-    gap: 0.5em 0.8em;
+    padding-top: .5em;
   }
-
-  #nav-navigation a.active { border-bottom-color: transparent; } /* evita underline permanente su mobile */
-
-  #header-logo {
-    margin-left: 0;
-    margin-bottom: 0.8em;
-    height: clamp(4em, 9vw, 5.8em); /* dimensione ottimizzata per mobile */
-  }
-
-  main {
-    margin: 1.5em auto;
-    padding: 0 1em;
-  }
-
-  section { padding: 1em; }
-
-  /* Search bar mobile */
-  #search-container { padding: 1em; margin-bottom: 1.5em; }
-  #document-search { font-size: 1rem; }
-
-  /* Download button mobile */
-  .download-button { font-size: 0.75em; }
-}
-
-/* --- Search Bar --- */
-#search-container {
-  background-color: var(--white);
-  padding: 1em 1.5em;
-  border: 1px solid var(--black);
-  margin-bottom: 2em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#document-search {
-  width: 100%;
-  max-width: 40em;
-  padding: 0.6em 1em;
-  border: 1px solid var(--black);
-  border-radius: 0;
-  font-size: 1rem;
-  font-family: inherit;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-#document-search:focus {
-  outline: none;
-  border-color: var(--black);
-  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--black); /* focus invertito */
 }
