@@ -1,16 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap');
-
+/* --- Global Settings & Black/White Palette --- */
 :root {
-  --primary-color: #2c3e50; /* Blu scuro */
-  --accent-color: #3498db;  /* Blu link */
-  --text-color: #333333;
-  --light-text: #7f8c8d;
-  --background: #ecf0f1;
-  --card-bg: #ffffff;
-  --border-color: #bdc3c7;
+  --black: #000000;
+  --white: #ffffff;
 }
 
-/* --- Global Settings & Sticky Footer --- */
 html { height: 100%; }
 body {
   min-height: 100%;
@@ -18,56 +11,42 @@ body {
   flex-direction: column;
   margin: 0;
   padding: 0;
-  font-family: "Inter", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   font-size: 16px;
-  font-weight: 400;
-  background-color: var(--background);
-  color: var(--text-color);
+  background-color: var(--white); /* White background */
+  color: var(--black); /* Black text */
   line-height: 1.6;
-  scroll-padding-top: 5em; /* Space for fixed header */
+  scroll-padding-top: 5em; 
   scroll-behavior: smooth;
 }
 .page-wrapper { flex-grow: 1; }
 
 /* --- Typography --- */
-h1 { font-size: 2rem; }
-h3 { font-size: 1.2rem; }
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  color: var(--primary-color);
-  margin-block-start: 1.2em;
-  margin-block-end: 0.6em;
-}
-
-a {
-  color: var(--accent-color);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-a:hover { text-decoration: underline; }
+h1 { font-size: 1.8rem; color: var(--black); margin-bottom: 0.5em; border-bottom: 1px solid var(--black); padding-bottom: 0.3em;} /* Section Title */
+h3 { font-size: 1.1rem; color: var(--black); margin-bottom: 0.3em; font-weight: 600; } /* Folder Title */
+a { color: var(--black); text-decoration: underline; font-weight: 500; } /* Links underlined */
+a:hover { text-decoration: none; } /* Remove underline on hover */
 a:focus {
-  outline: 2px solid var(--accent-color);
+  outline: 2px solid var(--black);
   outline-offset: 2px;
 }
 
 /* --- Header --- */
 header {
-  position: sticky; /* Header remains visible */
+  position: sticky;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  background-color: var(--card-bg);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  height: 4.5em; /* Header height */
+  background-color: var(--white);
+  border-bottom: 1px solid var(--black); /* Black border */
+  height: 4.5em; /* Original height */
 }
 
-/* Navigation bar inside header */
 nav {
-  max-width: 65em; /* Max width */
+  max-width: 65em;
   height: 100%;
-  margin: 0 auto; /* Center */
+  margin: 0 auto;
   padding: 0 1em;
   display: flex;
   justify-content: space-between;
@@ -76,7 +55,7 @@ nav {
 
 /* Logo Team */
 #header-logo {
-  height: 2.8em; /* Logo size */
+  height: 2.5em; /* Original small height */
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -87,51 +66,45 @@ nav {
   display: block;
 }
 
-/* Navigation Links (center) */
+/* Navigation Links */
 #nav-navigation {
   display: flex;
   list-style-type: none;
   margin: 0;
   padding: 0;
-  flex-grow: 1; /* Take available space */
-  justify-content: center; /* Center links */
-  flex-wrap: wrap; /* Wrap links if needed */
-  gap: 0 1em; /* Space between links */
+  flex-grow: 1;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0 1em;
 }
 
 #nav-navigation a {
   text-decoration: none;
-  color: var(--light-text);
+  color: var(--black); /* Black links */
   font-weight: 500;
   font-size: 1rem;
   padding: 0.5em 0.25em;
   position: relative;
   transition: color 0.2s ease;
   white-space: nowrap;
+  border-bottom: 2px solid transparent; /* Space for active line */
 }
 #nav-navigation a:hover {
-  color: var(--text-color);
   text-decoration: none;
+  color: #555; /* Slightly lighter on hover - using a grey here for interaction */
 }
 
 /* Scroll-Spy Style */
 #nav-navigation a.active {
-  color: var(--primary-color);
+  color: var(--black);
   font-weight: 600;
+  border-bottom-color: var(--black); /* Black underline for active */
 }
-#nav-navigation a.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: var(--primary-color);
-}
+#nav-navigation a.active::after { display: none; } /* Remove ::after rule */
 
-/* GitHub Link (right) */
+/* GitHub Link */
 .github-link {
-  height: 1.8em; /* Adjust size */
+  height: 1.8em; /* Original small height */
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -140,40 +113,35 @@ nav {
   height: 100%;
   width: auto;
   display: block;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
+  opacity: 1; /* Fully visible */
 }
-.github-link:hover .github-logo { opacity: 1; }
+.github-link:hover .github-logo { opacity: 0.7; } /* Dim slightly on hover */
 
 
 /* --- Main Content --- */
 main {
-  max-width: 60em; /* Content width */
-  margin: 2em auto; /* Centering and spacing */
+  max-width: 60em;
+  margin: 2em auto;
   padding: 0 1em;
 }
 
 /* Style for each section */
 section {
-  background: var(--card-bg);
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  padding: 1.5em;
-  margin-bottom: 1.5em; /* Space between sections */
+  background: var(--white);
+  border: 1px solid var(--black); /* Black border */
+  border-radius: 0; /* No radius */
+  box-shadow: none; /* No shadow */
+  padding: 1em 1.5em; /* Adjusted padding */
+  margin-bottom: 1.5em;
 }
 section:last-of-type {
     margin-bottom: 0;
 }
 
-section h1 {
-  color: var(--primary-color);
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.5em;
-  margin-top: 0;
-  margin-bottom: 1em;
-}
+/* Remove section title styling as it's replaced by folder toggle */
+/* section h1 { ... } */
 
-/* --- File Tree Styling --- */
+/* --- File Tree Styling (Uniform Collapse) --- */
 .dynamic-content-container ul {
   list-style-type: none;
   padding-left: 0;
@@ -181,12 +149,19 @@ section h1 {
 }
 .dynamic-content-container li { margin-bottom: 0.3em; }
 
+/* Applies to ALL folder levels now */
 .folder-toggle {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #333;
+  color: var(--black);
   cursor: pointer;
   padding: 0.2em 0;
+  display: block; /* Take full width */
+  border-bottom: 1px dashed var(--black); /* Dashed line under folder name */
+  margin-bottom: 0.5em;
+}
+.folder-toggle:hover {
+    background-color: #eee; /* Light grey hover */
 }
 .folder-toggle::before {
   content: '▶'; /* Closed */
@@ -201,7 +176,7 @@ section h1 {
 
 .folder-content {
   padding-left: 1.2em;
-  border-left: 1px solid #eee;
+  /* No border needed, structure is clear */
   max-height: 1000px;
   overflow: hidden;
   transition: max-height 0.3s ease-out;
@@ -214,67 +189,123 @@ section h1 {
 
 /* File Item Styling */
 .dynamic-content-container p {
-  background: #f9f9f9;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  padding: 0.5em 1em;
-  margin: 0 0 0.3em 0;
+  background: none; /* No background */
+  border: none;
+  border-radius: 0;
+  padding: 0.3em 0; /* Reduced padding */
+  margin: 0 0 0.2em 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.dynamic-content-container p:hover { border-color: #ccc; }
-.dynamic-content-container p a { color: #333; font-weight: 500; }
-.dynamic-content-container p a::before { content: '📄'; margin-right: 0.5em; }
+.dynamic-content-container p:hover { background: none; } /* No hover background */
+.dynamic-content-container p a { 
+    color: var(--black); 
+    font-weight: 400; /* Regular weight for files */
+    text-decoration: underline; /* Underline file links */
+}
+.dynamic-content-container p a:hover { 
+    text-decoration: none; /* Remove underline on hover */
+}
+.dynamic-content-container p a::before { content: ''; margin-right: 0.5em; } /* Basic spacing, remove icon */
 
 .tag-versione {
   font-size: 0.75rem;
-  color: #777;
+  color: #555; /* Grey for tags */
   margin-left: 0.5em;
   white-space: nowrap;
 }
 
+/* Download button (simple link style) */
+.download-button {
+  font-size: 0.8em;
+  color: #555; /* Grey */
+  text-decoration: underline;
+  margin-left: 1em;
+  white-space: nowrap;
+}
+.download-button:hover {
+    color: var(--black);
+    text-decoration: none;
+}
+.download-button::before { content: ''; margin: 0;} /* Remove icon */
+
+
 /* --- Footer --- */
 footer {
-  padding: 1.5em 1em;
+  padding: 1em;
   text-align: center;
-  font-size: 0.9rem;
-  color: var(--light-text);
-  margin-top: auto; /* Sticky footer */
-  border-top: 1px solid var(--border-color);
-  background-color: var(--card-bg);
+  font-size: 0.85rem;
+  color: #555; /* Grey text */
+  margin-top: auto;
+  border-top: 1px solid var(--black); /* Black border */
+  background-color: var(--white);
 }
 
 /* --- Media Queries (Mobile) --- */
 @media (max-width: 750px) {
-  body { font-size: 16px; scroll-padding-top: 0; }
+  body { font-size: 15px; scroll-padding-top: 0; }
   header {
-      position: relative; /* Remove sticky on mobile */
+      position: relative;
       height: auto;
       padding: 0.8em 1em;
   }
   nav {
-      flex-wrap: wrap; /* Allow wrapping */
-      justify-content: center; /* Center items when wrapped */
-      gap: 0.5em 1em; /* Add gap between wrapped rows */
-  }
-  #header-logo { height: 2.5em; order: -1; /* Ensure logo is first */ }
-  #nav-navigation {
-      width: 100%; /* Take full width */
-      order: 1; /* Move below logo/github */
+      flex-wrap: wrap;
       justify-content: center;
-      border-top: 1px solid var(--border-color);
+      gap: 0.5em 1em;
+  }
+  #header-logo { height: 2.5em; order: -1; }
+  #nav-navigation {
+      width: 100%;
+      order: 1;
+      justify-content: center;
+      border-top: 1px solid var(--black);
       padding-top: 0.5em;
       margin-top: 0.5em;
+      gap: 0.5em 0.8em;
   }
-   #nav-navigation a.active::after { display: none; } /* Hide line on mobile */
+   #nav-navigation a.active { border-bottom-color: transparent; } /* Hide active border on mobile */
   .github-link {
-      height: 1.6em; /* Slightly smaller on mobile */
-      /* No absolute positioning needed anymore */
+      height: 1.6em;
   }
   main {
       margin: 1.5em auto;
       padding: 0 1em;
   }
   section { padding: 1em; }
+
+  /* Search bar mobile */
+  #search-container { padding: 1em; margin-bottom: 1.5em; }
+  #document-search { font-size: 1rem; }
+
+  /* Download button mobile */
+  .download-button { font-size: 0.75em; }
+}
+
+/* --- Search Bar --- */
+#search-container {
+  background-color: var(--white);
+  padding: 1em 1.5em;
+  border: 1px solid var(--black);
+  margin-bottom: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#document-search {
+  width: 100%;
+  max-width: 40em;
+  padding: 0.6em 1em; /* Reduced padding */
+  border: 1px solid var(--black);
+  border-radius: 0;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+#document-search:focus {
+  outline: none;
+  border-color: var(--black);
+  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--black); /* Inverted focus */
 }
