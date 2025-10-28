@@ -206,25 +206,25 @@ footer {
   border-top: 1px solid var(--black);
 }
 
-/* --- HEADER ACTIVE SECTION (FRECCIA) --- */
-#nav-navigation a.active {
-  background: transparent;
-  box-shadow: none;
+/* --- HEADER ACTIVE SECTION (FRECCIA FISSA) --- */
+#nav-navigation a {
+  position: relative;
+  min-width: 4.5em; /* fissa la larghezza per non far muovere le voci */
+  text-align: center;
+}
+#nav-navigation a.show-arrow::after {
+  content: '↓';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0.15em;
   font-size: 1.2rem;
-  padding: 0.2em;
   color: var(--black);
-  cursor: default;
+}
+#nav-navigation a.show-arrow {
+  color: transparent; /* nasconde il testo ma mantiene spazio */
 }
 
-/* --- TITOLO PRINCIPALE DELLA SEZIONE --- */
-.repo-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--black);
-  margin: 0 0 0.8em 0;
-  border-bottom: 2px solid var(--black);
-  padding-bottom: 0.3em;
-}
 
 /* --- MOBILE --- */
 @media (max-width: 750px) {

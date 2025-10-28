@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
       a.href = '#';
       a.dataset.section = name;
       a.textContent = name;
-      if (i === 0) a.classList.add('active');
+      if (i === 0) a.classList.add('active', 'show-arrow');
       li.appendChild(a);
       nav.appendChild(li);
     });
@@ -42,29 +42,31 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('#nav-navigation a').forEach(a => {
       const isActive = a.dataset.section === name;
       a.classList.toggle('active', isActive);
-      a.textContent = isActive ? '↓' : a.dataset.section; // freccia o testo
+      a.classList.toggle('show-arrow', isActive);
     });
 
     // aggiorna placeholder ricerca
     searchInput.placeholder = `Cerca in ${name}…`;
 
-    // aggiorna titolo principale sotto
-    let existingTitle = sectionsWrapper.querySelector('h1.repo-title');
-    if (!existingTitle) {
-      existingTitle = document.createElement('h1');
-      existingTitle.className = 'repo-title';
-      sectionsWrapper.insertBefore(existingTitle, container);
-    }
-    existingTitle.textContent = name;
-
     // reset contenuto
     container.innerHTML = '';
     noResults.hidden = true;
 
-    const section = document.createElement('section');
-    section.className = 'doc-section active-section';
-    section.appendChild(buildTree(docsTree[name]));
-    container.appendChild(section);
+    // crea cartella root collassabile
+    const rootWrapper = document.createElement('section');
+    rootWrapper.className = 'doc-section active-section';
+
+    const rootToggle = document.createElement('div');
+    rootToggle.className = 'folder-toggle';
+    rootToggle.textContent = name;
+
+    const rootContent = document.createElement('div');
+    rootContent.className = 'folder-content';
+
+    rootContent.appendChild(buildTree(docsTree[name]));
+
+    rootWrapper.append(rootToggle, rootContent);
+    container.appendChild(rootWrapper);
   }
 
   // Costruzione ricorsiva della struttura file/cartelle
