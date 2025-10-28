@@ -193,25 +193,38 @@ footer {
 
 /* --- Mobile --- */
 @media (max-width: 750px) {
-  header { height: auto; }
-  nav {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5em;
-    padding: 1em;
+  header {
+    height: auto;
   }
+
+  nav {
+    flex-direction: column; /* ora va in colonna, logo sopra */
+    align-items: center;
+    gap: 0.8em;
+    padding: 1em 0.5em;
+  }
+
+  /* logo sopra e centrato */
   #header-logo {
+    order: -1; /* lo mette prima */
     height: auto;
     max-height: 6em;
+    margin: 0 auto 0.8em auto;
   }
   #header-logo img {
     width: auto;
-    max-height: 5em;
+    max-height: 5.5em;
   }
+
+  /* menu sezioni sotto */
   #nav-navigation {
+    order: 2;
+    width: 100%;
+    justify-content: center;
     border-top: 1px solid var(--black);
     padding-top: 0.5em;
     flex-wrap: wrap;
-    justify-content: center;
+    gap: 0.6em 1em;
   }
 }
+
