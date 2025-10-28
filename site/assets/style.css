@@ -164,7 +164,7 @@ main {
   display: inline-block;
   width: 16px;
   height: 16px;
-  background-image: url("../images/pdf-icon.svg");
+  background-image: url("./assets/images/pdf-icon.svg");
   background-size: contain;
   background-repeat: no-repeat;
 }
@@ -198,7 +198,7 @@ footer {
   }
 
   nav {
-    flex-direction: column; /* ora va in colonna, logo sopra */
+    flex-direction: column; /* logo sopra */
     align-items: center;
     gap: 0.8em;
     padding: 1em 0.5em;
@@ -216,15 +216,14 @@ footer {
     max-height: 5.5em;
   }
 
-  /* menu sezioni sotto */
+  /* menu sezioni sotto, SENZA linea */
   #nav-navigation {
     order: 2;
     width: 100%;
     justify-content: center;
-    border-top: 1px solid var(--black);
-    padding-top: 0.5em;
     flex-wrap: wrap;
     gap: 0.6em 1em;
+    border-top: none; /* 🔥 rimossa la linea sopra */
+    padding-top: 0;
   }
 }
-
