@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('sections-container');
   const searchInput = document.getElementById('document-search');
   const searchContainer = document.getElementById('search-container');
-  const noResults = document.getElementById('no-results');
   const sectionsWrapper = document.getElementById('sections-wrapper');
   
   let docsTree = {};
@@ -54,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // reset della search bar al cambio sezione
     searchInput.value = '';
-    noResults.hidden = true;
 
     // aggiorna gli stati attivi dei link
     document.querySelectorAll('#nav-navigation a').forEach(a => {
@@ -199,7 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (query === '') {
       const allItems = container.querySelectorAll('li');
       allItems.forEach(li => li.style.display = '');
-      noResults.hidden = true;
       return;
     }
 
@@ -242,9 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
         li.style.display = hasVisibleChildren ? '' : 'none';
       }
     });
-
-    // mostra messaggio se non ci sono risultati
-    noResults.hidden = visibleCount > 0;
   });
 
   loadDocsTree();

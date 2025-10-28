@@ -1,0 +1,188 @@
+{
+  "PB": [
+    {
+      "type": "file",
+      "name": "Valutazione Capitolati",
+      "path": "./docs/PB/Valutazione_Capitolati.pdf",
+      "version": null
+    },
+    {
+      "type": "file",
+      "name": "Preventivo Costi",
+      "path": "./docs/PB/Preventivo_Costi.pdf",
+      "version": null
+    },
+    {
+      "type": "folder",
+      "name": "Verbali",
+      "children": [
+        {
+          "type": "folder",
+          "name": "Verbali Interni",
+          "children": [
+            {
+              "type": "file",
+              "name": "verbale interno 20-10-25",
+              "path": "./docs/PB/Verbali/Verbali Interni/verbale_interno_20-10-25.pdf",
+              "version": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 27-10-25",
+              "path": "./docs/PB/Verbali/Verbali Interni/verbale_interno_27-10-25.pdf",
+              "version": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 14-10-25",
+              "path": "./docs/PB/Verbali/Verbali Interni/verbale_interno_14-10-25.pdf",
+              "version": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 15-10-25",
+              "path": "./docs/PB/Verbali/Verbali Interni/verbale_interno_15-10-25.pdf",
+              "version": null
+            }
+          ]
+        },
+        {
+          "type": "folder",
+          "name": "Verbali Esterni",
+          "children": [
+            {
+              "type": "file",
+              "name": "verbale esterno 22-10-25",
+              "path": "./docs/PB/Verbali/Verbali Esterni/verbale_esterno_22-10-25.pdf",
+              "version": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Candidatura": [
+    {
+      "type": "file",
+      "name": "Valutazione Capitolati",
+      "path": "./docs/Candidatura/Valutazione_Capitolati.pdf",
+      "version": null
+    },
+    {
+      "type": "file",
+      "name": "Preventivo Costi",
+      "path": "./docs/Candidatura/Preventivo_Costi.pdf",
+      "version": null
+    },
+    {
+      "type": "folder",
+      "name": "Verbali",
+      "children": [
+        {
+          "type": "folder",
+          "name": "Verbali Interni",
+          "children": [
+            {
+              "type": "file",
+              "name": "verbale interno 20-10-25",
+              "path": "./docs/Candidatura/Verbali/Verbali Interni/verbale_interno_20-10-25.pdf",
+              "version": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 27-10-25",
+              "path": "./docs/Candidatura/Verbali/Verbali Interni/verbale_interno_27-10-25.pdf",
+              "version": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 14-10-25",
+              "path": "./docs/Candidatura/Verbali/Verbali Interni/verbale_interno_14-10-25.pdf",
+              "version": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 15-10-25",
+              "path": "./docs/Candidatura/Verbali/Verbali Interni/verbale_interno_15-10-25.pdf",
+              "version": null
+            }
+          ]
+        },
+        {
+          "type": "folder",
+          "name": "Verbali Esterni",
+          "children": [
+            {
+              "type": "file",
+              "name": "verbale esterno 22-10-25",
+              "path": "./docs/Candidatura/Verbali/Verbali Esterni/verbale_esterno_22-10-25.pdf",
+              "version": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "RTB": [
+    {
+      "type": "file",
+      "name": "Valutazione Capitolati",
+      "path": "./docs/RTB/Valutazione_Capitolati.pdf",
+      "version": null
+    },
+    {
+      "type": "file",
+      "name": "Preventivo Costi",
+      "path": "./docs/RTB/Preventivo_Costi.pdf",
+      "version": null
+    },
+    {
+      "type": "folder",
+      "name": "Verbali",
+      "children": [
+        {
+          "type": "folder",
+          "name": "Verbali Interni",
+          "children": [
+            {
+              "type": "file",
+              "name": "verbale interno 20-10-25",
+              "path": "./docs/RTB/Verbali/Verbali Interni/verbale_interno_20-10-25.pdf",
+              "version": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 27-10-25",
+              "path": "./docs/RTB/Verbali/Verbali Interni/verbale_interno_27-10-25.pdf",
+              "version": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 14-10-25",
+              "path": "./docs/RTB/Verbali/Verbali Interni/verbale_interno_14-10-25.pdf",
+              "version": null
+            },
+            {
+              "type": "file",
+              "name": "verbale interno 15-10-25",
+              "path": "./docs/RTB/Verbali/Verbali Interni/verbale_interno_15-10-25.pdf",
+              "version": null
+            }
+          ]
+        },
+        {
+          "type": "folder",
+          "name": "Verbali Esterni",
+          "children": [
+            {
+              "type": "file",
+              "name": "verbale esterno 22-10-25",
+              "path": "./docs/RTB/Verbali/Verbali Esterni/verbale_esterno_22-10-25.pdf",
+              "version": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
