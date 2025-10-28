@@ -1,5 +1,10 @@
-# Report di compilazione del 2025-10-28T00:34:37+00:00
+# Report di compilazione del 2025-10-28T00:42:40+00:00
 
-Compilazione basata sul commit a81eae24efa9f0d003d3154bf42858ef6ab22c14 (base: a81eae2)
+Compilazione basata sul commit 0cd56a5a7c7dc74348cd4c2ed8ab3de253f829e3 (base: 0cd56a5)
 
-💡 Nessun file modificato o mancante. Nessuna compilazione eseguita.
+## Falliti
+💡 Nessun errore di compilazione
+
+## Compilati
+✅ [docs/RTB/template.pdf](docs/RTB/template.pdf)
+
