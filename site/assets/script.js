@@ -6,42 +6,42 @@ document.addEventListener('DOMContentLoaded', () => {
   let docsTree = {};
   let currentSection = null;
 
-  // Carica il file JSON principale
   async function loadDocsTree() {
     try {
-      const res = await fetch('./docs_tree.json');
+      const res = await fetch('./docs_tree.json'); // percorso corretto
       docsTree = await res.json();
       buildNavigation();
-      const firstSection = Object.keys(docsTree)[0];
-      if (firstSection) showSection(firstSection);
+      const first = Object.keys(docsTree)[0];
+      if (first) showSection(first);
     } catch (err) {
       container.innerHTML = `<p style="color:#555;">Impossibile caricare docs_tree.json</p>`;
     }
   }
 
-  // Crea la barra di navigazione dalle sezioni principali
   function buildNavigation() {
     nav.innerHTML = '';
-    Object.keys(docsTree).forEach((sectionName, index) => {
+    Object.keys(docsTree).forEach((name, i) => {
       const li = document.createElement('li');
       const a = document.createElement('a');
       a.href = '#';
-      a.dataset.section = sectionName;
-      a.textContent = sectionName;
-      if (index === 0) a.classList.add('active');
+      a.dataset.section = name;
+      a.textContent = name;
+      if (i === 0) a.classList.add('active');
       li.appendChild(a);
       nav.appendChild(li);
     });
   }
 
-  // Mostra una sezione principale
   function showSection(name) {
     currentSection = name;
     document.querySelectorAll('#nav-navigation a').forEach(a => {
       a.classList.toggle('active', a.dataset.section === name);
     });
 
-    container.innerHTML = ''; // pulisci tutto
+    // Aggiorna placeholder ricerca
+    searchInput.placeholder = `Cerca in ${name}…`;
+
+    container.innerHTML = '';
     noResults.hidden = true;
 
     const section = document.createElement('section');
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     container.appendChild(section);
   }
 
-  // Costruzione ricorsiva dell'albero
+  // Costruzione ricorsiva
   function buildTree(items) {
     const wrapper = document.createElement('div');
     wrapper.className = 'dynamic-content-container';
@@ -65,12 +65,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const content = document.createElement('div');
         content.className = 'folder-content';
-        if (item.children && item.children.length > 0) {
+        if (item.children?.length) {
           content.appendChild(buildTree(item.children));
         }
-
-        li.appendChild(toggle);
-        li.appendChild(content);
+        li.append(toggle, content);
       } else if (item.type === 'file') {
         li.innerHTML = `
           <p>
@@ -86,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return wrapper;
   }
 
-  // Gestione toggle delle cartelle
   document.body.addEventListener('click', e => {
     const toggle = e.target.closest('.folder-toggle');
     if (!toggle) return;
@@ -94,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
     toggle.nextElementSibling?.classList.toggle('collapsed');
   });
 
-  // Cambio sezione
   nav.addEventListener('click', e => {
     const link = e.target.closest('a[data-section]');
     if (!link) return;
@@ -103,13 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // Ricerca
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim().toLowerCase();
-    const activeSection = container.querySelector('.doc-section');
-    if (!activeSection) return;
+    const active = container.querySelector('.doc-section');
+    if (!active) return;
 
-    const items = activeSection.querySelectorAll('li');
+    const items = active.querySelectorAll('li');
     let visible = 0;
     items.forEach(li => {
       const match = li.textContent.toLowerCase().includes(query);

@@ -18,7 +18,7 @@
     <header>
       <nav>
         <ul id="nav-navigation">
-          <!-- Queste voci verranno generate dinamicamente dal JSON -->
+          <!-- Popolato dal JS -->
         </ul>
 
         <a href="https://github.com/sass0lino/DocuTex" id="header-logo" target="_blank"
@@ -29,14 +29,13 @@
     </header>
 
     <main id="main-content">
-      <div id="search-container" role="search">
-        <input id="document-search" type="search" placeholder="Cerca nei documenti…" aria-label="Cerca nei documenti" />
-      </div>
+      <div id="sections-wrapper">
+        <div id="search-container" role="search">
+          <input id="document-search" type="search" placeholder="Cerca nei documenti…" aria-label="Cerca nei documenti" />
+        </div>
 
-      <p id="no-results" hidden>Nessun risultato trovato.</p>
-
-      <div id="sections-container">
-        <!-- Le sezioni principali (Candidatura, RTB, ecc.) vengono generate qui -->
+        <p id="no-results" hidden>Nessun risultato trovato.</p>
+        <div id="sections-container"></div>
       </div>
     </main>
   </div>
