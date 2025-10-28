@@ -11,13 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('./docs_tree.json');
       docsTree = await res.json();
       buildNavigation();
-      showSection('Tutto'); // mostra "Tutto" di default
-    } catch (err) {
-      container.innerHTML = `<p style="color:#555;">Impossibile caricare docs_tree.json</p>`;
+      showSection('Tutto'); // default
+    } catch {
+      container.innerHTML = `<p style="color:#555;">Errore nel caricamento dei documenti.</p>`;
     }
   }
 
-  // --- COSTRUZIONE NAVBAR ---
   function buildNavigation() {
     nav.innerHTML = '';
 
@@ -31,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     allLi.appendChild(allA);
     nav.appendChild(allLi);
 
-    // Tutte le sezioni del JSON
+    // Sezioni principali
     Object.keys(docsTree).forEach(name => {
       const li = document.createElement('li');
       const a = document.createElement('a');
@@ -43,42 +42,44 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- MOSTRA SEZIONE ---
   function showSection(name) {
     currentSection = name;
 
-    // aggiorna stato attivo header
     document.querySelectorAll('#nav-navigation a').forEach(a => {
       const isActive = a.dataset.section === name;
       a.classList.toggle('active', isActive);
       a.classList.toggle('show-arrow', isActive);
     });
 
-    // placeholder ricerca
-    searchInput.placeholder = name === 'Tutto' ? 'Cerca...' : `Cerca in ${name}…`;
+    searchInput.placeholder = name === 'Tutto' ? 'Cerca…' : `Cerca in ${name}…`;
 
-    // reset contenuto
     container.innerHTML = '';
     noResults.hidden = true;
 
-    // sezione principale
     const rootWrapper = document.createElement('section');
     rootWrapper.className = 'doc-section active-section';
 
     if (name === 'Tutto') {
-      // --- Sezione "Tutto": mostra tutto il repository ---
       const title = document.createElement('h1');
       title.className = 'repo-title';
       title.textContent = 'Documentazione di Progetto';
       rootWrapper.appendChild(title);
 
+      // Mostra tutte le cartelle di primo livello collassabili
       Object.keys(docsTree).forEach(section => {
-        const subSection = document.createElement('div');
-        subSection.appendChild(buildTree(docsTree[section]));
-        rootWrapper.appendChild(subSection);
+        const sectionContainer = document.createElement('div');
+        const sectionToggle = document.createElement('div');
+        sectionToggle.className = 'folder-toggle';
+        sectionToggle.textContent = section;
+
+        const sectionContent = document.createElement('div');
+        sectionContent.className = 'folder-content';
+        sectionContent.appendChild(buildTree(docsTree[section]));
+
+        sectionContainer.append(sectionToggle, sectionContent);
+        rootWrapper.appendChild(sectionContainer);
       });
     } else {
-      // --- Sezione singola ---
       const rootToggle = document.createElement('div');
       rootToggle.className = 'folder-toggle';
       rootToggle.textContent = name;
@@ -93,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
     container.appendChild(rootWrapper);
   }
 
-  // --- COSTRUZIONE STRUTTURA FILE/CARTELLE ---
   function buildTree(items) {
     const wrapper = document.createElement('div');
     wrapper.className = 'dynamic-content-container';
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return wrapper;
   }
 
-  // --- EVENTI ---
+  // Interazioni
   document.body.addEventListener('click', e => {
     const toggle = e.target.closest('.folder-toggle');
     if (!toggle) return;
