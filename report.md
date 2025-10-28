@@ -1,10 +1,5 @@
-# Report di compilazione del 2025-10-28T08:55:05+00:00
+# Report di compilazione del 2025-10-28T09:02:30+00:00
 
-Compilazione basata sul commit fa0bfc76220dce3c4a2591731d9fcea66d49c2ba (base: fa0bfc7)
+Compilazione basata sul commit 1120382d61588920e3793a9d302c66ca7f69bde0 (base: 1120382)
 
-## Falliti
-💡 Nessun errore di compilazione
-
-## Compilati
-✅ [docs/RTB/templatev2.pdf](docs/RTB/templatev2.pdf)
-
+💡 Nessun file modificato o mancante. Nessuna compilazione eseguita.
