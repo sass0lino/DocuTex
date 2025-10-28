@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('./docs_tree.json');
       docsTree = await res.json();
       buildNavigation();
-      showSection('Tutto'); // 👈 apre la sezione "Tutto" di default
+      showSection('Tutto'); // 👈 apre la sezione "Tutto" all'avvio
     } catch (err) {
       container.innerHTML = `<p style="color:#555;">Impossibile caricare docs_tree.json</p>`;
     }
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function buildNavigation() {
     nav.innerHTML = '';
 
-    // Aggiungi "Tutto" come prima voce
+    // Sezione speciale "Tutto"
     const allLi = document.createElement('li');
     const allA = document.createElement('a');
     allA.href = '#';
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     allLi.appendChild(allA);
     nav.appendChild(allLi);
 
-    // Poi tutte le sezioni del JSON
+    // Sezioni dal JSON
     Object.keys(docsTree).forEach(name => {
       const li = document.createElement('li');
       const a = document.createElement('a');
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Mostra la sezione scelta
+  // Mostra la sezione selezionata
   function showSection(name) {
     currentSection = name;
 
@@ -54,7 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
       a.classList.toggle('show-arrow', isActive);
     });
 
-    searchInput.placeholder = `Cerca in ${name}…`;
+    // Placeholder diverso se siamo in "Tutto"
+    searchInput.placeholder = name === 'Tutto' ? 'Cerca...' : `Cerca in ${name}…`;
 
     container.innerHTML = '';
     noResults.hidden = true;
@@ -62,29 +63,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const rootWrapper = document.createElement('section');
     rootWrapper.className = 'doc-section active-section';
 
-    const rootToggle = document.createElement('div');
-    rootToggle.className = 'folder-toggle';
-    rootToggle.textContent = name;
-
-    const rootContent = document.createElement('div');
-    rootContent.className = 'folder-content';
-
-    // Se "Tutto", mostra la struttura completa
+    // Sezione "Tutto" -> solo titolo
     if (name === 'Tutto') {
+      const title = document.createElement('h1');
+      title.className = 'repo-title';
+      title.textContent = 'Tutto';
+      rootWrapper.appendChild(title);
+
       Object.keys(docsTree).forEach(section => {
-        const sub = document.createElement('div');
-        sub.appendChild(buildTree(docsTree[section]));
-        rootContent.appendChild(sub);
+        const sectionDiv = document.createElement('div');
+        sectionDiv.appendChild(buildTree(docsTree[section]));
+        rootWrapper.appendChild(sectionDiv);
       });
     } else {
+      // Sezioni normali -> cartella collassabile
+      const rootToggle = document.createElement('div');
+      rootToggle.className = 'folder-toggle';
+      rootToggle.textContent = name;
+
+      const rootContent = document.createElement('div');
+      rootContent.className = 'folder-content';
       rootContent.appendChild(buildTree(docsTree[name]));
+
+      rootWrapper.append(rootToggle, rootContent);
     }
 
-    rootWrapper.append(rootToggle, rootContent);
     container.appendChild(rootWrapper);
   }
 
-  // Ricorsione per costruire struttura cartelle e file
+  // Costruzione ricorsiva della struttura file/cartelle
   function buildTree(items) {
     const wrapper = document.createElement('div');
     wrapper.className = 'dynamic-content-container';

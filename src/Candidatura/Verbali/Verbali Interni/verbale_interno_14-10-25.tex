@@ -1,12 +1,3 @@
-% ===================================================================
-%  TEMPLATE DOCUMENTO PROGETTO (File Unico)
-%  Gruppo: NightPRO
-%  Progetto: Ingegneria del Software 2025/2026
-% ===================================================================
-
-% -------------------------------------------------------------------
-%  SEZIONE: configurazione 
-% -------------------------------------------------------------------
 \documentclass[a4paper, 11pt, oneside]{scrartcl} % Classe KOMA-Script
 
 % --- Pacchetti Fondamentali ---
@@ -21,7 +12,7 @@
 \graphicspath{{src/immagini/}{\currfiledir contenuti/}{\currfiledir contenuti/immagini/}}
 
 \usepackage[a4paper, top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry} % Margini
-\usepackage{fancyhdr}           % Per header e footer
+\usepackage{fancyhdr}           % Per header e footer personalizzati
 \usepackage{microtype}          % Migliora la tipografia
 \usepackage[svgnames]{xcolor}   % Colori
 
@@ -56,7 +47,7 @@
 \begin{document}
 
 % -------------------------------------------------------------------
-%  SEZIONE: intestazione_titolo
+%  SEZIONE: intestazione_titolo.tex
 % -------------------------------------------------------------------
 \thispagestyle{empty}
 \begin{titlepage}
@@ -79,12 +70,12 @@
     
     \vfill
     
-    {\Huge \bfseries Documentazione di Progetto \par}
+    {\Huge \bfseries Verbale di Riunione \par}
     
     \vspace{1cm}
     
     % Inserisci qui il titolo specifico del documento
-    {\Large \itshape (Titolo Specifico del Documento) \par} 
+    {\Large \itshape Verbale Interno del 14 ottobre 2025 \par} 
     
     \vfill
     
@@ -95,19 +86,19 @@
     \vfill
     
     % Inserisci qui la data di redazione del documento
-    {\large Data: \today \par}
+    {\large Data: 14 ottobre 2025 \par}
 
 \end{titlepage}
 
 % -------------------------------------------------------------------
-%  SEZIONE: indice
+%  SEZIONE: indice.tex
 % -------------------------------------------------------------------
 \newpage
 \tableofcontents % Genera l'indice
 \pagestyle{fancy} % Riattiva lo stile di pagina da qui in poi
 
 % -------------------------------------------------------------------
-%  SEZIONE: informazioni
+%  SEZIONE: informazioni.tex
 % -------------------------------------------------------------------
 \newpage
 \section{Informazioni Generali}
@@ -133,62 +124,56 @@ Ponso & Giovanni & 2000558 \\
 \caption{Componenti del Gruppo NightPRO.}
 \end{table}
 
-\subsection{Architettura dei Repository}
-Il progetto è articolato su due repository distinti:
+\subsection{Dettagli Riunione}
 \begin{itemize}
-    \item \textbf{Repository Documentazione:} \url{https://github.com/swenightpro/Documentazione}
-    \item \textbf{Repository Prodotto Software:} \url{https://github.com/swenightpro/nightpro}
-\end{itemize}
-
-\subsection{Dettagli Riunione (se applicabile)}
-\begin{itemize}
-    \item \textbf{Data:} (Inserire data riunione)
-    \item \textbf{Luogo:} (Inserire luogo)
-    \item \textbf{Partecipanti:} (Inserire presenti/assenti)
+    \item \textbf{Data:} 14 ottobre 2025
+    \item \textbf{Ora:} 18:00 - 19:15
+    \item \textbf{Luogo:} Google Meet
+    \item \textbf{Partecipanti:} Tutti i membri del gruppo hanno partecipato
+    \item  \textbf{Redatto da: } Davide Biasuzzi
+    \item  \textbf{Verificato da:} Francesco Zanella
+    \item \textbf{Versione: } 1.0
 \end{itemize}
 
 
 % -------------------------------------------------------------------
-%  SEZIONE: odg (Ordine del Giorno)
+%  SEZIONE: odg.tex (Ordine del Giorno)
 % -------------------------------------------------------------------
 \newpage
 \section{Ordine del Giorno (Agenda)}
-\emph{(Questa sezione descrive i punti da discutere)}
-
 \begin{itemize}
-    \item[1.] (Punto 1 dell'agenda)
-    \item[2.] (Punto 2 dell'agenda)
-    \item[3.] ...
-    \item[4.] Varie ed eventuali
+    \item[1.] Nome e logo del gruppo
+    \item[2.] Contatti
+    \item[3.] Tecnologie
+    \item[4.] Modalità scelta e discussione capitolati
 \end{itemize}
 
 % -------------------------------------------------------------------
-%  SEZIONE: diario (Diario della riunione)
+%  SEZIONE: diario.tex (Diario della riunione)
 % -------------------------------------------------------------------
 \newpage
 \section{Diario della Riunione}
-\emph{(Questa sezione trascrive la discussione avvenuta)}
 
-\subsection{Discussione Punto 1: ...}
-(Trascrizione della discussione...)
+\subsection{Nome e logo del gruppo:}
+È stato scelto e approvato il nome ufficiale del gruppo: "Night Pro". La realizzazione della proposta di logo è stata affidata a Davide Biasuzzi.
 
-\subsection{Discussione Punto 2: ...}
-(Trascrizione della discussione...)
-
-\subsection{Discussione Varie ed eventuali}
-(Trascrizione della discussione...)
-
+\subsection{Contatti:}
+È stato creato l'account email condiviso del gruppo, che verrà utilizzato per le comunicazioni ufficiali e la gestione degli account condivisi. L'indirizzo è: swe.nightpro@gmail.com
+\subsection{Tecnologie:}
+Si è deciso di utilizzare GitHub come piattaforma di code hosting e versioning. Michele Ogniben procederà alla creazione della repository (o organizzazione) su GitHub, utilizzando il nuovo account Google del gruppo. La repository verrà inizialmente utilizzata per effettuare test e definire la struttura ottimale per la gestione della documentazione e del codice sorgente del progetto.
+\subsection{Scelta e discussione capitolati:}
+È stato predisposto un file Google Docs per permettere a tutti i membri di votare i capitolati di interesse. La discussione plenaria sui risultati della votazione, l'analisi dei capitolati selezionati e la risoluzione di eventuali dubbi sono state calendarizzate per la prossima riunione, fissata per il 15 ottobre.
 % -------------------------------------------------------------------
-%  SEZIONE: decisioni (Decisioni prese)
+%  SEZIONE: decisioni.tex (Decisioni prese)
 % -------------------------------------------------------------------
 \newpage
 \section{Decisioni Prese}
-\emph{(Questa sezione elenca le decisioni chiave concordate)}
 
 \begin{enumerate}
-    \item (Decisione 1)
-    \item (Decisione 2)
-    \item ...
+    \item Nome del gruppo e creazione logo
+    \item Account di contatto
+    \item Github come piattaforma di versioning
+    \item Modalità di "votazione" capitolati
 \end{enumerate}
 
 % -------------------------------------------------------------------
@@ -196,7 +181,6 @@ Il progetto è articolato su due repository distinti:
 % -------------------------------------------------------------------
 \newpage
 \section{Attività da Svolgere (To-Do)}
-\emph{(Questa sezione elenca i task assegnati)}
 
 \begin{table}[h!]
 \centering
@@ -204,10 +188,8 @@ Il progetto è articolato su due repository distinti:
 \toprule
 \textbf{Attività} & \textbf{Assegnatario/i} & \textbf{Scadenza} \\
 \midrule
-(Task 1) & (Nome) & (gg/mm/aaaa) \\
-(Task 2) & (Nome) & (gg/mm/aaaa) \\
-(Task 3) & (Nome) & (gg/mm/aaaa) \\
-... & ... & ... \\
+Creazione Logo & Davide Biasuzzi & 15/10/25 \\
+Creazione Github & Michele Ogniben & 15/10/25 \\
 \bottomrule
 \end{tabular}
 \caption{Riepilogo task assegnati.}

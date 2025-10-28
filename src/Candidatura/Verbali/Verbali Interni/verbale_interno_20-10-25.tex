@@ -1,3 +1,22 @@
+% ===================================================================
+%  TEMPLATE DOCUMENTO PROGETTO (File Unico)
+%  Gruppo: NightPRO
+%  Progetto: Ingegneria del Software 2025/2026
+%
+%  Basato sulla struttura:
+%  - configurazione.tex
+%  - intestazione_titolo.tex
+%  - indice.tex
+%  - informazioni.tex
+%  - odg.tex
+%  - diario.tex
+%  - decisioni.tex
+%  - todo.tex
+% ===================================================================
+
+% -------------------------------------------------------------------
+%  SEZIONE: configurazione.tex
+% -------------------------------------------------------------------
 \documentclass[a4paper, 11pt, oneside]{scrartcl} % Classe KOMA-Script
 
 % --- Pacchetti Fondamentali ---
@@ -75,7 +94,7 @@
     \vspace{1cm}
     
     % Inserisci qui il titolo specifico del documento
-    {\Large \itshape Verbale Interno del 14 ottobre 2025 \par} 
+    {\Large \itshape Verbale Interno del 20 ottobre 2025 \par} 
     
     \vfill
     
@@ -86,7 +105,7 @@
     \vfill
     
     % Inserisci qui la data di redazione del documento
-    {\large Data: 14 ottobre 2025 \par}
+    {\large Data: 20 ottobre 2025 \par}
 
 \end{titlepage}
 
@@ -126,10 +145,13 @@ Ponso & Giovanni & 2000558 \\
 
 \subsection{Dettagli Riunione}
 \begin{itemize}
-    \item \textbf{Data:} 14 ottobre 2025
-    \item \textbf{Ora:} 18:00 - 19:15
+    \item \textbf{Data:} 20 ottobre 2025
+    \item \textbf{Ora:} 17:30 - 19:30
     \item \textbf{Luogo:} Google Meet
-    \item \textbf{Partecipanti:} Tutti i membri del gruppo hanno partecipato
+    \item \textbf{Partecipanti:} Biasuzzi Davide, Zanella Francesco, Ponso Giovanni, Bilato Leonardo
+    \item  \textbf{Redatto da: } Francesco Zanella
+    \item  \textbf{Verificato da:} Davide Biasuzzi
+    \item \textbf{Versione: } 1.0
 \end{itemize}
 
 
@@ -139,10 +161,9 @@ Ponso & Giovanni & 2000558 \\
 \newpage
 \section{Ordine del Giorno (Agenda)}
 \begin{itemize}
-    \item[1.] Nome e logo del gruppo
-    \item[2.] Contatti
-    \item[3.] Tecnologie
-    \item[4.] Modalità scelta e discussione capitolati
+    \item[1.] Funzionamento Github
+    \item[2.] Compilazione documenti Github
+    \item[3.] Decisione documenti da iniziare a produrre
 \end{itemize}
 
 % -------------------------------------------------------------------
@@ -151,15 +172,28 @@ Ponso & Giovanni & 2000558 \\
 \newpage
 \section{Diario della Riunione}
 
-\subsection{Nome e logo del gruppo:}
-È stato scelto e approvato il nome ufficiale del gruppo: "Night Pro". La realizzazione della proposta di logo è stata affidata a Davide Biasuzzi.
+\subsection{Funzionamento Github:}
+Il gruppo ha avviato la riunione con una breve panoramica su GitHub, volta a chiarire il suo funzionamento di base.
+È emerso che uno dei membri aveva recentemente approfondito l’uso della piattaforma e ha condiviso le nozioni principali con il resto del gruppo, illustrando i concetti di repository, commit, branch e pull request.
+Un secondo membro aveva già utilizzato GitHub in passato, sebbene in modo limitato, e ha contribuito con esempi pratici su come gestire file e versioni.
+La discussione si è concentrata anche su come orientarsi nell’interfaccia e come creare e caricare vari tipi di file.
+L’obiettivo della sezione era garantire che tutti i membri acquisissero un livello minimo comune di competenza per poter collaborare in modo efficace sulla piattaforma.
 
-\subsection{Contatti:}
-È stato creato l'account email condiviso del gruppo, che verrà utilizzato per le comunicazioni ufficiali e la gestione degli account condivisi. L'indirizzo è: swe.nightpro@gmail.com
-\subsection{Tecnologie:}
-Si è deciso di utilizzare GitHub come piattaforma di code hosting e versioning. Michele Ogniben procederà alla creazione della repository (o organizzazione) su GitHub, utilizzando il nuovo account Google del gruppo. La repository verrà inizialmente utilizzata per effettuare test e definire la struttura ottimale per la gestione della documentazione e del codice sorgente del progetto.
-\subsection{Scelta e discussione capitolati:}
-È stato predisposto un file Google Docs per permettere a tutti i membri di votare i capitolati di interesse. La discussione plenaria sui risultati della votazione, l'analisi dei capitolati selezionati e la risoluzione di eventuali dubbi sono state calendarizzate per la prossima riunione, fissata per il 15 ottobre.
+\subsection{Compilazione documenti Github:}
+Successivamente, il gruppo ha analizzato come procedere alla redazione e compilazione dei documenti direttamente su GitHub.
+È stato chiarito il funzionamento della modifica dei file in formato Markdown e la possibilità di lavorare in modo collaborativo, evitando sovrapposizioni grazie all’uso dei branch e delle commit message chiare e coerenti.
+Si è inoltre discusso della struttura da mantenere all’interno del repository per rendere ordinata la documentazione (cartelle dedicate ai verbali, ai template, ecc.).
+Il gruppo ha concordato di utilizzare una nomenclatura coerente per i file e di mantenere una cronologia trasparente delle modifiche, in modo da facilitare eventuali revisioni future.
+\subsection{Decisione documenti da iniziare a produrre:}
+Nella parte finale della riunione si è deciso di iniziare la produzione dei seguenti documenti:
+\begin{itemize}
+    \item Diario di bordo, per tenere traccia delle attività svolte e delle decisioni prese durante le varie fasi del progetto.
+    \item Verbali delle riunioni, per documentare gli incontri in modo formale e consultabile da tutti i membri.
+    \item  Documento di candidatura, necessario per presentare ufficialmente il progetto e il gruppo di lavoro.
+\end{itemize}
+
+Il gruppo ha concordato di partire da modelli condivisi su GitHub, in modo da mantenere uniformità nella struttura dei documenti (template).
+
 % -------------------------------------------------------------------
 %  SEZIONE: decisioni.tex (Decisioni prese)
 % -------------------------------------------------------------------
@@ -167,10 +201,8 @@ Si è deciso di utilizzare GitHub come piattaforma di code hosting e versioning.
 \section{Decisioni Prese}
 
 \begin{enumerate}
-    \item Nome del gruppo e creazione logo
-    \item Account di contatto
-    \item Github come piattaforma di versioning
-    \item Modalità di "votazione" capitolati
+    \item Gestione file all'interno di Github
+    \item Priorità nella stesura della documentazione necessaria
 \end{enumerate}
 
 % -------------------------------------------------------------------
@@ -185,8 +217,9 @@ Si è deciso di utilizzare GitHub come piattaforma di code hosting e versioning.
 \toprule
 \textbf{Attività} & \textbf{Assegnatario/i} & \textbf{Scadenza} \\
 \midrule
-Creazione Logo & Davide Biasuzzi & 15/10/25 \\
-Creazione Github & Michele Ogniben & 15/10/25 \\
+Ottimizzazione e divisione su Github & Leonardo Bilato & 21/10/25 \\
+Stesura template& Davide Biasuzzi & 21/10/25 \\
+stesura prime relazioni& Francesco Zanella & 21/10/25 \\
 \bottomrule
 \end{tabular}
 \caption{Riepilogo task assegnati.}

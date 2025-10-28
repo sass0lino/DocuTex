@@ -3,7 +3,7 @@
 % --- Pacchetti Fondamentali ---
 \usepackage[utf8]{inputenc}     % Codifica UTF-8
 \usepackage[T1]{fontenc}        % Font encoding moderno
-\usepackage[italian]{babel}     % Lingua italiana
+\usepackage[italian]{babel}     % Lingua italiana 
 \usepackage{lmodern}            % Font "Latin Modern"
 
 % --- Grafica e Layout ---
@@ -74,8 +74,7 @@
     
     \vspace{1cm}
     
-    % Inserisci qui il titolo specifico del documento
-    {\Large \itshape Verbale Interno del 15 ottobre 2025 \par} 
+    {\Large \itshape Verbale Interno del 27 ottobre 2025 \par} 
     
     \vfill
     
@@ -84,9 +83,8 @@
     {\large \href{mailto:swe.nightpro@gmail.com}{swe.nightpro@gmail.com} \par}
     
     \vfill
-    
-    % Inserisci qui la data di redazione del documento
-    {\large Data: 15 ottobre 2025 \par}
+  
+    {\large Data: 27 ottobre 2025 \par}
 
 \end{titlepage}
 
@@ -105,7 +103,6 @@
 
 \subsection{Componenti del Gruppo}
 Elenco dei membri del gruppo di lavoro NightPRO.
-
 \begin{table}[h!]
 \centering
 \begin{tabular}{@{}llc@{}}
@@ -126,10 +123,13 @@ Ponso & Giovanni & 2000558 \\
 
 \subsection{Dettagli Riunione}
 \begin{itemize}
-    \item \textbf{Data:} 15 ottobre 2025
-    \item \textbf{Ora:} 18:00 - 19:30
+    \item \textbf{Data:} 27 ottobre 2025
+    \item \textbf{Ora:} 16:30 - 18:15
     \item \textbf{Luogo:} Google Meet
-    \item \textbf{Partecipanti:} Tutti i membri del gruppo hanno partecipato
+    \item \textbf{Partecipanti:} Tutti i membri del gruppo tranne Michele Ogniben
+    \item \textbf{Redatto da: } Davide Biasuzzi
+    \item \textbf{Verificato da:} Francesco Zanella
+    \item \textbf{Versione: } 1.0
 \end{itemize}
 
 
@@ -139,11 +139,12 @@ Ponso & Giovanni & 2000558 \\
 \newpage
 \section{Ordine del Giorno (Agenda)}
 \begin{itemize}
-    \item[1.] Discussione generale su tutti i capitolati
-    \item[2.] Approfondimento su capitolato C6
-    \item[3.] Approfondimento su capitolato C8
-    \item[4.] Approfondimento su capitolato C9
-    \item[5.] Contatti email da effettuare
+    \item[1.] Analisi strumenti di project management (JIRA vs GitHub Projects)
+    \item[2.] Definizione e setup repository e organizzazione GitHub
+    \item[3.] Aggiornamento scelta capitolato (Zucchetti vs VIMAR)
+    \item[4.] Pianificazione e assegnazione task per documenti di presentazione (Lettera, Preventivo, Valutazione)
+    \item[5.] Discussione struttura file LaTeX
+    \item[6.] Pianificazione prossimi incontri e scadenze
 \end{itemize}
 
 % -------------------------------------------------------------------
@@ -152,49 +153,44 @@ Ponso & Giovanni & 2000558 \\
 \newpage
 \section{Diario della Riunione}
 
-\subsection{Discussione generale su tutti i capitolati:}
+\subsection{Analisi strumenti di project management (JIRA vs GitHub Projects)}
+Si è discusso sull'utilizzo di JIRA o GitHub Projects per la gestione delle attività. 
+Giovanni Ponso ha mostrato un esempio di un progetto passato (MTSS) gestito su GitHub, illustrando la gestione delle \textit{issue} (task), l'assegnazione ai membri del team, l'uso di tag multipli, la definizione di \textit{milestones} e la tracciabilità delle scadenze.
+Viste le funzionalità, si è deciso di procedere con GitHub Projects.
 
-Si è proceduto all'analisi condivisa del file Google contenente le preferenze e le votazioni sui capitolati, preparato il giorno precedente. Dopo una discussione generale su tutte le proposte, il gruppo ha identificato tre capitolati di maggiore interesse sui quali concentrare l'approfondimento:
+\subsection{Definizione e setup repository e organizzazione GitHub}
+È stata creata l'organizzazione GitHub ufficiale del gruppo. 
+Samuele Perozzo ha sottolineato l'importanza di inserire una descrizione chiara e dettagliata per ogni commit.
+Francesco Zanella e Giovanni Ponso si occuperanno di creare la repository definitiva per la documentazione, migrando la struttura di prova già funzionante (incluso il convertitore LaTeX). 
+È stato specificato che i verbali firmati (PDF) dovranno essere inseriti manualmente nella posizione corretta nel repository, affiancando quelli compilati automaticamente.
+
+\subsection{Aggiornamento scelta capitolato (Zucchetti vs VIMAR)}
+Si è preso atto che un incontro con Zucchetti (proponente C6) è al momento fuori discussione, data l'elevata richiesta da parte di altri gruppi e la nostra propensione per il capitolato C8. 
+Si è quindi deciso di scartare questa opzione e di concentrarsi sul capitolato VIMAR. 
+Si è deciso di procedere fissando un colloquio con VIMAR per approfondire la proposta.
+
+\subsection{Pianificazione e assegnazione task per documenti di presentazione}
+Stabilita la scelta di VIMAR, si è deciso di procedere immediatamente con la stesura dei documenti necessari per la presentazione del gruppo all'azienda:
 \begin{itemize}
-    \item C6 (Second Brain)
-    \item C8 (Smart Order)
-    \item C9 (View4Life)
+    \item Lettera di Presentazione
+    \item Preventivo dei Costi ed Impegno Orario
+    \item Valutazione dei Capitolati
+\end{itemize}
+I compiti per la redazione della prima bozza sono stati così suddivisi:
+\begin{itemize}
+    \item \textbf{Lettera di Presentazione:} Samuele Perozzo, Francesco Zanella, Michele Ogniben.
+    \item \textbf{Valutazione dei Capitolati:} Davide Biasuzzi, Giovanni Ponso, Mariana Romascu.
+    \item \textbf{Preventivo dei Costi ed Impegno Orario:} Leonardo Bilato e Mariana Romascu.
 \end{itemize}
 
+\subsection{Discussione struttura file LaTeX}
+Giovanni Ponso ha illustrato la possibilità di suddividere i documenti LaTeX in file separati (per sezione) per una migliore organizzazione, o in alternativa di mantenerli in un unico file per semplicità operativa. Si è deciso di mantenere la struttura unica per evitare eccessiva complessità.
 
-\subsection{Approfondimento su capitolato C6:}
-È stato analizzato in dettaglio il capitolato C6. Sono emersi diversi dubbi e punti chiave da chiarire con il proponente (Dott. Piccoli) al fine di definire correttamente l'ambito del Proof of Concept (PoC) e dell'MVP (Minimum Viable Product). 
-La discussione si è focalizzata su:
-\begin{itemize}
-    \item Architettura Server: Si è discusso sul carattere "opzionale" della parte server. Si è convenuto che per le funzionalità LLM avanzate (come il collegamento tra note) sia fondamentale. È necessario chiedere se il PoC debba già includere la predisposizione per un database server-side.
-    \item Tecnologie Web App: È stata notata la richiesta di un editor MarkDown in pagina HTML. Si è deciso di chiedere a Zucchetti se esistano preferenze tecnologiche (es. specifici framework UI) oltre a quelle indicate.
-    \item Versionamento delle Note: Il capitolato menziona il salvataggio in file di testo. Si è discusso se sia sufficiente un semplice salvataggio (sovrascrittura) o se sia atteso un meccanismo di versioning dei contenuti.
-\end{itemize}
+\subsection{Pianificazione prossimi incontri e scadenze}
+È stata fissata una nuova riunione interna per il 29 ottobre 2025, con l'obiettivo di revisionare i documenti prodotti. 
+L'obiettivo è inviare la mail con la documentazione a VIMAR entro il 30 ottobre.
+Davide Biasuzzi è stato incaricato di scrivere l'email a VIMAR e di redigere il presente verbale.
 
-\subsection{Approfondimento su capitolato C8 (Smart Order):}
-Analogamente, si è approfondito il capitolato C8. L'analisi dell'architettura proposta ha sollevato diversi quesiti tecnici fondamentali da porre al proponente (Dott. Carlesso) per definire i confini del progetto. 
-I punti di discussione principali sono stati:
-\begin{itemize}
-    \item Modalità di Input: Chiarire quale sia il numero minimo di modalità (audio, testo, immagine, ecc.) richieste per il prodotto finale, oltre alle 1-2 suggerite per il PoC.
-    \item Confini del Sistema (Layer 1): Definire se la progettazione dei connettori per i dati eterogenei rientri nei compiti del gruppo, o se si debba assumere che l'infrastruttura dati sia già fornita.
-    \item Livello di Automazione (Layer 6): Comprendere se il layer di validazione e arricchimento dati debba tendere a un'automazione completa o se prevedere un intervento di supervisione umana (human-in-the-loop).
-    \item Gestione Retraining (Layer 8): Approfondire se il "retraining periodico" menzionato debba essere implementato come un ciclo automatico basato sul feedback o come un'operazione supervisionata.
-    \item Stack Tecnologico: Verificare se Ergon abbia uno stack tecnologico di riferimento interno o preferenze specifiche (es. .NET Blazor, React) per l'interfaccia.
-\end{itemize}
-\subsection{Approfondimento su capitolato C9 (View4Life):}
-Per il capitolato C9, la discussione si è concentrata principalmente su aspetti organizzativi e gestionali, ritenuti critici per la fattibilità del progetto.
-\begin{itemize}
-    \item Gestione Comunicazioni: È emersa una preoccupazione basata su feedback (riportati da studenti degli anni precedenti) circa possibili lunghi tempi di risposta da parte dei proponenti. Si è deciso di chiedere preventivamente e con trasparenza se per l'anno corrente siano state previste modalità o tempistiche specifiche per la gestione delle domande dei gruppi.
-\end{itemize}
-\subsection{Contatti email da effettuare:}
-Al termine della discussione, si è deciso di contattare via email tutti e tre i proponenti per sottoporre i dubbi emersi e ottenere i chiarimenti necessari prima di una scelta definitiva.
-Sono stati assegnati i seguenti incarichi per la stesura e l'invio delle comunicazioni:
-
-\begin{itemize}
-    \item C6 (Second Brain): Davide Biasuzzi
-    \item C8 (Smart Order): Giovanni Ponso
-    \item C9 (View4Life): Leonardo Bilato
-\end{itemize}
 % -------------------------------------------------------------------
 %  SEZIONE: decisioni.tex (Decisioni prese)
 % -------------------------------------------------------------------
@@ -202,7 +198,13 @@ Sono stati assegnati i seguenti incarichi per la stesura e l'invio delle comunic
 \section{Decisioni Prese}
 
 \begin{enumerate}
-    \item Scrivere mail ai capitolati d'interesse con lo scopo di approfondire e se necessario fissare un colloquio con l'azienda
+    \item Adottare GitHub Projects come strumento di task management.
+    \item Creare la repository GitHub definitiva per la documentazione.
+    \item Richiedere una descrizione chiara e dettagliata per ogni commit.
+    \item Scartare il capitolato Zucchetti e procedere con il capitolato VIMAR.
+    \item Fissare un colloquio con VIMAR.
+    \item Suddividere la preparazione dei documenti di presentazione (Lettera, Valutazione, Preventivo) tra i membri.
+    \item Fissare la prossima riunione interna per il 29 ottobre 2025.
 \end{enumerate}
 
 % -------------------------------------------------------------------
@@ -217,9 +219,13 @@ Sono stati assegnati i seguenti incarichi per la stesura e l'invio delle comunic
 \toprule
 \textbf{Attività} & \textbf{Assegnatario/i} & \textbf{Scadenza} \\
 \midrule
-Inviare mail per capitolato C6 & Davide Biasuzzi & 16/10/25 \\
-Inviare mail per capitolato C8 & Giovanni Ponso & 16/10/25 \\
-Inviare mail per capitolato C9 & Francesco Zanella & 16/10/25 \\
+Redazione Verbale Riunione 27/10 & Davide Biasuzzi & 28/10/25 \\
+Inviare mail a VIMAR per colloquio & Davide Biasuzzi & 28/10/25 \\
+Creazione Progetto GitHub (Kanban, issues) & Samuele Perozzo, Giovanni Ponso & 29/10/25 \\
+Creazione repository documentazione definitiva & Francesco Zanella, Giovanni Ponso & 29/10/25 \\
+Redazione "Lettera di Presentazione" (Bozza) & S. Perozzo, F. Zanella, M. Ogniben & 29/10/25 \\
+Redazione "Valutazione dei Capitolati" (Bozza) & D. Biasuzzi, G. Ponso, M. Romascu & 29/10/25 \\
+Redazione "Preventivo dei Costi" (Bozza) & Leonardo Bilato, M. Romascu & 29/10/25 \\
 \bottomrule
 \end{tabular}
 \caption{Riepilogo task assegnati.}

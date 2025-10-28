@@ -1,22 +1,3 @@
-% ===================================================================
-%  TEMPLATE DOCUMENTO PROGETTO (File Unico)
-%  Gruppo: NightPRO
-%  Progetto: Ingegneria del Software 2025/2026
-%
-%  Basato sulla struttura:
-%  - configurazione.tex
-%  - intestazione_titolo.tex
-%  - indice.tex
-%  - informazioni.tex
-%  - odg.tex
-%  - diario.tex
-%  - decisioni.tex
-%  - todo.tex
-% ===================================================================
-
-% -------------------------------------------------------------------
-%  SEZIONE: configurazione.tex
-% -------------------------------------------------------------------
 \documentclass[a4paper, 11pt, oneside]{scrartcl} % Classe KOMA-Script
 
 % --- Pacchetti Fondamentali ---
@@ -94,7 +75,7 @@
     \vspace{1cm}
     
     % Inserisci qui il titolo specifico del documento
-    {\Large \itshape Verbale Interno del 20 ottobre 2025 \par} 
+    {\Large \itshape Verbale Interno del 15 ottobre 2025 \par} 
     
     \vfill
     
@@ -105,7 +86,7 @@
     \vfill
     
     % Inserisci qui la data di redazione del documento
-    {\large Data: 20 ottobre 2025 \par}
+    {\large Data: 15 ottobre 2025 \par}
 
 \end{titlepage}
 
@@ -145,10 +126,13 @@ Ponso & Giovanni & 2000558 \\
 
 \subsection{Dettagli Riunione}
 \begin{itemize}
-    \item \textbf{Data:} 20 ottobre 2025
-    \item \textbf{Ora:} 17:30 - 19:30
+    \item \textbf{Data:} 15 ottobre 2025
+    \item \textbf{Ora:} 18:00 - 19:30
     \item \textbf{Luogo:} Google Meet
-    \item \textbf{Partecipanti:} Biasuzzi Davide, Zanella Francesco, Ponso Giovanni, Bilato Leonardo
+    \item \textbf{Partecipanti:} Tutti i membri del gruppo hanno partecipato
+    \item  \textbf{Redatto da: } Davide Biasuzzi
+    \item  \textbf{Verificato da:} Francesco Zanella
+    \item \textbf{Versione: } 1.0
 \end{itemize}
 
 
@@ -158,9 +142,11 @@ Ponso & Giovanni & 2000558 \\
 \newpage
 \section{Ordine del Giorno (Agenda)}
 \begin{itemize}
-    \item[1.] Funzionamento Github
-    \item[2.] Compilazione documenti Github
-    \item[3.] Decisione documenti da iniziare a produrre
+    \item[1.] Discussione generale su tutti i capitolati
+    \item[2.] Approfondimento su capitolato C6
+    \item[3.] Approfondimento su capitolato C8
+    \item[4.] Approfondimento su capitolato C9
+    \item[5.] Contatti email da effettuare
 \end{itemize}
 
 % -------------------------------------------------------------------
@@ -169,28 +155,49 @@ Ponso & Giovanni & 2000558 \\
 \newpage
 \section{Diario della Riunione}
 
-\subsection{Funzionamento Github:}
-Il gruppo ha avviato la riunione con una breve panoramica su GitHub, volta a chiarire il suo funzionamento di base.
-È emerso che uno dei membri aveva recentemente approfondito l’uso della piattaforma e ha condiviso le nozioni principali con il resto del gruppo, illustrando i concetti di repository, commit, branch e pull request.
-Un secondo membro aveva già utilizzato GitHub in passato, sebbene in modo limitato, e ha contribuito con esempi pratici su come gestire file e versioni.
-La discussione si è concentrata anche su come orientarsi nell’interfaccia e come creare e caricare vari tipi di file.
-L’obiettivo della sezione era garantire che tutti i membri acquisissero un livello minimo comune di competenza per poter collaborare in modo efficace sulla piattaforma.
+\subsection{Discussione generale su tutti i capitolati:}
 
-\subsection{Compilazione documenti Github:}
-Successivamente, il gruppo ha analizzato come procedere alla redazione e compilazione dei documenti direttamente su GitHub.
-È stato chiarito il funzionamento della modifica dei file in formato Markdown e la possibilità di lavorare in modo collaborativo, evitando sovrapposizioni grazie all’uso dei branch e delle commit message chiare e coerenti.
-Si è inoltre discusso della struttura da mantenere all’interno del repository per rendere ordinata la documentazione (cartelle dedicate ai verbali, ai template, ecc.).
-Il gruppo ha concordato di utilizzare una nomenclatura coerente per i file e di mantenere una cronologia trasparente delle modifiche, in modo da facilitare eventuali revisioni future.
-\subsection{Decisione documenti da iniziare a produrre:}
-Nella parte finale della riunione si è deciso di iniziare la produzione dei seguenti documenti:
+Si è proceduto all'analisi condivisa del file Google contenente le preferenze e le votazioni sui capitolati, preparato il giorno precedente. Dopo una discussione generale su tutte le proposte, il gruppo ha identificato tre capitolati di maggiore interesse sui quali concentrare l'approfondimento:
 \begin{itemize}
-    \item Diario di bordo, per tenere traccia delle attività svolte e delle decisioni prese durante le varie fasi del progetto.
-    \item Verbali delle riunioni, per documentare gli incontri in modo formale e consultabile da tutti i membri.
-    \item  Documento di candidatura, necessario per presentare ufficialmente il progetto e il gruppo di lavoro.
+    \item C6 (Second Brain)
+    \item C8 (Smart Order)
+    \item C9 (View4Life)
 \end{itemize}
 
-Il gruppo ha concordato di partire da modelli condivisi su GitHub, in modo da mantenere uniformità nella struttura dei documenti (template).
 
+\subsection{Approfondimento su capitolato C6:}
+È stato analizzato in dettaglio il capitolato C6. Sono emersi diversi dubbi e punti chiave da chiarire con il proponente (Dott. Piccoli) al fine di definire correttamente l'ambito del Proof of Concept (PoC) e dell'MVP (Minimum Viable Product). 
+La discussione si è focalizzata su:
+\begin{itemize}
+    \item Architettura Server: Si è discusso sul carattere "opzionale" della parte server. Si è convenuto che per le funzionalità LLM avanzate (come il collegamento tra note) sia fondamentale. È necessario chiedere se il PoC debba già includere la predisposizione per un database server-side.
+    \item Tecnologie Web App: È stata notata la richiesta di un editor MarkDown in pagina HTML. Si è deciso di chiedere a Zucchetti se esistano preferenze tecnologiche (es. specifici framework UI) oltre a quelle indicate.
+    \item Versionamento delle Note: Il capitolato menziona il salvataggio in file di testo. Si è discusso se sia sufficiente un semplice salvataggio (sovrascrittura) o se sia atteso un meccanismo di versioning dei contenuti.
+\end{itemize}
+
+\subsection{Approfondimento su capitolato C8 (Smart Order):}
+Analogamente, si è approfondito il capitolato C8. L'analisi dell'architettura proposta ha sollevato diversi quesiti tecnici fondamentali da porre al proponente (Dott. Carlesso) per definire i confini del progetto. 
+I punti di discussione principali sono stati:
+\begin{itemize}
+    \item Modalità di Input: Chiarire quale sia il numero minimo di modalità (audio, testo, immagine, ecc.) richieste per il prodotto finale, oltre alle 1-2 suggerite per il PoC.
+    \item Confini del Sistema (Layer 1): Definire se la progettazione dei connettori per i dati eterogenei rientri nei compiti del gruppo, o se si debba assumere che l'infrastruttura dati sia già fornita.
+    \item Livello di Automazione (Layer 6): Comprendere se il layer di validazione e arricchimento dati debba tendere a un'automazione completa o se prevedere un intervento di supervisione umana (human-in-the-loop).
+    \item Gestione Retraining (Layer 8): Approfondire se il "retraining periodico" menzionato debba essere implementato come un ciclo automatico basato sul feedback o come un'operazione supervisionata.
+    \item Stack Tecnologico: Verificare se Ergon abbia uno stack tecnologico di riferimento interno o preferenze specifiche (es. .NET Blazor, React) per l'interfaccia.
+\end{itemize}
+\subsection{Approfondimento su capitolato C9 (View4Life):}
+Per il capitolato C9, la discussione si è concentrata principalmente su aspetti organizzativi e gestionali, ritenuti critici per la fattibilità del progetto.
+\begin{itemize}
+    \item Gestione Comunicazioni: È emersa una preoccupazione basata su feedback (riportati da studenti degli anni precedenti) circa possibili lunghi tempi di risposta da parte dei proponenti. Si è deciso di chiedere preventivamente e con trasparenza se per l'anno corrente siano state previste modalità o tempistiche specifiche per la gestione delle domande dei gruppi.
+\end{itemize}
+\subsection{Contatti email da effettuare:}
+Al termine della discussione, si è deciso di contattare via email tutti e tre i proponenti per sottoporre i dubbi emersi e ottenere i chiarimenti necessari prima di una scelta definitiva.
+Sono stati assegnati i seguenti incarichi per la stesura e l'invio delle comunicazioni:
+
+\begin{itemize}
+    \item C6 (Second Brain): Davide Biasuzzi
+    \item C8 (Smart Order): Giovanni Ponso
+    \item C9 (View4Life): Leonardo Bilato
+\end{itemize}
 % -------------------------------------------------------------------
 %  SEZIONE: decisioni.tex (Decisioni prese)
 % -------------------------------------------------------------------
@@ -198,8 +205,7 @@ Il gruppo ha concordato di partire da modelli condivisi su GitHub, in modo da ma
 \section{Decisioni Prese}
 
 \begin{enumerate}
-    \item Gestione file all'interno di Github
-    \item Priorità nella stesura della documentazione necessaria
+    \item Scrivere mail ai capitolati d'interesse con lo scopo di approfondire e se necessario fissare un colloquio con l'azienda
 \end{enumerate}
 
 % -------------------------------------------------------------------
@@ -214,9 +220,9 @@ Il gruppo ha concordato di partire da modelli condivisi su GitHub, in modo da ma
 \toprule
 \textbf{Attività} & \textbf{Assegnatario/i} & \textbf{Scadenza} \\
 \midrule
-Ottimizzazione e divisione su Github & Leonardo Bilato & 21/10/25 \\
-Stesura template& Davide Biasuzzi & 21/10/25 \\
-stesura prime relazioni& Francesco Zanella & 21/10/25 \\
+Inviare mail per capitolato C6 & Davide Biasuzzi & 16/10/25 \\
+Inviare mail per capitolato C8 & Giovanni Ponso & 16/10/25 \\
+Inviare mail per capitolato C9 & Francesco Zanella & 16/10/25 \\
 \bottomrule
 \end{tabular}
 \caption{Riepilogo task assegnati.}
