@@ -1,10 +1,5 @@
-# Report di compilazione del 2025-10-28T09:48:26+00:00
+# Report di compilazione del 2025-10-28T10:01:43+00:00
 
-Compilazione basata sul commit 9e8d6052e10eec5e9b798bfc5bbd61003d8e8ac6 (base: 9e8d605)
+Compilazione basata sul commit 92c0eba5778ebb34dfca6043a67aa036969f6f42 (base: 92c0eba)
 
-## Falliti
-💡 Nessun errore di compilazione
-
-## Compilati
-✅ [docs/RTB/templatev3.pdf](docs/RTB/templatev3.pdf)
-
+💡 Nessun file modificato o mancante. Nessuna compilazione eseguita.
