@@ -1,198 +1,280 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap');
+
 :root {
-  --bg: #f9fafb;
-  --card: #ffffff;
-  --text: #222;
-  --accent: #007acc;
-  --accent-hover: #005c99;
-  --border: #e0e0e0;
-  --shadow: 0 2px 10px rgba(0,0,0,0.05);
+  --primary-color: #2c3e50; /* Blu scuro */
+  --accent-color: #3498db;  /* Blu link */
+  --text-color: #333333;
+  --light-text: #7f8c8d;
+  --background: #ecf0f1;
+  --card-bg: #ffffff;
+  --border-color: #bdc3c7;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: "Inter", "Segoe UI", sans-serif;
-}
-
+/* --- Global Settings & Sticky Footer --- */
+html { height: 100%; }
 body {
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  background-color: var(--background);
+  color: var(--text-color);
+  line-height: 1.6;
+  scroll-padding-top: 5em; /* Space for fixed header */
+  scroll-behavior: smooth;
+}
+.page-wrapper { flex-grow: 1; }
+
+/* --- Typography --- */
+h1 { font-size: 2rem; }
+h3 { font-size: 1.2rem; }
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-block-start: 1.2em;
+  margin-block-end: 0.6em;
 }
 
-/* Header */
-.header {
-  background: var(--card);
+a {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+a:hover { text-decoration: underline; }
+a:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* --- Header --- */
+header {
+  position: sticky; /* Header remains visible */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: var(--card-bg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  height: 4.5em; /* Header height */
+}
+
+/* Navigation bar inside header */
+nav {
+  max-width: 65em; /* Max width */
+  height: 100%;
+  margin: 0 auto; /* Center */
+  padding: 0 1em;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 1.5rem;
-  box-shadow: var(--shadow);
-  position: sticky;
-  top: 0;
-  z-index: 10;
 }
 
-.header-left {
+/* Logo Team */
+#header-logo {
+  height: 2.8em; /* Logo size */
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  flex-shrink: 0;
 }
-
-.logo {
-  height: 40px;
-}
-
-.github-link img {
-  height: 32px;
-  transition: transform 0.2s;
-}
-.github-link img:hover {
-  transform: scale(1.1);
-}
-
-/* Main */
-.content {
-  flex: 1;
-  max-width: 900px;
-  margin: 1.5rem auto;
-  padding: 0 1rem;
-}
-
-.content h2 {
-  color: var(--accent);
-  margin-bottom: 0.5rem;
-}
-
-.content p {
-  margin-bottom: 1.5rem;
-}
-
-.docs-container {
-  background: var(--card);
-  border-radius: 10px;
-  padding: 1.2rem;
-  box-shadow: var(--shadow);
-}
-
-.loading {
-  color: #666;
-}
-
-.error {
-  color: red;
-  font-weight: bold;
-}
-
-.section {
-  margin-bottom: 1rem;
-}
-
-.section h3 {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 0.3rem;
-  margin-bottom: 0.5rem;
-  color: var(--accent);
-}
-
-/* Tree */
-ul {
-  list-style: none;
-  margin-left: 1rem;
-}
-
-.folder-header {
-  cursor: pointer;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin: 0.3rem 0;
-  user-select: none;
-}
-
-.folder-content {
-  display: none;
-  margin-left: 1rem;
-  border-left: 1px solid var(--border);
-  padding-left: 0.6rem;
-}
-
-.folder-content.open {
+.header-logo-img {
+  height: 100%;
+  width: auto;
   display: block;
 }
 
-.file-item {
+/* Navigation Links (center) */
+#nav-navigation {
+  display: flex;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  flex-grow: 1; /* Take available space */
+  justify-content: center; /* Center links */
+  flex-wrap: wrap; /* Wrap links if needed */
+  gap: 0 1em; /* Space between links */
+}
+
+#nav-navigation a {
+  text-decoration: none;
+  color: var(--light-text);
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 0.5em 0.25em;
+  position: relative;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+#nav-navigation a:hover {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+/* Scroll-Spy Style */
+#nav-navigation a.active {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+#nav-navigation a.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-color);
+}
+
+/* GitHub Link (right) */
+.github-link {
+  height: 1.8em; /* Adjust size */
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.github-logo {
+  height: 100%;
+  width: auto;
+  display: block;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+.github-link:hover .github-logo { opacity: 1; }
+
+
+/* --- Main Content --- */
+main {
+  max-width: 60em; /* Content width */
+  margin: 2em auto; /* Centering and spacing */
+  padding: 0 1em;
+}
+
+/* Style for each section */
+section {
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 1.5em;
+  margin-bottom: 1.5em; /* Space between sections */
+}
+section:last-of-type {
+    margin-bottom: 0;
+}
+
+section h1 {
+  color: var(--primary-color);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5em;
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+/* --- File Tree Styling --- */
+.dynamic-content-container ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+.dynamic-content-container li { margin-bottom: 0.3em; }
+
+.folder-toggle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  padding: 0.2em 0;
+}
+.folder-toggle::before {
+  content: '▶'; /* Closed */
+  display: inline-block;
+  font-size: 0.7em;
+  margin-right: 0.5em;
+  transition: transform 0.2s ease;
+}
+.folder-toggle:not(.collapsed)::before {
+  transform: rotate(90deg); /* Open */
+}
+
+.folder-content {
+  padding-left: 1.2em;
+  border-left: 1px solid #eee;
+  max-height: 1000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+.folder-content.collapsed {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-in;
+}
+
+/* File Item Styling */
+.dynamic-content-container p {
+  background: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 0.5em 1em;
+  margin: 0 0 0.3em 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.25rem 0;
-  border-bottom: 1px solid var(--border);
+}
+.dynamic-content-container p:hover { border-color: #ccc; }
+.dynamic-content-container p a { color: #333; font-weight: 500; }
+.dynamic-content-container p a::before { content: '📄'; margin-right: 0.5em; }
+
+.tag-versione {
+  font-size: 0.75rem;
+  color: #777;
+  margin-left: 0.5em;
+  white-space: nowrap;
 }
 
-.file-link {
-  text-decoration: none;
-  color: var(--text);
-  transition: color 0.2s;
-}
-
-.file-link:hover {
-  color: var(--accent);
-}
-
-.file-actions {
-  display: flex;
-  gap: 0.4rem;
-}
-
-.file-actions button {
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 0.25rem 0.5rem;
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: background 0.2s;
-}
-
-.file-actions button:hover {
-  background: var(--accent-hover);
-}
-
-/* Footer */
-.footer {
-  background: var(--card);
+/* --- Footer --- */
+footer {
+  padding: 1.5em 1em;
   text-align: center;
-  padding: 1rem;
-  border-top: 1px solid var(--border);
   font-size: 0.9rem;
+  color: var(--light-text);
+  margin-top: auto; /* Sticky footer */
+  border-top: 1px solid var(--border-color);
+  background-color: var(--card-bg);
 }
 
-.footer a {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.footer a:hover {
-  text-decoration: underline;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .file-item {
-    flex-direction: column;
-    align-items: flex-start;
+/* --- Media Queries (Mobile) --- */
+@media (max-width: 750px) {
+  body { font-size: 16px; scroll-padding-top: 0; }
+  header {
+      position: relative; /* Remove sticky on mobile */
+      height: auto;
+      padding: 0.8em 1em;
   }
-
-  .file-actions {
-    margin-top: 0.2rem;
+  nav {
+      flex-wrap: wrap; /* Allow wrapping */
+      justify-content: center; /* Center items when wrapped */
+      gap: 0.5em 1em; /* Add gap between wrapped rows */
   }
-
-  .logo {
-    height: 32px;
+  #header-logo { height: 2.5em; order: -1; /* Ensure logo is first */ }
+  #nav-navigation {
+      width: 100%; /* Take full width */
+      order: 1; /* Move below logo/github */
+      justify-content: center;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.5em;
+      margin-top: 0.5em;
   }
+   #nav-navigation a.active::after { display: none; } /* Hide line on mobile */
+  .github-link {
+      height: 1.6em; /* Slightly smaller on mobile */
+      /* No absolute positioning needed anymore */
+  }
+  main {
+      margin: 1.5em auto;
+      padding: 0 1em;
+  }
+  section { padding: 1em; }
 }
