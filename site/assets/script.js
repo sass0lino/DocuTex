@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('document-search');
   const searchContainer = document.getElementById('search-container');
   const sectionsWrapper = document.getElementById('sections-wrapper');
-  
+
   let docsTree = {};
   let currentSection = null;
 
@@ -79,10 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
       // crea una sezione collassabile per ogni cartella principale
       Object.keys(docsTree).forEach(section => {
         const sectionContainer = document.createElement('div');
-        
+
         const sectionToggle = document.createElement('div');
         sectionToggle.className = 'folder-toggle';
-        sectionToggle.textContent = section;
+        const toggleData = document.createElement('span');
+        toggleData.className = 'toggle-data';
+        toggleData.textContent = section;
+        sectionToggle.appendChild(toggleData);
 
         const sectionContent = document.createElement('div');
         sectionContent.className = 'folder-content';
@@ -99,7 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const rootToggle = document.createElement('div');
       rootToggle.className = 'folder-toggle';
-      rootToggle.textContent = name;
+      const toggleData = document.createElement('span');
+      toggleData.className = 'toggle-data';
+      toggleData.textContent = name;
+      rootToggle.appendChild(toggleData);
 
       const rootContent = document.createElement('div');
       rootContent.className = 'folder-content';
@@ -122,7 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (item.type === 'folder') {
         const toggle = document.createElement('span');
         toggle.className = 'folder-toggle';
-        toggle.textContent = item.name;
+        const toggleData = document.createElement('span');
+        toggleData.className = 'toggle-data';
+        toggleData.textContent = item.name;
+        toggle.appendChild(toggleData);
 
         const content = document.createElement('div');
         content.className = 'folder-content';
@@ -133,26 +142,27 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (item.type === 'file') {
         // mostra solo il nome file, il percorso viene aggiunto dinamicamente dalla ricerca
         const p = document.createElement('p');
-        
+        p.className = 'pdf_row';
+
         const fileInfo = document.createElement('div');
         fileInfo.className = 'file-info';
-        
+
         const fileLink = document.createElement('a');
         fileLink.className = 'file-name';
         fileLink.href = item.path;
         fileLink.target = '_blank';
         fileLink.textContent = item.name;
         fileLink.dataset.fullPath = itemPath; // salviamo il percorso come data attribute
-        
+
         fileInfo.appendChild(fileLink);
-        
+
         const downloadLink = document.createElement('a');
         downloadLink.className = 'download-button';
         downloadLink.href = item.path;
         downloadLink.download = '';
         downloadLink.title = 'Scarica file';
         downloadLink.setAttribute('aria-label', `Scarica ${item.name}`);
-        
+
         p.append(fileInfo, downloadLink);
         li.appendChild(p);
       }
@@ -167,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.addEventListener('click', e => {
     const toggle = e.target.closest('.folder-toggle');
     if (!toggle) return;
-    
+
     e.preventDefault();
     toggle.classList.toggle('collapsed');
     const nextContent = toggle.nextElementSibling;
@@ -180,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
   nav.addEventListener('click', e => {
     const link = e.target.closest('a[data-section]');
     if (!link) return;
-    
+
     e.preventDefault();
     showSection(link.dataset.section);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -189,10 +199,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // gestisce la ricerca in tempo reale
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim().toLowerCase();
-    
+
     // rimuovi tutti i percorsi mostrati precedentemente
     document.querySelectorAll('.file-path').forEach(path => path.remove());
-    
+
     // se la query è vuota mostra tutto normalmente
     if (query === '') {
       const allItems = container.querySelectorAll('li');
@@ -207,15 +217,15 @@ document.addEventListener('DOMContentLoaded', () => {
     allListItems.forEach(li => {
       // controlla se questo li contiene un file (ha un link con classe file-name)
       const fileLink = li.querySelector('.file-name');
-      
+
       if (fileLink) {
         // è un file, cerca nel nome e nel percorso
         const fileName = fileLink.textContent.toLowerCase();
         const filePath = fileLink.dataset.fullPath?.toLowerCase() || '';
         const matches = fileName.includes(query) || filePath.includes(query);
-        
+
         li.style.display = matches ? '' : 'none';
-        
+
         if (matches) {
           visibleCount++;
           // mostra il percorso solo se stiamo cercando
@@ -235,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const filePath = link.dataset.fullPath?.toLowerCase() || '';
           return fileName.includes(query) || filePath.includes(query);
         });
-        
+
         li.style.display = hasVisibleChildren ? '' : 'none';
       }
     });

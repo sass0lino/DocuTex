@@ -20,12 +20,14 @@ html, body {
 
 /* --- HEADER --- */
 header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--cyber-violet);
-  border-bottom: 1px solid #999;
-  box-shadow: 0 2px 6px var(--cyber-glow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-image: url("./images/sfondo3.jpeg");
+    background-repeat: no-repeat;
+    background-size: 100%;
+    border-bottom: 1px solid #999;
+    box-shadow: 0 2px 6px var(--cyber-glow);
 }
 
 nav {
@@ -47,9 +49,11 @@ nav {
 }
 
 .header-logo-img {
-  height: 100%;
-  width: auto;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.6);
+    height: 100%;
+    width: auto;
+    transition: opacity .2s ease, transform .2s ease;
 }
 
 #header-logo:hover .header-logo-img {
@@ -67,7 +71,7 @@ nav {
 }
 
 #nav-navigation a {
-  color: var(--black);
+  color: white;
   text-decoration: none;
   font-weight: 500;
   padding: 0.5em 0.8em;
@@ -90,17 +94,20 @@ nav {
 
 /* freccia giù che copre il testo della sezione attiva */
 #nav-navigation a.show-arrow::after {
-  content: '↓';
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   top: 0.15em;
   font-size: 1.2rem;
-  color: var(--black);
+  content: "↓";
+  color: transparent;
+  backdrop-filter: invert(1);
+  -webkit-backdrop-filter: invert(1);
+  mix-blend-mode: exclusion;
 }
 
 #nav-navigation a.show-arrow { 
-  color: transparent; 
+  color: transparent;
 }
 
 /* nella sezione "Tutto" non mostriamo la freccia */
@@ -150,7 +157,7 @@ main {
   max-width: 40em;
   padding: 0.6em 1em;
   border: 1px solid var(--black);
-  border-radius: 0;
+  border-radius: 20px;
   font-size: 1rem;
   font-family: inherit;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -174,23 +181,45 @@ main {
 }
 
 /* toggle per le cartelle collassabili */
+.toggle-data {
+    content: "";
+    color: black;
+    display: inline-block;
+}
+
+.toggle-data::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url("./images/cartella.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-right: 0.5em;
+    margin-top: 0.5em;
+}
 .folder-toggle {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--black);
-  cursor: pointer;
-  padding: 0.2em 0;
-  display: block;
-  border-bottom: 1px dashed var(--black);
-  margin-bottom: 0.5em;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: black;
+    cursor: pointer;
+    padding: 0.2em 0;
+    display: block;
+}
+
+.folder-toggle:hover {
+    background-color: #eee;
+    border-radius: 8px;
 }
 
 .folder-toggle::before {
-  content: '▶';
-  display: inline-block;
-  font-size: 0.7em;
-  margin-right: 0.5em;
-  transition: transform 0.2s ease;
+    content: '▶';
+    color: #FF973D;
+    display: inline-block;
+    font-size: 0.7em;
+    margin-right: 0.5em;
+    margin-left: 0.4em;
+    transition: transform .15s ease;
 }
 
 .folder-toggle:not(.collapsed)::before { 
@@ -211,6 +240,21 @@ main {
 }
 
 /* wrapper per file con nome e percorso */
+.pdf_row{
+  display: block;
+}
+
+/* .pdf_row:hover{
+  border: 1px solid;
+  border-radius: 8px;
+  border-color: radial-gradient(circle, rgba(63, 69, 251, 0.2) 0%, rgba(246, 70, 252, 0.2) 100%);
+  } */
+  
+  .pdf_row:hover{
+    background-color: #eee;;
+    border-radius: 8px;
+}
+
 .dynamic-content-container p {
   padding: 0.3em 0;
   margin: 0 0 0.2em 0;
@@ -243,16 +287,17 @@ main {
 }
 
 /* icona pdf prima del nome file */
+
 .dynamic-content-container p a[href$=".pdf"]:not(.download-button)::before {
-  content: '';
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background-image: url("./images/pdf-icon.svg");
-  background-size: contain;
-  background-repeat: no-repeat;
-  margin-right: 0.4em;
-  vertical-align: middle;
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url("./images/documenti.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-right: 0.4em;
+    margin-left: 0.4em;
 }
 
 /* bottone download a destra */
