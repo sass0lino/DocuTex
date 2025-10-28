@@ -1,163 +1,76 @@
-/* =================================================== */
-/* PARTE 1: Costruzione Dinamica delle Schede          */
-/* =================================================== */
-document.addEventListener("DOMContentLoaded", function() {
-  
-  const tabButtonsContainer = document.getElementById("tab-buttons");
-  const tabContentContainer = document.getElementById("tab-content");
-
-  if (!tabButtonsContainer || !tabContentContainer) {
-    console.error("Errore critico: Impossibile trovare #tab-buttons o #tab-content.");
-    return; 
+async function loadDocsTree() {
+  try {
+    const response = await fetch("./docs_tree.json");
+    const data = await response.json();
+    const treeContainer = document.getElementById("docs-tree");
+    treeContainer.innerHTML = "";
+    renderTree(data, treeContainer);
+  } catch (error) {
+    console.error("Errore nel caricamento del file docs_tree.json:", error);
   }
+}
 
-  fetch('./docs_tree.json')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`File 'docs_tree.json' non trovato (404). Hai eseguito lo script di build?`);
-      }
-      return response.json();
-    })
-    .then(treeData => {
-      createTabs(treeData); 
-    })
-    .catch(error => {
-      console.error("Impossibile caricare la struttura dei documenti:", error);
-      tabContentContainer.innerHTML = `<p style="color: red; font-weight: bold;">${error.message}</p>`; 
+function renderTree(node, container) {
+  for (const [key, value] of Object.entries(node)) {
+    const section = document.createElement("div");
+    section.classList.add("section");
+    const title = document.createElement("h3");
+    title.textContent = key;
+    section.appendChild(title);
+
+    const list = document.createElement("ul");
+    value.forEach(item => list.appendChild(renderNode(item)));
+    section.appendChild(list);
+    container.appendChild(section);
+  }
+}
+
+function renderNode(item) {
+  const li = document.createElement("li");
+
+  if (item.type === "folder") {
+    const folderTitle = document.createElement("div");
+    folderTitle.classList.add("folder");
+    folderTitle.textContent = item.name;
+    folderTitle.addEventListener("click", () => {
+      folderTitle.classList.toggle("open");
+      ul.classList.toggle("hidden");
     });
-});
 
-/**
- * Funzione helper per creare tutti i pulsanti e i pannelli
- */
-function createTabs(treeData) {
-  const tabButtonsContainer = document.getElementById("tab-buttons");
-  const tabContentContainer = document.getElementById("tab-content");
-  
-  tabButtonsContainer.innerHTML = '';
-  tabContentContainer.innerHTML = '';
-
-  const tabNames = Object.keys(treeData);
-
-  if (tabNames.length === 0) {
-    tabContentContainer.innerHTML = "<p>Nessun documento trovato.</p>";
-    return;
-  }
-
-  tabNames.sort(); // Ordina i nomi delle schede
-
-  tabNames.forEach((tabName, index) => {
-    const cleanName = tabName.replace(/^[0-9]+_/, '').replace(/_/g, ' ');
-    const id = `tab-${tabName.toLowerCase().replace(/[^a-z0-9]/g, '-') || index}`;
-
-    // 1. Crea il Pulsante della Scheda
-    const button = document.createElement('button');
-    button.className = 'tab-button';
-    button.textContent = cleanName;
-    button.setAttribute('data-tab-target', `#${id}`);
-    tabButtonsContainer.appendChild(button);
-
-    // 2. Crea il Pannello di Contenuto della Scheda
-    const pane = document.createElement('div');
-    pane.className = 'tab-pane';
-    pane.id = id;
-    
-    // Costruisce sempre l'albero di file
-    pane.innerHTML = buildHtmlFromTree(treeData[tabName]); 
-    tabContentContainer.appendChild(pane);
-
-    // Attiva la prima scheda di default
-    if (index === 0) {
-      button.classList.add('active');
-      pane.classList.add('active');
+    const ul = document.createElement("ul");
+    if (item.children) {
+      item.children.forEach(child => ul.appendChild(renderNode(child)));
     }
-  });
-  
-  addCollapseListeners();
-  addTabListeners();
-}
+    ul.classList.add("hidden");
 
-/* =================================================== */
-/* PARTE 2: Funzione per gestire le Schede              */
-/* =================================================== */
-function addTabListeners() {
-  const tabButtons = document.querySelectorAll('.tab-button');
-  const tabPanes = document.querySelectorAll('.tab-pane');
-
-  tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const targetPaneId = button.getAttribute('data-tab-target');
-      const targetPane = document.querySelector(targetPaneId);
-
-      if (targetPane) {
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        tabPanes.forEach(pane => pane.classList.remove('active'));
-        
-        button.classList.add('active');
-        targetPane.classList.add('active');
-      } else {
-        console.warn(`Pannello non trovato: ${targetPaneId}`);
-      }
-    });
-  });
-}
-
-/* =================================================== */
-/* PARTE 3: Funzione Helper Ricorsiva (per <ul>/<li>)   */
-/* =================================================== */
-function buildHtmlFromTree(nodes) {
-  if (!nodes || nodes.length === 0) return "";
-
-  nodes.sort((a, b) => {
-    if (a.type === b.type) return a.name.localeCompare(b.name);
-    return a.type === 'folder' ? -1 : 1; 
-  });
-
-  let html = '<ul class="dynamic-content-container">';
-
-  for (const node of nodes) {
-    if (node.type === 'file') {
-      html += `
-        <li>
-          <p>
-            <a href="${node.path}" target="_blank">${node.name}</a>
-            <span>
-              ${node.version ? `<span class="tag-versione">${node.version}</span>` : ''}
-            </span>
-          </p>
-        </li>
-      `;
-    } else if (node.type === 'folder') {
-      html += `
-        <li>
-          <h3 class="folder-toggle collapsed">${node.name}</h3> <div class="folder-content collapsed"> ${buildHtmlFromTree(node.children)} 
-          </div>
-        </li>
-      `;
-    }
+    li.appendChild(folderTitle);
+    li.appendChild(ul);
   }
 
-  html += '</ul>';
-  return html;
+  if (item.type === "file") {
+    const fileDiv = document.createElement("div");
+    fileDiv.classList.add("file-item");
+
+    const link = document.createElement("a");
+    link.href = item.path;
+    link.target = "_blank";
+    link.textContent = item.name;
+
+    const downloadBtn = document.createElement("button");
+    downloadBtn.textContent = "↓";
+    downloadBtn.title = "Scarica PDF";
+    downloadBtn.classList.add("download-btn");
+    downloadBtn.onclick = (e) => {
+      e.stopPropagation();
+      window.open(item.path, "_blank");
+    };
+
+    fileDiv.appendChild(link);
+    fileDiv.appendChild(downloadBtn);
+    li.appendChild(fileDiv);
+  }
+
+  return li;
 }
 
-/* =================================================== */
-/* PARTE 4: Funzione per cartelle collassabili         */
-/* =================================================== */
-function addCollapseListeners() {
-  const toggles = document.querySelectorAll('.folder-toggle');
-  
-  toggles.forEach(toggle => {
-    // Rimosso .add('collapsed') qui, lo aggiungiamo in buildHtmlFromTree
-
-    toggle.addEventListener('click', () => {
-      const content = toggle.nextElementSibling;
-      if (content && content.classList.contains('folder-content')) {
-        toggle.classList.toggle('collapsed');
-        content.classList.toggle('collapsed');
-      } else {
-        console.warn("Elemento 'folder-content' non trovato dopo il toggle:", toggle);
-      }
-    });
-  });
-}
+document.addEventListener("DOMContentLoaded", loadDocsTree);

@@ -1,42 +1,38 @@
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Documentazione ufficiale del progetto NighPRO.">
-  <title>NighPRO - Documentazione Progetto</title>
-
-  <link rel="stylesheet" href="./assets/style.css">
-  <script defer src="./assets/script.js"></script>
-  
-  <link rel="icon" href="./assets/images/logo.svg" type="image/svg+xml"> 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DocuTex - Documentazione</title>
+  <link rel="stylesheet" href="./assets/style.css" />
+  <link rel="icon" type="image/svg+xml" href="./assets/images/logo.svg" />
 </head>
-
 <body>
-  <div class="page-wrapper">
+  <header class="header">
+    <div class="logo-container">
+      <img src="./assets/images/logo.svg" alt="DocuTex logo" class="logo" />
+      <h1>DocuTex</h1>
+    </div>
+    <a href="https://github.com/sass0lino/DocuTex" target="_blank" class="github-link" title="Vai al repository GitHub">
+      <img src="./assets/images/logo_github.svg" alt="GitHub" class="github-logo" />
+    </a>
+  </header>
 
-    <header>
-      <a href="#" class="header-logo-link" aria-label="NighPRO - Home">
-        <img src="./assets/images/logo.svg" alt="Logo NighPRO" class="header-logo-img"> 
-      </a>
-      
-      <div id="tab-buttons">
-        </div>
-      
-      <a href="https://github.com/swenightpro" target="_blank" class="github-link" aria-label="Visita la nostra organizzazione GitHub">
-        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="Logo GitHub" class="github-logo">
-      </a>
-    </header>
+  <main class="main">
+    <section class="intro">
+      <h2>Documentazione del Progetto</h2>
+      <p>Benvenuto nella documentazione di <strong>DocuTex</strong>. Qui puoi consultare e scaricare facilmente i PDF aggiornati del progetto.</p>
+    </section>
 
-    <main id="main-content">
-      <div id="tab-content">
-        </div>
-    </main> 
+    <section id="docs-section">
+      <div id="docs-tree" class="docs-tree"></div>
+    </section>
+  </main>
 
-  </div> <footer>
-    <p>&copy; 2025 NighPRO. Tutti i diritti riservati.</p>
+  <footer class="footer">
+    <p>© 2025 DocuTex Team – <a href="https://github.com/sass0lino/DocuTex" target="_blank">GitHub</a></p>
   </footer>
 
+  <script src="./assets/scripts.js"></script>
 </body>
 </html>
