@@ -68,22 +68,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     container.innerHTML = '';
 
-    // nella sezione "Tutto" mettiamo la search sotto il titolo
+    // nella sezione "Tutto" mettiamo la search tra titolo e contenuto
     if (name === 'Tutto') {
-      searchContainer.classList.add('below-title');
-      sectionsWrapper.style.display = 'flex';
-      sectionsWrapper.style.flexDirection = 'column';
-      
       const title = document.createElement('h1');
       title.className = 'repo-title';
       title.textContent = 'Documentazione di Progetto';
-      title.style.order = '0';
       container.appendChild(title);
+
+      // sposta la search subito dopo il titolo
+      container.appendChild(searchContainer);
 
       // crea una sezione collassabile per ogni cartella principale
       Object.keys(docsTree).forEach(section => {
         const sectionContainer = document.createElement('div');
-        sectionContainer.style.order = '2';
         
         const sectionToggle = document.createElement('div');
         sectionToggle.className = 'folder-toggle';
@@ -97,9 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
         container.appendChild(sectionContainer);
       });
     } else {
-      // nelle altre sezioni la search resta sopra
-      searchContainer.classList.remove('below-title');
-      sectionsWrapper.style.display = 'block';
+      // nelle altre sezioni la search resta prima del container
+      if (searchContainer.parentElement !== sectionsWrapper) {
+        sectionsWrapper.insertBefore(searchContainer, container);
+      }
 
       const rootToggle = document.createElement('div');
       rootToggle.className = 'folder-toggle';
@@ -135,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         li.append(toggle, content);
       } else if (item.type === 'file') {
-        // mostra nome file e percorso
+        // mostra solo il nome file, il percorso viene aggiunto dinamicamente dalla ricerca
         const p = document.createElement('p');
         
         const fileInfo = document.createElement('div');
@@ -146,12 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
         fileLink.href = item.path;
         fileLink.target = '_blank';
         fileLink.textContent = item.name;
+        fileLink.dataset.fullPath = itemPath; // salviamo il percorso come data attribute
         
-        const filePath = document.createElement('span');
-        filePath.className = 'file-path';
-        filePath.textContent = itemPath;
-        
-        fileInfo.append(fileLink, filePath);
+        fileInfo.appendChild(fileLink);
         
         const downloadLink = document.createElement('a');
         downloadLink.className = 'download-button';
@@ -197,7 +192,10 @@ document.addEventListener('DOMContentLoaded', () => {
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim().toLowerCase();
     
-    // se la query è vuota mostra tutto
+    // rimuovi tutti i percorsi mostrati precedentemente
+    document.querySelectorAll('.file-path').forEach(path => path.remove());
+    
+    // se la query è vuota mostra tutto normalmente
     if (query === '') {
       const allItems = container.querySelectorAll('li');
       allItems.forEach(li => li.style.display = '');
@@ -205,15 +203,44 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // cerca nei nomi file e nei percorsi
-    const allItems = container.querySelectorAll('li');
+    // cerca solo nei file, non nelle cartelle
+    const allListItems = container.querySelectorAll('li');
     let visibleCount = 0;
 
-    allItems.forEach(li => {
-      const text = li.textContent.toLowerCase();
-      const matches = text.includes(query);
-      li.style.display = matches ? '' : 'none';
-      if (matches) visibleCount++;
+    allListItems.forEach(li => {
+      // controlla se questo li contiene un file (ha un link con classe file-name)
+      const fileLink = li.querySelector('.file-name');
+      
+      if (fileLink) {
+        // è un file, cerca nel nome e nel percorso
+        const fileName = fileLink.textContent.toLowerCase();
+        const filePath = fileLink.dataset.fullPath?.toLowerCase() || '';
+        const matches = fileName.includes(query) || filePath.includes(query);
+        
+        li.style.display = matches ? '' : 'none';
+        
+        if (matches) {
+          visibleCount++;
+          // mostra il percorso solo se stiamo cercando
+          const fileInfo = fileLink.parentElement;
+          let pathSpan = fileInfo.querySelector('.file-path');
+          if (!pathSpan) {
+            pathSpan = document.createElement('span');
+            pathSpan.className = 'file-path';
+            pathSpan.textContent = fileLink.dataset.fullPath;
+            fileInfo.appendChild(pathSpan);
+          }
+        }
+      } else {
+        // è una cartella, nascondi solo se non ha figli visibili
+        const hasVisibleChildren = Array.from(li.querySelectorAll('.file-name')).some(link => {
+          const fileName = link.textContent.toLowerCase();
+          const filePath = link.dataset.fullPath?.toLowerCase() || '';
+          return fileName.includes(query) || filePath.includes(query);
+        });
+        
+        li.style.display = hasVisibleChildren ? '' : 'none';
+      }
     });
 
     // mostra messaggio se non ci sono risultati
