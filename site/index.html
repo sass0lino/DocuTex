@@ -2,40 +2,133 @@
 <html lang="it">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Documentazione ufficiale del progetto NighPRO.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Documentazione ufficiale del progetto NighPRO." />
   <title>NighPRO - Documentazione Progetto</title>
 
-  <link rel="stylesheet" href="./assets/style.css">
+  <link rel="stylesheet" href="./assets/style.css" />
   <script defer src="./assets/script.js"></script>
 
-  <link rel="icon" href="./assets/images/logo.jpg" type="image/jpeg"> 
+  <link rel="icon" href="./assets/images/logo.jpg" type="image/jpeg" />
 </head>
 
 <body>
   <div class="page-wrapper">
-
     <header>
       <nav>
+        <!-- Sezioni principali (una visibile alla volta) -->
         <ul id="nav-navigation">
+          <li><a href="#" data-section="feature" class="active" aria-current="page">Feature</a></li>
+          <li><a href="#" data-section="api">API</a></li>
+          <li><a href="#" data-section="guide">Guide</a></li>
         </ul>
 
-        <!-- Logo spostato a destra e con link al repo -->
-        <a href="https://github.com/sass0lino/DocuTex" id="header-logo" target="_blank" aria-label="Visita il repository NighPRO su GitHub" title="Vai al repository GitHub">
-          <img src="./assets/images/logo.jpg" alt="Logo NighPRO" class="header-logo-img"> 
+        <!-- Logo a destra (link al repo) -->
+        <a href="https://github.com/sass0lino/DocuTex" id="header-logo" target="_blank"
+           aria-label="Visita il repository NighPRO su GitHub" title="Vai al repository GitHub">
+          <img src="./assets/images/logo.jpg" alt="Logo NighPRO" class="header-logo-img" />
         </a>
       </nav>
     </header>
 
     <main id="main-content">
-    </main> 
+      <!-- Barra di ricerca opzionale -->
+      <div id="search-container" role="search">
+        <input id="document-search" type="search" placeholder="Cerca nei documenti…" aria-label="Cerca nei documenti" />
+      </div>
 
+      <!-- SEZIONE: FEATURE (visibile di default) -->
+      <section id="feature" class="doc-section active-section">
+        <h1>Feature</h1>
+
+        <div class="dynamic-content-container">
+          <div class="folder">
+            <span class="folder-toggle">Feature principali</span>
+            <div class="folder-content">
+              <ul>
+                <li>
+                  <p>
+                    <a href="./docs/feature/overview.pdf" target="_blank" rel="noopener">Panoramica</a>
+                    <span class="tag-versione">v1.0</span>
+                    <a class="download-button" href="./docs/feature/overview.pdf" download>Scarica</a>
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <a href="./docs/feature/specs.pdf" target="_blank" rel="noopener">Specifiche</a>
+                    <span class="tag-versione">v1.2</span>
+                    <a class="download-button" href="./docs/feature/specs.pdf" download>Scarica</a>
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEZIONE: API -->
+      <section id="api" class="doc-section">
+        <h1>API</h1>
+
+        <div class="dynamic-content-container">
+          <div class="folder">
+            <span class="folder-toggle">Endpoint</span>
+            <div class="folder-content collapsed">
+              <ul>
+                <li>
+                  <p>
+                    <a href="./docs/api/reference.html" target="_blank" rel="noopener">Reference</a>
+                    <span class="tag-versione">v2.0</span>
+                    <a class="download-button" href="./docs/api/reference.html" download>Scarica</a>
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <a href="./docs/api/auth.md" target="_blank" rel="noopener">Autenticazione</a>
+                    <span class="tag-versione">v1.3</span>
+                    <a class="download-button" href="./docs/api/auth.md" download>Scarica</a>
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEZIONE: GUIDE -->
+      <section id="guide" class="doc-section">
+        <h1>Guide</h1>
+
+        <div class="dynamic-content-container">
+          <div class="folder">
+            <span class="folder-toggle">Tutorial</span>
+            <div class="folder-content collapsed">
+              <ul>
+                <li>
+                  <p>
+                    <a href="./docs/guide/quickstart.pdf" target="_blank" rel="noopener">Quickstart</a>
+                    <span class="tag-versione">v1.1</span>
+                    <a class="download-button" href="./docs/guide/quickstart.pdf" download>Scarica</a>
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <a href="./docs/guide/best-practices.pdf" target="_blank" rel="noopener">Best Practices</a>
+                    <span class="tag-versione">v1.0</span>
+                    <a class="download-button" href="./docs/guide/best-practices.pdf" download>Scarica</a>
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
 
   <footer>
     <p>&copy; 2025 NighPRO. Tutti i diritti riservati.</p>
   </footer>
-
 </body>
 </html>

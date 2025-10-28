@@ -40,7 +40,7 @@ header {
   z-index: 100;
   background-color: var(--white);
   border-bottom: 1px solid var(--black);
-  height: clamp(5.5em, 8vw, 7em); /* più alto */
+  height: clamp(5.5em, 8vw, 7em); /* più alto per accomodare logo grande */
 }
 
 nav {
@@ -49,17 +49,17 @@ nav {
   margin: 0 auto;
   padding: 0 1em;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* nav a sinistra, logo a destra */
   align-items: center;
 }
 
-/* Logo Team (ora a destra, molto più grande) */
+/* Logo a destra — grande */
 #header-logo {
-  height: clamp(5em, 8vw, 6.5em); /* ↑ ancora più grande */
+  height: clamp(5em, 8vw, 6.5em); /* logo ben visibile */
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  margin-left: auto; /* spinge a destra */
+  margin-left: auto; /* ancora a destra */
 }
 .header-logo-img {
   height: 100%;
@@ -68,22 +68,21 @@ nav {
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 #header-logo:hover .header-logo-img {
-  opacity: 0.8;
+  opacity: 0.85;
   transform: scale(1.03);
 }
 
-/* Navigation Links (ora ancorati a sinistra) */
+/* Navigation Links — ancorati a sinistra */
 #nav-navigation {
   display: flex;
   list-style-type: none;
   margin: 0;
   padding: 0;
-  justify-content: flex-start; /* allineati a sinistra */
+  justify-content: flex-start; /* sinistra */
   flex-grow: 1;
   flex-wrap: wrap;
   gap: 0 1em;
 }
-
 #nav-navigation a {
   text-decoration: none;
   color: var(--black);
@@ -93,20 +92,24 @@ nav {
   position: relative;
   transition: color 0.2s ease;
   white-space: nowrap;
-  border-bottom: 2px solid transparent;
+  border-bottom: 2px solid transparent; /* spazio per linea attiva */
 }
-#nav-navigation a:hover {
-  text-decoration: none;
-  color: #555;
-}
-
-/* Scroll-Spy Style */
+#nav-navigation a:hover { color: #555; }
 #nav-navigation a.active {
-  color: var(--black);
   font-weight: 600;
   border-bottom-color: var(--black);
 }
-#nav-navigation a.active::after { display: none; }
+
+/* --- Sezioni principali (una visibile alla volta) --- */
+.doc-section {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.doc-section.active-section {
+  display: block;
+  opacity: 1;
+}
 
 /* --- Main Content --- */
 main {
@@ -115,8 +118,8 @@ main {
   padding: 0 1em;
 }
 
-/* --- Sezioni principali (cartelle) --- */
-/* Rimuovo box esterno attorno alle cartelle */
+/* --- Rimozione box attorno alle cartelle principali --- */
+/* Prima le section avevano bordo/box: lo rimuoviamo */
 section {
   background: none;
   border: none;
@@ -125,11 +128,9 @@ section {
   padding: 1em 1.5em;
   margin-bottom: 1.5em;
 }
-section:last-of-type {
-  margin-bottom: 0;
-}
+section:last-of-type { margin-bottom: 0; }
 
-/* --- File Tree Styling --- */
+/* --- File Tree Styling (Uniform Collapse) --- */
 .dynamic-content-container ul {
   list-style-type: none;
   padding-left: 0;
@@ -137,6 +138,7 @@ section:last-of-type {
 }
 .dynamic-content-container li { margin-bottom: 0.3em; }
 
+/* Folder toggle */
 .folder-toggle {
   font-size: 1.1rem;
   font-weight: 600;
@@ -144,22 +146,18 @@ section:last-of-type {
   cursor: pointer;
   padding: 0.2em 0;
   display: block;
-  border-bottom: 1px dashed var(--black);
+  border-bottom: 1px dashed var(--black); /* linea tratteggiata sotto il nome cartella */
   margin-bottom: 0.5em;
 }
-.folder-toggle:hover {
-  background-color: #eee;
-}
+.folder-toggle:hover { background-color: #eee; }
 .folder-toggle::before {
-  content: '▶';
+  content: '▶'; /* chiusa */
   display: inline-block;
   font-size: 0.7em;
   margin-right: 0.5em;
   transition: transform 0.2s ease;
 }
-.folder-toggle:not(.collapsed)::before {
-  transform: rotate(90deg);
-}
+.folder-toggle:not(.collapsed)::before { transform: rotate(90deg); } /* aperta */
 
 .folder-content {
   padding-left: 1.2em;
@@ -186,14 +184,12 @@ section:last-of-type {
 }
 .dynamic-content-container p:hover { background: none; }
 .dynamic-content-container p a { 
-    color: var(--black); 
-    font-weight: 400;
-    text-decoration: underline;
+  color: var(--black); 
+  font-weight: 400; /* normale per i file */
+  text-decoration: underline;
 }
-.dynamic-content-container p a:hover { 
-    text-decoration: none;
-}
-.dynamic-content-container p a::before { content: ''; margin-right: 0.5em; }
+.dynamic-content-container p a:hover { text-decoration: none; }
+.dynamic-content-container p a::before { content: ''; margin-right: 0.5em; } /* solo spaziatura */
 
 .tag-versione {
   font-size: 0.75rem;
@@ -202,6 +198,7 @@ section:last-of-type {
   white-space: nowrap;
 }
 
+/* Download button (link semplice) */
 .download-button {
   font-size: 0.8em;
   color: #555;
@@ -210,8 +207,8 @@ section:last-of-type {
   white-space: nowrap;
 }
 .download-button:hover {
-    color: var(--black);
-    text-decoration: none;
+  color: var(--black);
+  text-decoration: none;
 }
 .download-button::before { content: ''; margin: 0; }
 
@@ -229,39 +226,49 @@ footer {
 /* --- Media Queries (Mobile) --- */
 @media (max-width: 750px) {
   body { font-size: 15px; scroll-padding-top: 0; }
+
   header {
-      position: relative;
-      height: auto;
-      padding: 0.8em 1em;
+    position: relative;
+    height: auto;
+    padding: 0.8em 1em;
   }
+
   nav {
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 0.5em 1em;
+    /* Logo deve andare SOPRA alle sezioni */
+    flex-direction: column-reverse; /* inverti: prima lista, poi logo -> con column-reverse il logo sale sopra */
+    align-items: center;
+    gap: 0.6em 1em;
   }
-  #header-logo {
-      height: clamp(4em, 9vw, 5.8em);
-      order: 2;
-  }
+
   #nav-navigation {
-      width: 100%;
-      order: 1;
-      justify-content: flex-start;
-      border-top: 1px solid var(--black);
-      padding-top: 0.5em;
-      margin-top: 0.5em;
-      gap: 0.5em 0.8em;
+    width: 100%;
+    justify-content: center;
+    border-top: 1px solid var(--black);
+    padding-top: 0.5em;
+    margin-top: 0.5em;
+    gap: 0.5em 0.8em;
   }
-  #nav-navigation a.active { border-bottom-color: transparent; }
+
+  #nav-navigation a.active { border-bottom-color: transparent; } /* evita underline permanente su mobile */
+
+  #header-logo {
+    margin-left: 0;
+    margin-bottom: 0.8em;
+    height: clamp(4em, 9vw, 5.8em); /* dimensione ottimizzata per mobile */
+  }
+
   main {
-      margin: 1.5em auto;
-      padding: 0 1em;
+    margin: 1.5em auto;
+    padding: 0 1em;
   }
+
   section { padding: 1em; }
 
+  /* Search bar mobile */
   #search-container { padding: 1em; margin-bottom: 1.5em; }
   #document-search { font-size: 1rem; }
 
+  /* Download button mobile */
   .download-button { font-size: 0.75em; }
 }
 
@@ -289,5 +296,5 @@ footer {
 #document-search:focus {
   outline: none;
   border-color: var(--black);
-  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--black);
+  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--black); /* focus invertito */
 }
