@@ -3,12 +3,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('sections-container');
   const searchInput = document.getElementById('document-search');
   const noResults = document.getElementById('no-results');
+  const sectionsWrapper = document.getElementById('sections-wrapper');
   let docsTree = {};
   let currentSection = null;
 
   async function loadDocsTree() {
     try {
-      const res = await fetch('./docs_tree.json'); // percorso corretto
+      const res = await fetch('./docs_tree.json');
       docsTree = await res.json();
       buildNavigation();
       const first = Object.keys(docsTree)[0];
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Crea la barra di navigazione dinamicamente
   function buildNavigation() {
     nav.innerHTML = '';
     Object.keys(docsTree).forEach((name, i) => {
@@ -32,15 +34,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Mostra la sezione scelta
   function showSection(name) {
     currentSection = name;
+
+    // aggiorna link attivi
     document.querySelectorAll('#nav-navigation a').forEach(a => {
-      a.classList.toggle('active', a.dataset.section === name);
+      const isActive = a.dataset.section === name;
+      a.classList.toggle('active', isActive);
+      a.textContent = isActive ? '↓' : a.dataset.section; // freccia o testo
     });
 
-    // Aggiorna placeholder ricerca
+    // aggiorna placeholder ricerca
     searchInput.placeholder = `Cerca in ${name}…`;
 
+    // aggiorna titolo principale sotto
+    let existingTitle = sectionsWrapper.querySelector('h1.repo-title');
+    if (!existingTitle) {
+      existingTitle = document.createElement('h1');
+      existingTitle.className = 'repo-title';
+      sectionsWrapper.insertBefore(existingTitle, container);
+    }
+    existingTitle.textContent = name;
+
+    // reset contenuto
     container.innerHTML = '';
     noResults.hidden = true;
 
@@ -50,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     container.appendChild(section);
   }
 
-  // Costruzione ricorsiva
+  // Costruzione ricorsiva della struttura file/cartelle
   function buildTree(items) {
     const wrapper = document.createElement('div');
     wrapper.className = 'dynamic-content-container';
@@ -74,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <p>
             <a href="${item.path}" target="_blank">${item.name}</a>
             ${item.version ? `<span class="tag-versione">${item.version}</span>` : ''}
-            <a class="download-button" href="${item.path}" download>Scarica</a>
+            <a class="download-button" href="${item.path}" download title="Scarica file"></a>
           </p>`;
       }
       ul.appendChild(li);
@@ -84,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return wrapper;
   }
 
+  // Toggle cartelle
   document.body.addEventListener('click', e => {
     const toggle = e.target.closest('.folder-toggle');
     if (!toggle) return;
@@ -91,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggle.nextElementSibling?.classList.toggle('collapsed');
   });
 
+  // Cambio sezione
   nav.addEventListener('click', e => {
     const link = e.target.closest('a[data-section]');
     if (!link) return;
@@ -99,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
+  // Ricerca
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim().toLowerCase();
     const active = container.querySelector('.doc-section');
