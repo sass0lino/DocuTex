@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('sections-container');
   const searchInput = document.getElementById('document-search');
   const noResults = document.getElementById('no-results');
-  const sectionsWrapper = document.getElementById('sections-wrapper');
   let docsTree = {};
   let currentSection = null;
 
@@ -12,17 +11,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('./docs_tree.json');
       docsTree = await res.json();
       buildNavigation();
-      showSection('Tutto'); // 👈 apre la sezione "Tutto" all'avvio
+      showSection('Tutto'); // mostra "Tutto" di default
     } catch (err) {
       container.innerHTML = `<p style="color:#555;">Impossibile caricare docs_tree.json</p>`;
     }
   }
 
-  // Crea la barra di navigazione dinamicamente
+  // --- COSTRUZIONE NAVBAR ---
   function buildNavigation() {
     nav.innerHTML = '';
 
-    // Sezione speciale "Tutto"
+    // Sezione "Tutto"
     const allLi = document.createElement('li');
     const allA = document.createElement('a');
     allA.href = '#';
@@ -32,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     allLi.appendChild(allA);
     nav.appendChild(allLi);
 
-    // Sezioni dal JSON
+    // Tutte le sezioni del JSON
     Object.keys(docsTree).forEach(name => {
       const li = document.createElement('li');
       const a = document.createElement('a');
@@ -44,39 +43,42 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Mostra la sezione selezionata
+  // --- MOSTRA SEZIONE ---
   function showSection(name) {
     currentSection = name;
 
+    // aggiorna stato attivo header
     document.querySelectorAll('#nav-navigation a').forEach(a => {
       const isActive = a.dataset.section === name;
       a.classList.toggle('active', isActive);
       a.classList.toggle('show-arrow', isActive);
     });
 
-    // Placeholder diverso se siamo in "Tutto"
+    // placeholder ricerca
     searchInput.placeholder = name === 'Tutto' ? 'Cerca...' : `Cerca in ${name}…`;
 
+    // reset contenuto
     container.innerHTML = '';
     noResults.hidden = true;
 
+    // sezione principale
     const rootWrapper = document.createElement('section');
     rootWrapper.className = 'doc-section active-section';
 
-    // Sezione "Tutto" -> solo titolo
     if (name === 'Tutto') {
+      // --- Sezione "Tutto": mostra tutto il repository ---
       const title = document.createElement('h1');
       title.className = 'repo-title';
-      title.textContent = 'Tutto';
+      title.textContent = 'Documentazione di Progetto';
       rootWrapper.appendChild(title);
 
       Object.keys(docsTree).forEach(section => {
-        const sectionDiv = document.createElement('div');
-        sectionDiv.appendChild(buildTree(docsTree[section]));
-        rootWrapper.appendChild(sectionDiv);
+        const subSection = document.createElement('div');
+        subSection.appendChild(buildTree(docsTree[section]));
+        rootWrapper.appendChild(subSection);
       });
     } else {
-      // Sezioni normali -> cartella collassabile
+      // --- Sezione singola ---
       const rootToggle = document.createElement('div');
       rootToggle.className = 'folder-toggle';
       rootToggle.textContent = name;
@@ -91,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     container.appendChild(rootWrapper);
   }
 
-  // Costruzione ricorsiva della struttura file/cartelle
+  // --- COSTRUZIONE STRUTTURA FILE/CARTELLE ---
   function buildTree(items) {
     const wrapper = document.createElement('div');
     wrapper.className = 'dynamic-content-container';
@@ -125,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return wrapper;
   }
 
-  // Toggle cartelle
+  // --- EVENTI ---
   document.body.addEventListener('click', e => {
     const toggle = e.target.closest('.folder-toggle');
     if (!toggle) return;
@@ -133,7 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
     toggle.nextElementSibling?.classList.toggle('collapsed');
   });
 
-  // Cambio sezione
   nav.addEventListener('click', e => {
     const link = e.target.closest('a[data-section]');
     if (!link) return;
@@ -142,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // Ricerca
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim().toLowerCase();
     const active = container.querySelector('.doc-section');
