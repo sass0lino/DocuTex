@@ -12,11 +12,16 @@ document.addEventListener("DOMContentLoaded", function() {
     return; 
   }
   
-  // Trova il link statico "Contatti" per inserire gli altri prima
-  const staticContactLink = navContainer.querySelector('a[href="#contatti"]')?.parentElement;
-  // Trova la sezione statica "Contatti" per inserire le altre prima
+  // Trova la sezione statica "Contatti" (anche se vuota) per inserire le altre prima
   const staticContactSection = document.getElementById('contatti');
 
+  // --- NUOVO CONTROLLO ---
+  // Se anche l'anchor #contatti non esiste, ferma tutto
+  if (!staticContactSection) {
+      console.error("Errore critico: Sezione #contatti (anchor) non trovata in index.html. Impossibile inserire contenuto dinamico.");
+      mainContainer.innerHTML = '<p style="color: red; font-weight: bold;">Errore di configurazione: Manca l\'elemento #contatti in index.html.</p>';
+      return;
+  }
 
   fetch('./docs_tree.json') // Cerca il file JSON nella root
     .then(response => {
@@ -28,38 +33,27 @@ document.addEventListener("DOMContentLoaded", function() {
     .then(treeData => {
       const folderNames = Object.keys(treeData).sort(); // Ordina le sezioni
       
-      if (folderNames.length === 0 && staticContactSection) {
-        // Se non ci sono documenti, non fare nulla (mostra solo Contatti)
+      if (folderNames.length === 0) {
+        // Se non ci sono documenti, mostra un messaggio PRIMA della sezione contatti
+         const noDocsP = document.createElement('p');
+         noDocsP.textContent = 'Nessun documento trovato nella cartella docs/.';
+         mainContainer.insertBefore(noDocsP, staticContactSection);
         return;
-      }
-      
-      if (!staticContactSection) {
-          console.error("Errore: Sezione #contatti non trovata in index.html");
-          mainContainer.innerHTML = '<p style="color: red;">Errore di configurazione: sezione Contatti mancante.</p>';
-          return;
       }
 
       folderNames.forEach((folderName, index) => {
         const cleanName = folderName.replace(/^[0-9]+_/, '').replace(/_/g, ' ');
-        // Crea un ID valido per HTML (solo lettere, numeri, trattini, _)
         const id = cleanName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-_]/g, '') || `section-${index}`;
 
         // 1. Crea il Link di Navigazione
         const navLi = document.createElement('li');
-        // Aggiunge la classe nav-link per lo scroll-spy
         navLi.innerHTML = `<a href="#${id}" class="nav-link">${cleanName}</a>`; 
-        // Inserisce prima del link "Contatti", se esiste
-        if (staticContactLink) {
-          navContainer.insertBefore(navLi, staticContactLink);
-        } else {
-          navContainer.appendChild(navLi); // Fallback
-        }
+        navContainer.appendChild(navLi); // Appende semplicemente alla fine della lista nav
         
         // 2. Crea la Sezione <section>
         const section = document.createElement('section');
         section.id = id;
         section.setAttribute('aria-labelledby', `h1-${id}`);
-        // La classe firstSection non serve più con header sticky
         
         section.innerHTML = `
           <h1 id="h1-${id}">${folderName.replace(/_/g, ' ')}</h1>
@@ -74,20 +68,16 @@ document.addEventListener("DOMContentLoaded", function() {
       
       // Attiva le funzionalità JS
       addCollapseListeners();
-      addScrollSpy(); // Riattivato scroll-spy
+      addScrollSpy(); 
     })
     .catch(error => {
       console.error("Impossibile caricare/processare docs_tree.json:", error);
-      // Se fallisce, mostra un errore PRIMA della sezione contatti
-       if (staticContactSection) {
-           const errorP = document.createElement('p');
-           errorP.style.color = 'red';
-           errorP.style.fontWeight = 'bold';
-           errorP.textContent = error.message;
-           mainContainer.insertBefore(errorP, staticContactSection);
-       } else {
-           mainContainer.innerHTML = `<p style="color: red; font-weight: bold;">${error.message}</p>`;
-       }
+       const errorP = document.createElement('p');
+       errorP.style.color = 'red';
+       errorP.style.fontWeight = 'bold';
+       errorP.textContent = error.message;
+       // Inserisce l'errore prima della sezione contatti
+       mainContainer.insertBefore(errorP, staticContactSection);
     });
 });
 
@@ -143,7 +133,6 @@ function addCollapseListeners() {
     toggle.addEventListener('click', () => {
       const content = toggle.nextElementSibling;
       if (content && content.classList.contains('folder-content')) {
-        // Usa requestAnimationFrame per animazione più fluida
         requestAnimationFrame(() => {
             toggle.classList.toggle('collapsed');
             content.classList.toggle('collapsed');
@@ -159,42 +148,36 @@ function addCollapseListeners() {
 /* PARTE 4: Funzione per "Scroll-Spy"                  */
 /* =================================================== */
 function addScrollSpy() {
-  // Seleziona tutte le sezioni DENTRO main E i link generati dinamicamente
-  const sections = document.querySelectorAll('main section[id]');
-  const navLinks = document.querySelectorAll('#nav-navigation a.nav-link'); // Usa la classe specifica
-  const headerHeight = document.querySelector('header')?.offsetHeight || 80; // Altezza header
+  const sections = document.querySelectorAll('main section[id]:not(#contatti)'); // Esclude la sezione contatti vuota
+  const navLinks = document.querySelectorAll('#nav-navigation a.nav-link'); 
+  const headerHeight = document.querySelector('header')?.offsetHeight || 80;
 
-  if (sections.length === 0 || navLinks.length === 0) return; // Non fare nulla se non ci sono sezioni/link
+  if (sections.length === 0 || navLinks.length === 0) return; 
 
   const onScroll = () => {
     let current = '';
 
     sections.forEach(section => {
       const sectionTop = section.offsetTop;
-      // Considera l'altezza dell'header + un piccolo offset
       if (window.scrollY >= sectionTop - headerHeight - 20) { 
         current = section.getAttribute('id');
       }
     });
 
-    // Controlla anche l'ultimo elemento per attivarlo se siamo in fondo
      const lastSection = sections[sections.length - 1];
-     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50) { // Se siamo quasi in fondo
+     // Aggiunto controllo per evitare errori se non ci sono sezioni
+     if (lastSection && window.innerHeight + window.scrollY >= document.body.offsetHeight - 50) { 
         current = lastSection.getAttribute('id');
      }
 
-
     navLinks.forEach(link => {
       link.classList.remove('active');
-      // Controlla se l'href del link (senza #) matcha l'ID corrente
       if (link.getAttribute('href').substring(1) === current) {
         link.classList.add('active');
       }
     });
   };
 
-  // Esegui subito per impostare lo stato iniziale
   onScroll(); 
-  // Poi aggiungi l'ascoltatore per lo scroll
-  window.addEventListener('scroll', onScroll, { passive: true }); // passive: true per performance
+  window.addEventListener('scroll', onScroll, { passive: true }); 
 }
