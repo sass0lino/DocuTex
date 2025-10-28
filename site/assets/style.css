@@ -37,22 +37,13 @@ nav {
   justify-content: space-between;
 }
 
-/* Sezioni a sinistra */
-#nav-navigation {
-  list-style: none;
-  display: flex;
-  gap: 1em;
-  margin: 0;
-  padding: 0;
-  order: -1; /* ora sta a sinistra */
-}
-
-/* Logo a destra */
+/* Logo a sinistra */
 #header-logo {
   height: clamp(4.8em, 7vw, 6em);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  order: -1;
 }
 .header-logo-img {
   height: 100%;
@@ -62,6 +53,15 @@ nav {
 #header-logo:hover .header-logo-img {
   opacity: 0.8;
   transform: scale(1.03);
+}
+
+/* Sezioni a destra */
+#nav-navigation {
+  list-style: none;
+  display: flex;
+  gap: 1em;
+  margin: 0;
+  padding: 0;
 }
 
 /* Link sezioni */
