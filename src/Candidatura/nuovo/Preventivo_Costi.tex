@@ -8,16 +8,11 @@
 
 
 % ====================================
-% immagini: \includegraphics{logo.jpg}
-% file: \pjinput{\contenuti/file.tex}
+% --- Grafica e Layout ---
+\usepackage{graphicx}           % Per includere immagini
 \usepackage{currfile}
-\usepackage{graphicx}
-\usepackage{xstring}
-\edef\pjrootfull{\currfileabsdir}
-\StrBehind{\pjrootfull}{src/}[\pjsubpath]
-\edef\pjroot{src/\pjsubpath}
-\graphicspath{{src/immagini/}{\pjroot/immagini/}{\pjroot/contenuti/immagini/}{\pjroot/contenuti/}{\pjroot}}
-\newcommand{\pjinput}[1]{\input{\pjroot#1}}
+\graphicspath{{src/immagini/}{\currfiledir contenuti/}{\currfiledir contenuti/immagini/}}
+
 % ====================================
 
 \usepackage[a4paper, top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry} % Margini
@@ -55,7 +50,7 @@
 % ===================================================================
 \begin{document}
 
-\pjinput{contenuti/intestazione_titolo.tex}
+\input{contenuti/intestazione_titolo.tex}
 
 % -------------------------------------------------------------------
 %  SEZIONE: indice.tex
