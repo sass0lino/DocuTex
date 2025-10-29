@@ -25,16 +25,9 @@
 \usepackage[italian]{babel}     % Lingua italiana
 \usepackage{lmodern}            % Font "Latin Modern"
 
-\usepackage{graphicx}
-\graphicspath{
-  {contenuti/}
-  {contenuti/immagini/}
-  {../assets condivisi/}
-  {../../assets condivisi/}
-  {../../../assets condivisi/}
-  {../../../../assets condivisi/}
-  {../../../../../assets condivisi/}
-}
+% --- Grafica e Layout ---
+\usepackage{graphicx}           % Per le immagini
+\graphicspath{{../../../../assets condivisi/}}
 \usepackage[a4paper, top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry} % Margini
 \usepackage{fancyhdr}           % Per header e footer personalizzati
 \usepackage{microtype}          % Migliora la tipografia
@@ -98,7 +91,6 @@
     
     \vspace{1cm}
     
-    % Inserisci qui il titolo specifico del documento
     {\Large \itshape Verbale Interno del 20 ottobre 2025 \par} 
     
     \vfill
@@ -109,7 +101,6 @@
     
     \vfill
     
-    % Inserisci qui la data di redazione del documento
     {\large Data: 20 ottobre 2025 \par}
 
 \end{titlepage}
