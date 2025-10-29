@@ -1,11 +1,11 @@
-# Report di compilazione del 2025-10-29T11:32:29+00:00
+# Report di compilazione del 2025-10-29T11:44:19+00:00
 
-Compilazione basata sul commit 6c0e5fc3e7c2d1b40e5fccee6a8a1ccb72b7d140 (base: 6c0e5fc)
+Compilazione basata sul commit c47f3addff14624d7ef3aaf6d86141c669ba6d8f (base: c47f3ad)
 
 ## Falliti
-❌ [src/Preventivo_Costi.tex](https://github.com/sass0lino/DocuTex/actions/runs/18906422630)
+❌ [src/Preventivo_Costi.tex](https://github.com/sass0lino/DocuTex/actions/runs/18906712510)
 
-❌ [src/Candidatura/Preventivo_Costi.tex](https://github.com/sass0lino/DocuTex/actions/runs/18906422630)
+❌ [src/Candidatura/nuovo/Preventivo_Costi.tex](https://github.com/sass0lino/DocuTex/actions/runs/18906712510)
 
 
 ## Compilati
