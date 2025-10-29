@@ -3,10 +3,6 @@ import re
 import json
 
 def estrai_versione(filename):
-    """
-    Estrae un numero di versione (es. v1.0.0) dal nome file,
-    anche se seguito da _firmato, -firmato o ' firmato' (o 'signed').
-    """
     match = re.search(r'v(\d+\.\d+(?:\.\d+)?)(?=[\s_\-]*(firmato|signed)?$)', filename, re.IGNORECASE)
     if match:
         return f"v{match.group(1)}"
@@ -14,21 +10,13 @@ def estrai_versione(filename):
 
 
 def build_file_tree(directory):
-    """
-    Crea una struttura ad albero dei file PDF nella cartella data.
-    - Mostra solo i file firmati se presenti (al posto della loro controparte non firmata).
-    - Rileva le versioni anche in presenza di firma.
-    """
     tree_root_dict = {}
 
     for root, dirs, files in os.walk(directory, topdown=True):
-        # Ignora cartelle e file nascosti
         dirs[:] = [d for d in dirs if not d.startswith('.')]
         files = [f for f in files if not f.startswith('.') and f.lower().endswith('.pdf')]
 
         relative_path = os.path.relpath(root, directory)
-
-        # Gestione della root
         if relative_path == '.':
             for d in dirs:
                 if d not in tree_root_dict:
@@ -52,19 +40,16 @@ def build_file_tree(directory):
                     current_folder_dict['children'].append(found_folder)
                 current_folder_dict = found_folder
 
-        # --- NUOVA LOGICA: preferire i file firmati se presenti ---
         base_files = {}
 
         for file in files:
             name_no_ext = os.path.splitext(file)[0]
 
-            # Rimuove eventuale suffisso firmato/signed (con qualsiasi separatore)
             base_name = re.sub(r'[\s_\-]*(firmato|signed)$', '', name_no_ext, flags=re.IGNORECASE)
 
             if base_name not in base_files:
                 base_files[base_name] = {'normal': None, 'signed': None}
 
-            # Controlla se il file è firmato (accetta _, -, o spazio)
             if re.search(r'[\s_\-](firmato|signed)$', name_no_ext, re.IGNORECASE):
                 base_files[base_name]['signed'] = file
             else:
@@ -90,7 +75,6 @@ def build_file_tree(directory):
             }
             children_list_to_add_files.append(file_data)
 
-    # Costruzione finale della struttura
     final_tree = {}
     for key, value in tree_root_dict.items():
         if value['type'] == 'folder':
