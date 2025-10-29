@@ -6,10 +6,16 @@
 \usepackage[italian]{babel}     % Lingua italiana
 \usepackage{lmodern}            % Font "Latin Modern"
 
-% --- Grafica e Layout ---
-\usepackage{graphicx}           % Per includere immagini
-\usepackage{currfile}
-\graphicspath{{src/immagini/}{\currfiledir contenuti/}{\currfiledir contenuti/immagini/}}
+\usepackage{graphicx}
+\graphicspath{
+  {contenuti/}
+  {contenuti/immagini/}
+  {../assets condivisi/}
+  {../../assets condivisi/}
+  {../../../assets condivisi/}
+  {../../../../assets condivisi/}
+  {../../../../../assets condivisi/}
+}
 
 \usepackage[a4paper, top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry} % Margini
 \usepackage{fancyhdr}           % Per header e footer personalizzati
