@@ -8,14 +8,29 @@
 
 % blocco di codice che permette di includere immagini con \includegraphics{logo.jpg} 
 % e i file ausiliari con \pjinput{\contenuti/file.tex} senza preoccupazioni
+% --- Gestione percorsi dinamici per progetti LaTeX ---
 \usepackage{currfile}
 \usepackage{graphicx}
 \usepackage{xstring}
 
-\edef\pjroot{\currfileabspath}
-\StrCutRight{\pjroot}{\jobname.tex}[\pjroot][\discard]
+% Ottieni il percorso assoluto del file principale (es: /home/.../src/.../progetto/)
+\edef\pjrootfull{\currfileabsdir}
 
-\graphicspath{{\pjroot}{\pjroot/immagini/}{src/immagini/}}
+% Estrai il percorso relativo a partire da "src/"
+\StrBehind{\pjrootfull}{src/}[\pjsubpath]
+
+% Ricostruisci il percorso del progetto, relativo alla root del repository
+\edef\pjroot{src/\pjsubpath}
+
+% Directory in cui cercare le immagini (ordine di ricerca)
+\graphicspath{
+  {\pjroot}              % cartella del progetto
+  {\pjroot/immagini/}    % immagini specifiche del progetto
+  {src/immagini/}        % immagini condivise tra progetti
+  {assets/immagini/}     % immagini globali (se presenti)
+}
+
+% Macro per includere i file locali al progetto
 \newcommand{\pjinput}[1]{\input{\pjroot#1}}
 
 \usepackage[a4paper, top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry} % Margini
