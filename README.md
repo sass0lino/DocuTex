@@ -7,6 +7,7 @@
 6) Da evitare l'utilizzo di rebase in favore del merge per creare meno problemi.
 7) I file `.pdf` che si trovano direttamente in `docs/` (senza passare per cartelle intermedie) vengono completamente ignorati dallo script che crea la struttura dei documenti per il sito web, di conseguenza non saranno visualizzati (per il nostro progetto questo sará un non problema dato che non é previsto accada).
 8) Nomenclatura file pdf: strutturare il nome del file latex mettendo la versione alla fine (es: nome_v0.1.5.tex). Quando si inserisce un file `.pdf` firmato a mano, si deve aggiungere la parola `firmato` o `signed` alla fine nel nome del file pdf (es: nome_v0.1.5_firmato.pdf). L'ordine è importante per garantire allo script python del sito web di riconoscere correttamente versione del file e presenza della firma. Per fare gli spazi si può usare `_` o il classico spazio. Utilizzare il `-` per le date.
+9) È possibile l'attivazione dei workflow anche manualmente direttamente tramite pulsante dedicato in github action.
 
 # Obiettivi della build di compilazione automatica
 
