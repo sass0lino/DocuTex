@@ -11,9 +11,11 @@
 \usepackage{currfile}
 \usepackage{graphicx}
 \usepackage{xstring}
+
 \edef\pjroot{\currfileabspath}
-\StrGobbleRight{\pjroot}{\numexpr\StrLen{\jobname.tex}\relax}[\pjroot]
-\graphicspath{{\pjroot}{\pjroot/immagini/}{assets/immagini/}}
+\StrCutRight{\pjroot}{\jobname.tex}[\pjroot][\discard]
+
+\graphicspath{{\pjroot}{\pjroot/immagini/}{src/immagini/}}
 \newcommand{\pjinput}[1]{\input{\pjroot#1}}
 
 \usepackage[a4paper, top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry} % Margini
