@@ -1,14 +1,16 @@
-# Report di compilazione del 2025-10-29T20:32:46+00:00
+# Report di compilazione del 2025-10-29T20:50:33+00:00
 
-Compilazione basata sul commit 6e420c0bcc9b0fdd208d9922535e0094d2e75279 (base: 6e420c0)
+Compilazione basata sul commit 3a5082f926a8c9d2c145e9f548d3fb25d5c1cb26 (base: 3a5082f)
 
 ## Falliti
-❌ [src/Candidatura/Valutazione_Capitolati.tex](https://github.com/sass0lino/DocuTex/actions/runs/18921247137)
+❌ [src/Preventivo_Costi.tex](https://github.com/sass0lino/DocuTex/actions/runs/18921670015)
+
+❌ [src/Candidatura/Valutazione_Capitolati.tex](https://github.com/sass0lino/DocuTex/actions/runs/18921670015)
+
+❌ [src/Preventivo_Costi_due.tex](https://github.com/sass0lino/DocuTex/actions/runs/18921670015)
 
 
 ## Compilati
-✅ [docs/Preventivo_Costi.pdf](docs/Preventivo_Costi.pdf)
-
 ✅ [docs/PB/Preventivo_Costi.pdf](docs/PB/Preventivo_Costi.pdf)
 
 ✅ [docs/PB/Verbali/Verbali Interni/verbale_interno_15-10-25_v0.3.1.pdf](docs/PB/Verbali/Verbali%20Interni/verbale_interno_15-10-25_v0.3.1.pdf)
@@ -32,6 +34,4 @@ Compilazione basata sul commit 6e420c0bcc9b0fdd208d9922535e0094d2e75279 (base: 6
 ✅ [docs/Candidatura/nuovo/Preventivo_Costi.pdf](docs/Candidatura/nuovo/Preventivo_Costi.pdf)
 
 ✅ [docs/RTB/Preventivo_Costi.pdf](docs/RTB/Preventivo_Costi.pdf)
-
-✅ [docs/Preventivo_Costi_due.pdf](docs/Preventivo_Costi_due.pdf)
 
