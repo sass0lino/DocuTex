@@ -1,4 +1,4 @@
-# Guida all'uso
+# Guida all'uso dei workflow del repository
 1) Per compilare i vostri file latex, caricateli tutti nella cartella `src/`. La build si attiverà in automatico e salverà tutti i rispettivi `.pdf` compilati nella cartella `docs/`, con una struttura di cartelle uguale a quella che abbiamo usato in `src/`.
 2) Potete caricare progetti latex mono-file oppure multi-file. Per i progetti multi-file è importante che esista un file `.tex` principale e una cartella obbligatoriamente chiamata `contenuti/` in cui disporre tutti i file secondari del progetto (questo nome è un vincolo tecnico per far funzionare la build).
 3) Questione immagini: la compilazione dei progetti latex parte dalla root, dunque per la compilazione delle immagini basta procedere nel seguente modo:
@@ -15,8 +15,9 @@
 7) Dettaglio da evidenziare: la build si attiverà anche se elimini, modifichi o aggiungi un file .pdf da docs/. Questo accade perché il sistema deve garantire che i PDF in docs/ siano sempre e solo quelli generati dalla build stessa e non modificati a mano (quindi li rigenera o li elimina se necessario).
 8) Report sui risultati di compilazione della build: potete controllare quali file sono stati effettivamente compilati correttamente, e quali hanno fallito la compilazione, nel file `report.md` (si aggiorna ad ogni build chiaramente).
 9) Evitiamo di utilizzare rebase in favore del merge per creare meno problemi.
+10) Dovete infine sapere una informazione in merito al processo di creazione e pubblicazione della webpage dedicata ai documenti del repository. I file `.pdf` che si trovano direttamente in `docs/` (senza passare per cartelle intermedie) vengono completamente ignorati dallo script che crea la struttura dei documenti per il sito web, di conseguenza non saranno visualizzati. Per il nostro progetto questo sará un non problema dato che non é previsto si verifichi questa situazione.
 
-# Obiettivi della Build
+# Obiettivi della build di compilazione automatica dei file LaTeX
 
 L’obiettivo della build implementata con github action è di compilare automaticamente i progetti latex caricati nel repository, mantenendo **coerenza e consistenza** tra i file sorgenti latex e i rispettivi pdf.
 Nello specifico la build garantisce che:
