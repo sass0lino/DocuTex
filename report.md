@@ -1,10 +1,12 @@
-# Report di compilazione del 2025-10-29T21:03:59+00:00
+# Report di compilazione del 2025-10-29T21:09:58+00:00
 
-Compilazione basata sul commit 7a2d61d5b1c45e3ac8e70bd178cd0fb0bbe10b4e (base: 7a2d61d)
+Compilazione basata sul commit c57ed1b7723ed6c0ed7f1fed3e37071ffadb8e6e (base: c57ed1b)
 
 ## Falliti
-❌ [src/Preventivo_Costi.tex](https://github.com/sass0lino/DocuTex/actions/runs/18922001883)
-
+💡 Nessun errore di compilazione
 
 ## Compilati
-💡 Nessun PDF compilato
+✅ [docs/Preventivo_Costi.pdf](docs/Preventivo_Costi.pdf)
+
+✅ [docs/Preventivo_Costi copia.pdf](docs/Preventivo_Costi%20copia.pdf)
+
