@@ -9,6 +9,7 @@ on:
     paths:
       - 'src/**/*.tex'
       - 'docs/**/*.pdf'
+  workflow_dispatch:
 
 concurrency:
   group: latex-build
