@@ -7,14 +7,10 @@
 \usepackage{lmodern}            % Font "Latin Modern"
 
 % blocco di codice che permette di includere immagini con \includegraphics{logo.jpg} 
-% e i file ausiliari con \input{contenuti/file.tex} senza preoccupazioni
+% e i file ausiliari con \input{\currentfiledir contenuti/file.tex} senza preoccupazioni
 \usepackage{currfile}
-\newcommand{\rootdir}{\currfiledir}
-\makeatletter
-\def\input@path{{\rootdir}{\rootdir contenuti/}}
-\makeatother
 \usepackage{graphicx}
-\graphicspath{{\rootdir}{\rootdir contenuti/}{\rootdir contenuti/immagini/}}
+\graphicspath{{\currentfiledir}{\currentfiledir contenuti/}{\currentfiledir contenuti/immagini/}}
 
 
 \usepackage[a4paper, top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry} % Margini
@@ -52,7 +48,7 @@
 % ===================================================================
 \begin{document}
 
-\input{contenuti/intestazione_titolo.tex}
+\input{\currentfiledir contenuti/intestazione_titolo.tex}
 
 % -------------------------------------------------------------------
 %  SEZIONE: indice.tex
