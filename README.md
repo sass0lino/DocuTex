@@ -1,17 +1,25 @@
 # Guida all'uso dei workflow del repository
-1) Per compilare i vostri file latex, caricateli tutti nella cartella `src/`. La build si attiverà in automatico e salverà tutti i rispettivi `.pdf` compilati nella cartella `docs/`, con una struttura di cartelle uguale a quella che abbiamo usato in `src/`.
+1) Per compilare i file `.tex` bisogna caricarli nella cartella `src/`. La build si attiverà in automatico e salverà tutti i rispettivi `.pdf` compilati nella cartella `docs/`, con una struttura di cartelle uguale a quella che abbiamo usato in `src/`.
 2) Potete caricare progetti latex mono-file oppure multi-file. Per i progetti multi-file è importante che esista un file `.tex` principale e una cartella obbligatoriamente chiamata `contenuti/` in cui disporre tutti i file secondari del progetto (questo nome è un vincolo tecnico per far funzionare la build).
-3) Questione immagini: la compilazione dei progetti latex parte dalla root, dunque per la compilazione delle immagini basta procedere nel seguente modo:
-   - aggiungi all'inizio del file latex principale le seguenti direttive:
+3) Questione immagini:
+   - se vuoi non avere dubbi nella compilazione aggiungi all'inizio del file latex "principale" le seguenti direttive:
    ```
-   \usepackage{graphicx} % Pacchetto classico per le immagini
-   \usepackage{currfile} % Pacchetto per ottenere il percorso del file compilato dinamicamente
-   \graphicspath{{src/immagini/}{\currfiledir contenuti/}{\currfiledir contenuti/immagini/}} % Percorsi dove cercare le immagini
+   \usepackage{graphicx}
+   \graphicspath{
+     {contenuti/}
+     {contenuti/immagini/}
+     {assets condivisi/}
+     {../assets condivisi/}
+     {../../assets condivisi/}
+     {../../../assets condivisi/}
+     {../../../../assets condivisi/}
+     {../../../../../assets condivisi/}
+   }
    ```
-   - Potrai disporre le immagini condivise da tutti i documenti (come il logo) nella cartella `src/immagini/`, e salvare le immagini specifiche dei progetti nelle rispettive cartelle dedicate (`.../progetto/contenuti/` o `.../progetto/contenuti/immagini/`).
-   - Infine utilizza il seguente comando per includere l'immagine: `\includegraphics{logo.jpg}` (non serve specificare il percorso)
+   - Potrai disporre le immagini condivise da tutti i documenti (come il logo) nella cartella `src/assets condivisi/`, e salvare le immagini specifiche dei progetti nelle rispettive cartelle dedicate (`.../progetto/contenuti/` o `.../progetto/contenuti/immagini/`).
+   - Le immagini si includono con il percorso relativo alla cartella dello specifico progetto in cui state lavorando, ma se si in clude il blocco di codice sopra potete tranquillamente scrivere `\includegraphics{logo.jpg}` (senza specificare il percorso)
 5) Attenzione: se modificate una immagine mantenendo lo stesso nome del file immagine, la ricompilazione non avverrá in automatico, dunque bisognerá forzarla eliminando il file pdf che vogliamo ricompilare.
-6) Potete caricare i file pdf firmati, caricandoli a mano in `docs/` dopo averli rinominati con un nome che termina con `*firmato.pdf` oppure `*signed.pdf` (esempio: `verbale_firmato.pdf`). Questi file infatti pur essendo "orfani" verranno ignorati (e quindi non eliminati) durante il controllo di integritá tra `src/` e `docs/` grazie al loro nome specifico.
+6) Potete caricare i file pdf firmati, caricandoli a mano in `docs/` dopo averli rinominati con un nome che termina con `firmato.pdf` oppure `signed.pdf` (esempio: `verbale_firmato.pdf`). Questi file infatti pur essendo "orfani" verranno ignorati (e quindi non eliminati) durante il controllo di integritá tra `src/` e `docs/` grazie al loro nome specifico.
 7) Dettaglio da evidenziare: la build si attiverà anche se elimini, modifichi o aggiungi un file .pdf da docs/. Questo accade perché il sistema deve garantire che i PDF in docs/ siano sempre e solo quelli generati dalla build stessa e non modificati a mano (quindi li rigenera o li elimina se necessario).
 8) Report sui risultati di compilazione della build: potete controllare quali file sono stati effettivamente compilati correttamente, e quali hanno fallito la compilazione, nel file `report.md` (si aggiorna ad ogni build chiaramente).
 9) Da evitare l'utilizzo di rebase in favore del merge per creare meno problemi.
