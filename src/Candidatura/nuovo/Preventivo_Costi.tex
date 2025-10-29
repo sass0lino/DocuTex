@@ -6,10 +6,16 @@
 \usepackage[italian]{babel}     % Lingua italiana
 \usepackage{lmodern}            % Font "Latin Modern"
 
-% --- Grafica e Layout ---
-\usepackage{graphicx}           % Per includere immagini
+% blocco di codice che permette di includere immagini con \includegraphics{logo.jpg} 
+% e i file ausiliari con \input{contenuti/file.tex} senza preoccupazioni
 \usepackage{currfile}
-\graphicspath{{src/immagini/}{\currfiledir contenuti/}{\currfiledir contenuti/immagini/}}
+\newcommand{\rootdir}{\currfiledir}
+\makeatletter
+\def\input@path{{\rootdir}{\rootdir contenuti/}}
+\makeatother
+\usepackage{graphicx}
+\graphicspath{{\rootdir}{\rootdir contenuti/}{\rootdir contenuti/immagini/}}
+
 
 \usepackage[a4paper, top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry} % Margini
 \usepackage{fancyhdr}           % Per header e footer personalizzati
