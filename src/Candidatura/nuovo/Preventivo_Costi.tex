@@ -15,7 +15,7 @@
 \usepackage{xstring}
 \edef\pjrootfull{\currfileabsdir}
 \StrBehind{\pjrootfull}{src/}[\pjsubpath]
-\IfStrEq{\pjsubpath}{}{\edef\pjroot{\pjrootfull}}{\edef\pjroot{src/\pjsubpath}}
+\edef\pjroot{src/\pjsubpath}
 \graphicspath{{src/immagini/}{\pjroot/immagini/}{\pjroot/contenuti/immagini/}{\pjroot/contenuti/}{\pjroot}}
 \newcommand{\pjinput}[1]{\input{\pjroot#1}}
 % ====================================
