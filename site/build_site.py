@@ -1,6 +1,13 @@
 import os
 import re
 import json
+from datetime import datetime
+
+def estrai_data(filename):
+    match = re.search(r'(\d+)(-|/)(\d+)(-|/)(\d+)', filename)
+    if match:
+        return (match.group(0), (match.group(5), match.group(3), match.group(1)))
+    return None
 
 def estrai_versione(filename):
     match = re.search(r'v(\d+\.\d+(?:\.\d+)?)(?=[\s_\-]*(firmato|signed)?$)', filename, re.IGNORECASE)
@@ -63,14 +70,19 @@ def build_file_tree(directory):
                 continue
 
             pdf_path = os.path.join(root, chosen_file)
-            clean_name = base_name.replace('_', ' ').replace('-', ' ')
+            clean_name = base_name.replace('_', ' ')
             web_path = f'./{pdf_path.replace(os.sep, "/").lstrip("../")}'
 
+            version = estrai_versione(base_name)
+            data = estrai_data(base_name)
+            if version: clean_name = clean_name.replace(version, '')
+            if data: clean_name = clean_name.replace(data[0], '')
             file_data = {
                 'type': 'file',
                 'name': clean_name.strip(),
+                'date': datetime.strptime('-'.join(data[1]), "%{}-%m-%d".format('Y' if len(data[1][0])==4 else 'y')).strftime('%m-%d-%Y') if data else data,
                 'path': web_path,
-                'version': estrai_versione(base_name),
+                'version': version,
                 'signed': bool(variants['signed'])
             }
             children_list_to_add_files.append(file_data)
