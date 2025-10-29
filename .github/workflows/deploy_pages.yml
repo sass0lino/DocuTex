@@ -1,16 +1,13 @@
 name: Build and Deploy Website
 run-name: >
   Deploy website –
-  ${{ github.event_name == 'workflow_run' && 'from LaTeX build' || github.event.head_commit.message }}
+  ${{ github.event_name == 'workflow_run' && 'from LaTeX build' }}
 
 on:
   workflow_run:
     workflows: ["Build LaTeX documents"]
     types:
       - completed
-  push:
-    paths:
-      - 'site/**'
 
 permissions:
   contents: read
@@ -20,7 +17,7 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout repository
