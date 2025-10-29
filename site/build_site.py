@@ -10,10 +10,7 @@ def estrai_versione(filename):
     return None
 
 def build_file_tree(directory):
-    '''
-    Analizza ricorsivamente la directory e crea un albero (dict)
-    di cartelle e file.
-    '''
+    
     tree_root_dict = {}
 
     for root, dirs, files in os.walk(directory, topdown=True):
@@ -55,7 +52,6 @@ def build_file_tree(directory):
                 pdf_path = os.path.join(root, file)
                 clean_name = os.path.splitext(file)[0].replace('_', ' ')
                 
-                # Crea il percorso web relativo: es. './docs/file.pdf'
                 web_path = f'./{pdf_path.replace(os.sep, "/").lstrip("../")}'
 
                 file_data = {
@@ -73,14 +69,10 @@ def build_file_tree(directory):
             
     return final_tree
 
-
 if __name__ == "__main__":
-    # --- CONFIGURAZIONE PER SCRIPT IN 'site/' ---
     
-    # Legge la cartella 'docs' salendo di un livello
     directory_docs = '../docs' 
     
-    # Salva il JSON accanto a sé, in 'site/'
     output_json_file = './docs_tree.json' 
     
     print(f"Avvio scansione della cartella: {directory_docs}")
