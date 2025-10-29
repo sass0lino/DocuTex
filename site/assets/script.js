@@ -66,7 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         li.append(folderToggle, content);
-      } else if (item.type === 'file') {
+      } 
+      else if (item.type === 'file') {
         const p = document.createElement('p');
         p.className = 'pdf_row';
         const fileInfo = document.createElement('div');
@@ -76,8 +77,22 @@ document.addEventListener('DOMContentLoaded', () => {
         link.className = 'file-name';
         link.href = item.path;
         link.target = '_blank';
-        link.textContent = item.name;
+
+        // ✅ Mostra nome leggibile: sostituisce solo gli underscore (mantiene i trattini)
+        const readableName = item.name.replace(/_/g, ' ');
+
+        // ✅ Aggiungi versione se presente
+        const versionLabel = item.version ? ` (${item.version})` : '';
+
+        // ✅ Aggiungi etichetta "Firmato" se il file è firmato
+        const signedLabel = item.signed
+          ? ' <span class="signed-badge">Firmato</span>'
+          : '';
+
+        // ✅ Composizione testo finale
+        link.innerHTML = `${readableName}${versionLabel}${signedLabel}`;
         link.dataset.fullPath = fullPath;
+
         fileInfo.appendChild(link);
 
         const download = document.createElement('a');
@@ -100,68 +115,68 @@ document.addEventListener('DOMContentLoaded', () => {
     return wrapper;
   }
 
-function showSection(name, filtered = null) {
-  currentSection = name;
-  container.innerHTML = '';
-  document.querySelectorAll('.file-path').forEach(p => p.remove());
+  function showSection(name, filtered = null) {
+    currentSection = name;
+    container.innerHTML = '';
+    document.querySelectorAll('.file-path').forEach(p => p.remove());
 
-  document.querySelectorAll('#nav-navigation a').forEach(a => {
-    const active = a.dataset.section === name;
-    a.classList.toggle('active', active);
-    a.classList.toggle('show-arrow', active);
-  });
+    document.querySelectorAll('#nav-navigation a').forEach(a => {
+      const active = a.dataset.section === name;
+      a.classList.toggle('active', active);
+      a.classList.toggle('show-arrow', active);
+    });
 
-  searchInput.placeholder = name === 'Archivio' ? 'Cerca…' : `Cerca in ${name}…`;
+    searchInput.placeholder = name === 'Archivio' ? 'Cerca…' : `Cerca in ${name}…`;
 
-  if (!sectionsWrapper.contains(searchContainer)) {
-    sectionsWrapper.insertBefore(searchContainer, container);
-  }
-
-  if (name === 'Archivio') {
-    let title = sectionsWrapper.querySelector('.repo-title');
-    if (!title) {
-      title = document.createElement('h1');
-      title.className = 'repo-title';
-      title.textContent = 'Documentazione di Progetto';
-      sectionsWrapper.insertBefore(title, searchContainer);
+    if (!sectionsWrapper.contains(searchContainer)) {
+      sectionsWrapper.insertBefore(searchContainer, container);
     }
 
-    const source = filtered || docsTree;
-    Object.keys(source).forEach(section => {
-      const sectionContainer = document.createElement('div');
-      const toggle = document.createElement('div');
-      toggle.className = 'folder-toggle';
+    if (name === 'Archivio') {
+      let title = sectionsWrapper.querySelector('.repo-title');
+      if (!title) {
+        title = document.createElement('h1');
+        title.className = 'repo-title';
+        title.textContent = 'Documentazione di Progetto';
+        sectionsWrapper.insertBefore(title, searchContainer);
+      }
+
+      const source = filtered || docsTree;
+      Object.keys(source).forEach(section => {
+        const sectionContainer = document.createElement('div');
+        const toggle = document.createElement('div');
+        toggle.className = 'folder-toggle';
+        const label = document.createElement('span');
+        label.className = 'toggle-data';
+        label.textContent = section;
+        toggle.appendChild(label);
+
+        const content = document.createElement('div');
+        content.className = 'folder-content';
+        content.appendChild(buildTree(source[section], section));
+
+        sectionContainer.append(toggle, content);
+        container.appendChild(sectionContainer);
+      });
+    } else {
+      const oldTitle = sectionsWrapper.querySelector('.repo-title');
+      if (oldTitle) oldTitle.remove();
+
+      const rootToggle = document.createElement('div');
+      rootToggle.className = 'folder-toggle';
       const label = document.createElement('span');
       label.className = 'toggle-data';
-      label.textContent = section;
-      toggle.appendChild(label);
+      label.textContent = name;
+      rootToggle.appendChild(label);
 
       const content = document.createElement('div');
       content.className = 'folder-content';
-      content.appendChild(buildTree(source[section], section));
+      const treeData = filtered ? filtered[name] : docsTree[name];
+      content.appendChild(buildTree(treeData, name));
 
-      sectionContainer.append(toggle, content);
-      container.appendChild(sectionContainer);
-    });
-  } else {
-    const oldTitle = sectionsWrapper.querySelector('.repo-title');
-    if (oldTitle) oldTitle.remove();
-
-    const rootToggle = document.createElement('div');
-    rootToggle.className = 'folder-toggle';
-    const label = document.createElement('span');
-    label.className = 'toggle-data';
-    label.textContent = name;
-    rootToggle.appendChild(label);
-
-    const content = document.createElement('div');
-    content.className = 'folder-content';
-    const treeData = filtered ? filtered[name] : docsTree[name];
-    content.appendChild(buildTree(treeData, name));
-
-    container.append(rootToggle, content);
+      container.append(rootToggle, content);
+    }
   }
-}
 
   function filterTree(items, query) {
     const results = [];
