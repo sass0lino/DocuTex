@@ -1,5 +1,5 @@
 name: Build LaTeX documents
-run-name: "Compile LaTeX documents – ${{ github.event.head_commit.message }}"
+run-name: "Compile LaTeX – ${{ github.sha.substring(0,7) }}"
 
 permissions:
   contents: write
@@ -61,7 +61,7 @@ jobs:
             done
           fi
           
-          # creazione lista pulita di file pdf modificati
+          # creazione lista pulita di file pdf modificati 
           if [ -n "$changed_pdfs" ]; then
             echo "$changed_pdfs" | while IFS= read -r pdf; do
               [ -z "$pdf" ] && continue
@@ -80,7 +80,7 @@ jobs:
 
       - name: Step 2 - Cleanup
         run: |
-          # eliminazione dei file pdf provenienti dalle due liste pulite create sopra (pdf obsoleti)(se esistono)
+          # eliminazione dei file pdf provenienti dalle due liste pulite create sopra (pdf obsoleti)(se esistono) 
           echo "--- Cleaning up obsolete or orphaned PDFs ---"
           if [ -s pdfs_to_remove.txt ]; then
             while IFS= read -r texfile; do
