@@ -33,7 +33,7 @@ Attenzione: tutto ció non vale per i file firmati, dovranno essere gestiti manu
 - Viene individuato l’ultimo commit creato dalla build automatica (`LAST_COMPILED`) e confrontato con `HEAD`.
 - Dal diff si ottiene una lista unica di PDF da rigenerare, composta da:
   - tutti i `.tex` modificati/aggiunti/rinominati (se un file è in una cartella `contenuti/`, si considera il relativo file padre nella stessa directory);
-  - tutti i `.pdf` in `docs/` modificati/aggiunti/rinominati manualmente.
+  - tutti i `.pdf` in `docs/` modificati/aggiunti/rinominati manualmente (non orfani).
 
 ### Step 2 – Pulizia
 - Si eliminano i PDF corrispondenti agli elementi identificati nello Step 1 (se esistono).
