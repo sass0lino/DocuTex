@@ -1,6 +1,4 @@
 name: Build LaTeX documents
-run-name: "Compile LaTeX – ${{ github.sha.substring(0,7) }}"
-
 permissions:
   contents: write
 
