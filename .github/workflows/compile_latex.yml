@@ -142,20 +142,24 @@ jobs:
           # setup ambiente di compilazione e file utili + compilazione file
           > build_result.log
           mkdir -p tmp_build
-          docker run --rm -v "$(pwd)":/workspace -w /workspace \
+          ROOT_DIR=$(git rev-parse --show-toplevel)
+          docker run --rm --volume "$(pwd)":"$(pwd)" --workdir "$(pwd)" \
             ghcr.io/xu-cheng/texlive-full:latest /bin/bash -c '
               while IFS= read -r texfile || [ -n "$texfile" ]; do
                 [ -z "$texfile" ] && continue
                 echo "Compiling: $texfile"
-                if latexmk -pdf -cd -interaction=nonstopmode -file-line-error -output-directory="tmp_build" "$texfile"; then
+                pushd "$(dirname "$texfile")" >/dev/null || exit 1
+                if latexmk -pdf -interaction=nonstopmode -file-line-error -output-directory="'"$ROOT_DIR"'/tmp_build" "$(basename "$texfile")"; then
+                  popd >/dev/null
                   filepath=$(dirname "$texfile")
                   filename=$(basename "$texfile" .tex)
                   out_sub=$(echo "$filepath" | sed "s|^src/||; s|^src\$||")
-                  out_dir="docs/$out_sub"
+                  out_dir="$(pwd)/docs/$out_sub"
                   mkdir -p "$out_dir"
-                  mv "tmp_build/$filename.pdf" "$out_dir/"
+                  mv "$(pwd)/tmp_build/$filename.pdf" "$out_dir/"
                   echo "$texfile;Success" >> build_result.log
                 else
+                  popd >/dev/null
                   echo "::error file=$texfile::LaTeX compilation failed"
                   echo "$texfile;Fail" >> build_result.log
                 fi
