@@ -201,9 +201,8 @@ jobs:
           # commit del report.md e dei pdf generati (se non sono state effettuate modifiche, ossia l'area di staging é vuota, allora il commit non avviene)(non accadrá mai)
           echo "--- Committing results ---"
           git add -f report.md
-          if [ -d "docs" ]; then
-            git add docs
-          fi
+          git add -f docs
+          
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
