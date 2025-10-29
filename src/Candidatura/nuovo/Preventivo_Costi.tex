@@ -6,32 +6,19 @@
 \usepackage[italian]{babel}     % Lingua italiana
 \usepackage{lmodern}            % Font "Latin Modern"
 
-% blocco di codice che permette di includere immagini con \includegraphics{logo.jpg} 
-% e i file ausiliari con \pjinput{\contenuti/file.tex} senza preoccupazioni
-% --- Gestione percorsi dinamici per progetti LaTeX ---
+
+% ====================================
+% immagini: \includegraphics{logo.jpg}
+% file: \pjinput{\contenuti/file.tex}
 \usepackage{currfile}
 \usepackage{graphicx}
 \usepackage{xstring}
-
-% Ottieni il percorso assoluto del file principale (es: /home/.../src/.../progetto/)
 \edef\pjrootfull{\currfileabsdir}
-
-% Estrai il percorso relativo a partire da "src/"
 \StrBehind{\pjrootfull}{src/}[\pjsubpath]
-
-% Ricostruisci il percorso del progetto, relativo alla root del repository
-\edef\pjroot{src/\pjsubpath}
-
-% Directory in cui cercare le immagini (ordine di ricerca)
-\graphicspath{
-  {\pjroot}              % cartella del progetto
-  {\pjroot/immagini/}    % immagini specifiche del progetto
-  {src/immagini/}        % immagini condivise tra progetti
-  {assets/immagini/}     % immagini globali (se presenti)
-}
-
-% Macro per includere i file locali al progetto
+\IfStrEq{\pjsubpath}{}{\edef\pjroot{\pjrootfull}}{\edef\pjroot{src/\pjsubpath}}
+\graphicspath{{src/immagini/}{\pjroot/immagini/}{\pjroot/contenuti/immagini/}{\pjroot/contenuti/}{\pjroot}}
 \newcommand{\pjinput}[1]{\input{\pjroot#1}}
+% ====================================
 
 \usepackage[a4paper, top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry} % Margini
 \usepackage{fancyhdr}           % Per header e footer personalizzati
