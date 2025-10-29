@@ -10,10 +10,11 @@
 % e i file ausiliari con \input{\currentfiledir contenuti/file.tex} senza preoccupazioni
 \usepackage{currfile}
 \usepackage{graphicx}
-\edef\pjroot{\currfileabsdir}
-\graphicspath{{\pjroot}{\pjroot/contenuti/}{\pjroot/contenuti/immagini/}{src/immagini/}}
-\newcommand{\pjinput}[1]{\input{\pjroot#1}}
 
+\edef\pjroot{\currfileabsdir}
+\graphicspath{{\pjroot}{\pjroot/contenuti/immagini/}{src/immagini/}}
+
+\newcommand{\pjinput}[1]{\input{\pjroot#1}}
 
 \usepackage[a4paper, top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry} % Margini
 \usepackage{fancyhdr}           % Per header e footer personalizzati
