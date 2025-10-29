@@ -10,7 +10,8 @@
 % e i file ausiliari con \input{\currentfiledir contenuti/file.tex} senza preoccupazioni
 \usepackage{currfile}
 \usepackage{graphicx}
-\graphicspath{{\currentfiledir}{\currentfiledir contenuti/}{\currentfiledir contenuti/immagini/}}
+\let\rootpath\currfiledir
+\graphicspath{{\rootpath}{\rootpath contenuti/}{\rootpath contenuti/immagini/}{\rootpath ../../assets/immagini/}}
 
 
 \usepackage[a4paper, top=2.5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry} % Margini
@@ -48,7 +49,7 @@
 % ===================================================================
 \begin{document}
 
-\input{\currentfiledir contenuti/intestazione_titolo.tex}
+\input{\rootpath contenuti/intestazione_titolo.tex}
 
 % -------------------------------------------------------------------
 %  SEZIONE: indice.tex
