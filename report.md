@@ -1,10 +1,10 @@
-# Report di compilazione del 2025-10-29T13:06:50+00:00
+# Report di compilazione del 2025-10-29T13:10:25+00:00
 
-Compilazione basata sul commit cf7c0760bf7cd7901ec7ab3ee53ee5d8351d23d6 (base: cf7c076)
+Compilazione basata sul commit 7a967477eb1753eb91ac7736ee38f0484a46fedf (base: 7a96747)
 
 ## Falliti
-❌ [src/Candidatura/nuovo/Preventivo_Costi.tex](https://github.com/sass0lino/DocuTex/actions/runs/18908833879)
-
+💡 Nessun errore di compilazione
 
 ## Compilati
-💡 Nessun PDF compilato
+✅ [docs/Candidatura/nuovo/Preventivo_Costi.pdf](docs/Candidatura/nuovo/Preventivo_Costi.pdf)
+
