@@ -69,33 +69,33 @@ def build_file_tree(directory):
                 current['children'].append(found)
             current = found
 
-    base_files = {}
-    for file in files:
-        clean_name, version, date, signed, search_name = estrai_info(file)
-        base_key = clean_name.lower()
-        if base_key not in base_files:
-            base_files[base_key] = {'normal': None, 'signed': None}
-        if signed:
-            base_files[base_key]['signed'] = (file, clean_name, version, date, signed, search_name)
-        else:
-            base_files[base_key]['normal'] = (file, clean_name, version, date, signed, search_name)
+        base_files = {}
+        for file in files:
+            clean_name, version, date, signed, search_name = estrai_info(file)
+            base_key = clean_name.lower()
+            if base_key not in base_files:
+                base_files[base_key] = {'normal': None, 'signed': None}
+            if signed:
+                base_files[base_key]['signed'] = (file, clean_name, version, date, signed, search_name)
+            else:
+                base_files[base_key]['normal'] = (file, clean_name, version, date, signed, search_name)
 
-    for base_name, variants in base_files.items():
-        entry = variants['signed'] or variants['normal']
-        file, clean_name, version, date, signed, search_name = entry
-        web_path = f'./{os.path.join(root, file).replace(os.sep, "/").lstrip("../")}'
-        current['children'].append({
-            'type': 'file',
-            'name': clean_name,
-            'version': version,
-            'date': date,
-            'signed': signed,
-            'path': web_path,
-            'search_name': search_name
-        })
-
+        for base_name, variants in base_files.items():
+            entry = variants['signed'] or variants['normal']
+            file, clean_name, version, date, signed, search_name = entry
+            web_path = f'./{os.path.join(root, file).replace(os.sep, "/").lstrip("../")}'
+            current['children'].append({
+                'type': 'file',
+                'name': clean_name,
+                'version': version,
+                'date': date,
+                'signed': signed,
+                'path': web_path,
+                'search_name': search_name
+            })
 
     return {k: v['children'] for k, v in tree_root.items()}
+
 
 if __name__ == "__main__":
     directory_docs = '../docs'
