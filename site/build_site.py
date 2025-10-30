@@ -2,18 +2,51 @@ import os
 import re
 import json
 from datetime import datetime
+from unidecode import unidecode  # serve per normalizzare nomi senza accenti
 
-def estrai_data(filename):
-    match = re.search(r'(\d+)(-|/)(\d+)(-|/)(\d+)', filename)
-    if match:
-        return (match.group(0), (match.group(5), match.group(3), match.group(1)))
-    return None
+def estrai_info(filename):
+    """Estrae nome base, versione, data e firma da un nome file PDF."""
+    name_no_ext = os.path.splitext(filename)[0]
 
-def estrai_versione(filename):
-    match = re.search(r'v(\d+\.\d+(?:\.\d+)?)(?=[\s_\-]*(firmato|signed)?$)', filename, re.IGNORECASE)
-    if match:
-        return f"v{match.group(1)}"
-    return None
+    # Normalizza underscore e spazi in un unico spazio
+    normalized = re.sub(r'[_\-]+', ' ', name_no_ext.strip())
+    normalized = re.sub(r'\s+', ' ', normalized)
+
+    # Cerca la firma (firmato/signed)
+    signed = bool(re.search(r'\b(firmato|signed)\b', normalized, re.IGNORECASE))
+    normalized = re.sub(r'\b(firmato|signed)\b', '', normalized, flags=re.IGNORECASE)
+
+    # Estrai versione (es. v1.0, v0.1.3, V2)
+    version_match = re.search(r'v\s?(\d+(?:\.\d+){0,2})', normalized, re.IGNORECASE)
+    version = f"v{version_match.group(1)}" if version_match else None
+    if version:
+        normalized = re.sub(r'v\s?\d+(?:\.\d+){0,2}', '', normalized, flags=re.IGNORECASE)
+
+    # Estrai data (molti formati possibili)
+    date_match = re.search(r'(\d{1,2}[-_/]\d{1,2}[-_/]\d{2,4}|\d{4}[-_/]\d{1,2}[-_/]\d{1,2})', normalized)
+    if date_match:
+        raw_date = date_match.group(1)
+        normalized = normalized.replace(raw_date, '')
+        for fmt in ("%d-%m-%Y", "%d/%m/%Y", "%Y-%m-%d", "%d-%m-%y"):
+            try:
+                date = datetime.strptime(re.sub(r'[-_/]', '-', raw_date), fmt).strftime("%Y-%m-%d")
+                break
+            except ValueError:
+                date = None
+    else:
+        date = None
+
+    # Rimuovi spazi extra e normalizza accenti
+    clean_name = unidecode(normalized.strip().title())
+
+    # Costruisci nome completo per ricerca
+    parts = [clean_name]
+    if version: parts.append(version)
+    if date: parts.append(date)
+    if signed: parts.append("firmato")
+    search_name = " ".join(parts).lower()
+
+    return clean_name, version, date, signed, search_name
 
 
 def build_file_tree(directory):
@@ -21,7 +54,7 @@ def build_file_tree(directory):
 
     for root, dirs, files in os.walk(directory, topdown=True):
         dirs[:] = [d for d in dirs if not d.startswith('.')]
-        files = [f for f in files if not f.startswith('.') and f.lower().endswith('.pdf')]
+        files = [f for f in files if f.lower().endswith('.pdf') and not f.startswith('.')]
 
         relative_path = os.path.relpath(root, directory)
         if relative_path == '.':
@@ -29,63 +62,41 @@ def build_file_tree(directory):
                 if d not in tree_root_dict:
                     tree_root_dict[d] = {'type': 'folder', 'name': d, 'children': []}
             continue
-        else:
-            root_folder_name = relative_path.split(os.sep)[0]
-            if root_folder_name not in tree_root_dict:
-                tree_root_dict[root_folder_name] = {'type': 'folder', 'name': root_folder_name, 'children': []}
 
-            parts = relative_path.split(os.sep)
-            current_folder_dict = tree_root_dict[parts[0]]
+        root_folder_name = relative_path.split(os.sep)[0]
+        if root_folder_name not in tree_root_dict:
+            tree_root_dict[root_folder_name] = {'type': 'folder', 'name': root_folder_name, 'children': []}
 
-            for part in parts[1:]:
-                found_folder = next(
-                    (i for i in current_folder_dict['children'] if i['type'] == 'folder' and i['name'] == part),
-                    None
-                )
-                if not found_folder:
-                    found_folder = {'type': 'folder', 'name': part, 'children': []}
-                    current_folder_dict['children'].append(found_folder)
-                current_folder_dict = found_folder
+        parts = relative_path.split(os.sep)
+        current_folder_dict = tree_root_dict[parts[0]]
 
-        base_files = {}
+        for part in parts[1:]:
+            found_folder = next(
+                (i for i in current_folder_dict['children'] if i['type'] == 'folder' and i['name'] == part),
+                None
+            )
+            if not found_folder:
+                found_folder = {'type': 'folder', 'name': part, 'children': []}
+                current_folder_dict['children'].append(found_folder)
+            current_folder_dict = found_folder
+
+        children_list = current_folder_dict.setdefault('children', [])
 
         for file in files:
-            name_no_ext = os.path.splitext(file)[0]
+            clean_name, version, date, signed, search_name = estrai_info(file)
+            web_path = f'./{os.path.join(root, file).replace(os.sep, "/").lstrip("../")}'
 
-            base_name = re.sub(r'[\s_\-]*(firmato|signed)$', '', name_no_ext, flags=re.IGNORECASE)
-
-            if base_name not in base_files:
-                base_files[base_name] = {'normal': None, 'signed': None}
-
-            if re.search(r'[\s_\-](firmato|signed)$', name_no_ext, re.IGNORECASE):
-                base_files[base_name]['signed'] = file
-            else:
-                base_files[base_name]['normal'] = file
-
-        children_list_to_add_files = current_folder_dict.setdefault('children', [])
-
-        for base_name, variants in base_files.items():
-            chosen_file = variants['signed'] or variants['normal']
-            if not chosen_file:
-                continue
-
-            pdf_path = os.path.join(root, chosen_file)
-            clean_name = base_name.replace('_', ' ')
-            web_path = f'./{pdf_path.replace(os.sep, "/").lstrip("../")}'
-
-            version = estrai_versione(base_name)
-            data = estrai_data(base_name)
-            if version: clean_name = clean_name.replace(version, '')
-            if data: clean_name = clean_name.replace(data[0], '')
             file_data = {
                 'type': 'file',
-                'name': clean_name.strip(),
-                'date': datetime.strptime('-'.join(data[1]), "%{}-%m-%d".format('Y' if len(data[1][0])==4 else 'y')).strftime('%m-%d-%Y') if data else data,
-                'path': web_path,
+                'name': clean_name,
                 'version': version,
-                'signed': bool(variants['signed'])
+                'date': date,
+                'signed': signed,
+                'path': web_path,
+                'search_name': search_name,  # <- campo aggiunto per la searchbar JS
             }
-            children_list_to_add_files.append(file_data)
+
+            children_list.append(file_data)
 
     final_tree = {}
     for key, value in tree_root_dict.items():
@@ -102,9 +113,6 @@ if __name__ == "__main__":
     print(f"Avvio scansione della cartella: {directory_docs}")
     file_tree = build_file_tree(directory_docs)
 
-    try:
-        with open(output_json_file, 'w', encoding='utf-8') as f:
-            json.dump(file_tree, f, indent=2, ensure_ascii=False)
-        print(f"\nAlbero dei file salvato con successo in: {output_json_file}")
-    except Exception as e:
-        print(f"\nErrore durante la scrittura del file JSON: {e}")
+    with open(output_json_file, 'w', encoding='utf-8') as f:
+        json.dump(file_tree, f, indent=2, ensure_ascii=False)
+    print(f"\nAlbero dei file salvato in: {output_json_file}")
