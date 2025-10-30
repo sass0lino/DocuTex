@@ -19,19 +19,20 @@ def estrai_info(filename):
     if version:
         normalized = re.sub(r'v\s?\d+(?:\.\d+){0,2}', '', normalized, flags=re.IGNORECASE)
 
-    date_match = re.search(r'(\d{1,2}[-_/]\d{1,2}[-_/]\d{2,4})', normalized)
+    date_match = re.search(r'\b(\d{2})[-_/](\d{2})[-_/](\d{2,4})\b', normalized)
     if date_match:
-        raw_date = date_match.group()
+        raw_date = date_match.group(0)
         normalized = normalized.replace(raw_date, '')
-        date = None
-        for fmt in ("%d-%m-%y", "%d-%m-%Y", "%d/%m/%y", "%d/%m/%Y"):
-            try:
-                date = datetime.strptime(re.sub(r'[-_/]', '-', raw_date), fmt).strftime("%Y-%m-%d")
-                break
-            except ValueError:
-                pass
+        day, month, year = date_match.groups()
+        if len(year) == 2:
+            year = ("20" + year) if int(year) < 50 else ("19" + year)
+        try:
+            date = f"{int(year):04d}-{int(month):02d}-{int(day):02d}"
+        except ValueError:
+            date = None
     else:
         date = None
+
 
 
     clean_name = normalize_text(normalized.strip().title())
@@ -68,19 +69,31 @@ def build_file_tree(directory):
                 current['children'].append(found)
             current = found
 
-        for file in files:
-            clean_name, version, date, signed, search_name = estrai_info(file)
-            web_path = f'./{os.path.join(root, file).replace(os.sep, "/").lstrip("../")}'
+    base_files = {}
+    for file in files:
+        clean_name, version, date, signed, search_name = estrai_info(file)
+        base_key = clean_name.lower()
+        if base_key not in base_files:
+            base_files[base_key] = {'normal': None, 'signed': None}
+        if signed:
+            base_files[base_key]['signed'] = (file, clean_name, version, date, signed, search_name)
+        else:
+            base_files[base_key]['normal'] = (file, clean_name, version, date, signed, search_name)
 
-            current['children'].append({
-                'type': 'file',
-                'name': clean_name,
-                'version': version,
-                'date': date,
-                'signed': signed,
-                'path': web_path,
-                'search_name': search_name
-            })
+    for base_name, variants in base_files.items():
+        entry = variants['signed'] or variants['normal']
+        file, clean_name, version, date, signed, search_name = entry
+        web_path = f'./{os.path.join(root, file).replace(os.sep, "/").lstrip("../")}'
+        current['children'].append({
+            'type': 'file',
+            'name': clean_name,
+            'version': version,
+            'date': date,
+            'signed': signed,
+            'path': web_path,
+            'search_name': search_name
+        })
+
 
     return {k: v['children'] for k, v in tree_root.items()}
 

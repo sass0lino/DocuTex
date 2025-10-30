@@ -178,7 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const item of items) {
             if (item.type === 'file') {
                 const text = (item.search_name || item.name).toLowerCase();
-                if (text.includes(query)) results.push(item);
+                const words = query.split(/\s+/);
+                if (words.every(w => text.includes(w))) results.push(item);
             } else if (item.type === 'folder' && item.children?.length) {
                 const filteredChildren = filterTree(item.children, query);
                 if (filteredChildren.length > 0) {
