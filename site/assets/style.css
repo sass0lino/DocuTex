@@ -158,11 +158,11 @@ header.center-logo nav {
 }
 
 main {
-    max-width: 55 rem;
+    width: 90%;
+    max-width: min(100%, 700px);
     margin: 2rem auto;
     padding: 0 1rem;
     flex-grow: 1;
-    min-width: 55%;
 }
 
 .repo-title {
