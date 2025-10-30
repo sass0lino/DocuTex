@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
             showSection('Archivio');
         } catch (err) {
             container.innerHTML = `<p style="color:#888;">Errore nel caricamento dei documenti.</p>`;
-            console.error('Errore nel caricamento docs_tree.json:', err);
         }
     }
 
@@ -71,8 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 li.append(folderToggle, content);
-            }
-            else if (item.type === 'file') {
+            } else {
                 const p = document.createElement('p');
                 p.className = 'pdf_row';
                 const fileInfo = document.createElement('div');
@@ -83,21 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 link.href = item.path;
                 link.target = '_blank';
 
-                // ✅ Mostra nome leggibile: sostituisce solo gli underscore (mantiene i trattini)
-                const readableName = item.name.replace(/_/g, ' ');
-
-                // ✅ Aggiungi versione se presente
+                const readableName = item.name;
                 const versionLabel = item.version ? ` (${item.version})` : '';
-
-                // ✅ Aggiungi data se presente
                 const dateLabel = item.date ? ` ${item.date}` : '';
+                const signedLabel = item.signed ? ' <span class="signed-badge">Firmato</span>' : '';
 
-                // ✅ Aggiungi etichetta "Firmato" se il file è firmato
-                const signedLabel = item.signed
-                    ? ' <span class="signed-badge">Firmato</span>'
-                    : '';
-
-                // ✅ Composizione testo finale
                 link.innerHTML = `${readableName}${dateLabel}${versionLabel}${signedLabel}`;
                 link.dataset.fullPath = fullPath;
 
@@ -108,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 download.href = item.path;
                 download.download = '';
                 download.title = 'Scarica file';
-                download.setAttribute('aria-label', `Scarica ${item.name}`);
 
                 p.append(fileInfo, download);
                 li.appendChild(p);
@@ -190,8 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const results = [];
         for (const item of items) {
             if (item.type === 'file') {
-                const match = item.name.toLowerCase().includes(query);
-                if (match) results.push(item);
+                const text = (item.search_name || item.name).toLowerCase();
+                if (text.includes(query)) results.push(item);
             } else if (item.type === 'folder' && item.children?.length) {
                 const filteredChildren = filterTree(item.children, query);
                 if (filteredChildren.length > 0) {
@@ -205,7 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', e => {
         const toggle = e.target.closest('.folder-toggle');
         if (!toggle) return;
-        e.preventDefault();
         toggle.classList.toggle('collapsed');
         const next = toggle.nextElementSibling;
         if (next?.classList.contains('folder-content')) {
