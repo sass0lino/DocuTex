@@ -1,7 +1,7 @@
 name: Build and Deploy Website
 run-name: >
   Deploy website –
-  ${{ github.event_name == 'workflow_run' && 'from LaTeX build' || (github.event_name == 'workflow_dispatch' && github.event.inputs.manual_run_name) || 'Manual Run' }}
+  ${{ github.event_name == 'workflow_run' && 'from LaTeX build' || 'Manual Run' }}
 
 on:
   workflow_run:
@@ -9,11 +9,7 @@ on:
     types:
       - completed
   workflow_dispatch:
-    inputs:
-      manual_run_name:
-        description: 'Specific name for the manual run (Optional)'
-        required: false
-        type: string
+
 permissions:
   contents: read
   pages: write
