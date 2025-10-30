@@ -179,19 +179,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (item.type === 'file') {
                 const text = (item.search_name || item.name).toLowerCase();
                 
-                const queryWords = query.split(/\s+/).filter(Boolean);
-                const wordCounts = {};
-                queryWords.forEach(w => wordCounts[w] = (wordCounts[w] || 0) + 1);
+                const words = query.split(/\s+/).filter(Boolean);
                             
-                const textWords = text.split(/\s+/);
-                const textCounts = {};
-                textWords.forEach(w => textCounts[w] = (textCounts[w] || 0) + 1);
+                let remainingText = text;
+                let match = true;
                             
-                const match = Object.entries(wordCounts).every(([word, count]) =>
-                    textCounts[word] >= count
-                );
+                for (const w of words) {
+                    const idx = remainingText.indexOf(w);
+                    if (idx === -1) {
+                        match = false;
+                        break;
+                    }
+                    remainingText =
+                        remainingText.slice(0, idx) + remainingText.slice(idx + w.length);
+                }
                 
                 if (match) results.push(item);
+
+
+
             } else if (item.type === 'folder' && item.children?.length) {
                 const filteredChildren = filterTree(item.children, query);
                 if (filteredChildren.length > 0) {
