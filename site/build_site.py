@@ -8,21 +8,24 @@ def normalize_text(s):
 
 def estrai_info(filename):
     name_no_ext = os.path.splitext(filename)[0]
-    normalized = re.sub(r'[_\-]+', ' ', name_no_ext.strip())
+    normalized = name_no_ext.strip()
+    normalized = re.sub(r'_+', ' ', normalized)
     normalized = re.sub(r'\s+', ' ', normalized)
 
-    signed = bool(re.search(r'\b(firmato|signed)\b', normalized, re.IGNORECASE))
-    normalized = re.sub(r'\b(firmato|signed)\b', '', normalized, flags=re.IGNORECASE)
+    signed = bool(re.search(r'(firmato|signed)', normalized, re.IGNORECASE))
+    normalized = re.sub(r'(?i)(?:[\s_\-\.]*)(firmato|signed)(?:[\s_\-\.]*)$', ' ', normalized)
+    normalized = re.sub(r'\s+', ' ', normalized).strip()
 
     version_match = re.search(r'v\s?(\d+(?:\.\d+){0,2})', normalized, re.IGNORECASE)
     version = f"v{version_match.group(1)}" if version_match else None
     if version:
-        normalized = re.sub(r'v\s?\d+(?:\.\d+){0,2}', '', normalized, flags=re.IGNORECASE)
+        normalized = re.sub(r'v\s?\d+(?:\.\d+){0,2}', ' ', normalized, flags=re.IGNORECASE)
+        normalized = re.sub(r'\s+', ' ', normalized).strip()
 
     date_match = re.search(r'\b(\d{2})[-_/](\d{2})[-_/](\d{2,4})\b', normalized)
     if date_match:
         raw_date = date_match.group(0)
-        normalized = normalized.replace(raw_date, '')
+        normalized = normalized.replace(raw_date, ' ')
         day, month, year = date_match.groups()
         if len(year) == 2:
             year = ("20" + year) if int(year) < 50 else ("19" + year)
@@ -30,10 +33,9 @@ def estrai_info(filename):
             date = f"{int(year):04d}-{int(month):02d}-{int(day):02d}"
         except ValueError:
             date = None
+        normalized = re.sub(r'\s+', ' ', normalized).strip()
     else:
         date = None
-
-
 
     clean_name = normalize_text(normalized.strip().title())
 
@@ -71,8 +73,12 @@ def build_file_tree(directory):
 
         base_files = {}
         for file in files:
+            base_key = os.path.splitext(file)[0]
+            base_key = re.sub(r'(?i)(?:[\s_\-\.]*)(firmato|signed)$', '', base_key)
+            base_key = re.sub(r'[\s_]+', '', base_key).lower()
+
             clean_name, version, date, signed, search_name = estrai_info(file)
-            base_key = clean_name.lower()
+
             if base_key not in base_files:
                 base_files[base_key] = {'normal': None, 'signed': None}
             if signed:
@@ -82,6 +88,8 @@ def build_file_tree(directory):
 
         for base_name, variants in base_files.items():
             entry = variants['signed'] or variants['normal']
+            if not entry:
+                continue
             file, clean_name, version, date, signed, search_name = entry
             web_path = f'./{os.path.join(root, file).replace(os.sep, "/").lstrip("../")}'
             current['children'].append({
@@ -95,7 +103,6 @@ def build_file_tree(directory):
             })
 
     return {k: v['children'] for k, v in tree_root.items()}
-
 
 if __name__ == "__main__":
     directory_docs = '../docs'
