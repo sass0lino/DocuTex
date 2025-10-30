@@ -1,8 +1,7 @@
 name: Build and Deploy Website
 run-name: >
-  Deploy website – ${{ github.event_name == 'workflow_run'
-    ? 'from LaTeX build'
-    : 'Manual' }}
+  Deploy website –
+  ${{ github.event_name == 'workflow_run' && 'from LaTeX build' }}
 
 on:
   workflow_run:
