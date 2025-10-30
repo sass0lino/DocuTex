@@ -19,12 +19,12 @@ def estrai_info(filename):
     if version:
         normalized = re.sub(r'v\s?\d+(?:\.\d+){0,2}', '', normalized, flags=re.IGNORECASE)
 
-    date_match = re.search(r'(\d{1,2}[-_/]\d{1,2}[-_/]\d{2,4}|\d{4}[-_/]\d{1,2}[-_/]\d{1,2})', normalized)
+    date_match = re.search(r'(\d{1,2}[-_/]\d{1,2}[-_/]\d{2,4})', normalized)
     if date_match:
         raw_date = date_match.group()
         normalized = normalized.replace(raw_date, '')
         date = None
-        for fmt in ("%d-%m-%Y", "%d/%m/%Y", "%Y-%m-%d", "%d-%m-%y", "%Y/%m/%d"):
+        for fmt in ("%d-%m-%y", "%d-%m-%Y", "%d/%m/%y", "%d/%m/%Y"):
             try:
                 date = datetime.strptime(re.sub(r'[-_/]', '-', raw_date), fmt).strftime("%Y-%m-%d")
                 break
@@ -32,6 +32,7 @@ def estrai_info(filename):
                 pass
     else:
         date = None
+
 
     clean_name = normalize_text(normalized.strip().title())
 

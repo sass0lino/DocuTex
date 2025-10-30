@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 link.target = '_blank';
 
                 const readableName = item.name;
-                const versionLabel = item.version ? ` (${item.version})` : '';
+                const versionLabel = item.version ? ` ${item.version}` : '';
                 const dateLabel = item.date ? ` ${item.date}` : '';
                 const signedLabel = item.signed ? ' <span class="signed-badge">Firmato</span>' : '';
 
