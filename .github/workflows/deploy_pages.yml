@@ -29,6 +29,9 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Install Python dependencies
+        run: pip install unidecode
+
       - name: Run build_site.py
         run: python build_site.py
         working-directory: ./site
