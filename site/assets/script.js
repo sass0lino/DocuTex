@@ -1,280 +1,198 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const nav = document.getElementById('nav-navigation');
-    const container = document.getElementById('sections-container');
-    const searchInput = document.getElementById('document-search');
-    const searchContainer = document.getElementById('search-container');
-    const sectionsWrapper = document.getElementById('sections-wrapper');
 
-    let docsTree = {};
-    let currentSection = null;
+const navLinks = document.querySelectorAll('#nav-navigation a');
+const docsSection = document.getElementById('docs-section');
+const contactsSection = document.getElementById('contacts-section');
+const container = document.getElementById('sections-container');
+const searchInput = document.getElementById('document-search');
+const filtersBar = document.getElementById('section-filters');
 
-    async function loadDocsTree() {
-        try {
-            const res = await fetch('./docs_tree.json');
-            docsTree = await res.json();
-            buildNavigation();
-            showSection('Archivio');
-        } catch (err) {
-            container.innerHTML = `<p style="color:#888;">Errore nel caricamento dei documenti.</p>`;
-        }
+let docsTree = {};
+let currentFilter = "Tutto";
+let currentSection = "Archivio";
+let lastQuery = "";
+
+/* NAV switching */
+navLinks.forEach(link => {
+  link.addEventListener("click", () => {
+    navLinks.forEach(a => a.classList.remove("active"));
+    link.classList.add("active");
+    const view = link.dataset.view;
+    docsSection.classList.toggle("hidden", view !== "docs");
+    contactsSection.classList.toggle("hidden", view !== "contacts");
+  });
+});
+
+/* Load */
+async function loadDocsTree(){
+  const res = await fetch("./docs_tree.json");
+  docsTree = await res.json();
+  renderFilters();
+  showSection("Archivio");
+}
+
+/* Filters UI */
+function renderFilters(){
+  filtersBar.innerHTML="";
+
+  const sections = Object.keys(docsTree);
+
+  const makeChip = sec=>{
+    const chip=document.createElement("button");
+    chip.className="filter-chip"+(currentFilter===sec?" active":"");
+    chip.textContent=sec;
+    chip.onclick=()=>{
+      currentFilter=sec;
+      showSection(sec);
+    };
+    return chip;
+  };
+
+  const allChip = document.createElement("button");
+  allChip.className="filter-chip"+(currentFilter==="Tutto"?" active":"");
+  allChip.textContent="Tutto";
+  allChip.onclick=()=>{
+    currentFilter="Tutto";
+    showSection("Archivio");
+  };
+
+  filtersBar.append(allChip);
+  sections.forEach(sec=>filtersBar.append(makeChip(sec)));
+}
+
+/* Search logic */
+function filterTree(items,query){
+  if(!query) return items;
+  const q=query.toLowerCase();
+  const res=[];
+  for(const it of items){
+    if(it.type==="file"){
+      const txt=(it.search_name||it.name||"").toLowerCase();
+      if(txt.includes(q)) res.push(it);
+    } else {
+      const kids=filterTree(it.children||[],q);
+      if(kids.length) res.push({...it,children:kids});
+    }
+  }
+  return res;
+}
+
+/* Tree builder */
+function buildTree(items){
+  const ul=document.createElement("ul");
+
+  items.forEach(item=>{
+    const li=document.createElement("li");
+
+    if(item.type==="folder"){
+      const t=document.createElement("div");
+      t.className="folder-toggle";
+      t.textContent=item.name;
+
+      const c=document.createElement("div");
+      c.className="folder-content";
+      if(item.children?.length) c.append(buildTree(item.children));
+      li.append(t,c);
+    } else {
+      const row=document.createElement("p");
+      row.className="pdf_row";
+
+      const link=document.createElement("a");
+      link.className="file-name";
+      link.href=item.path;
+      link.target="_blank";
+
+      const name=item.name||"";
+
+      // ✅ version logic correct (only add v if missing)
+      let version="";
+      if(item.version){
+        version = item.version.startsWith("v")
+          ? ` <span style="opacity:.7">${item.version}</span>`
+          : ` <span style="opacity:.7">v${item.version}</span>`;
+      }
+
+      const date=item.date?` <span style="opacity:.7">(${item.date})</span>`:"";
+      const signed=item.signed?` <span class="signed-badge">Firmato</span>`:"";
+
+      link.innerHTML = `
+        <img src="./assets/images/pdf.svg" class="icon-pdf">
+        ${name}${date}${version}${signed}
+      `;
+
+      const dl=document.createElement("a");
+      dl.className="download-button";
+      dl.href=item.path;
+      dl.download="";
+
+      row.append(link,dl);
+      li.append(row);
     }
 
-    function buildNavigation() {
-        nav.innerHTML = '';
+    ul.append(li);
+  });
 
-        const ArchivioLi = document.createElement('li');
-        const ArchivioA = document.createElement('a');
-        ArchivioA.href = '#';
-        ArchivioA.dataset.section = 'Archivio';
-        ArchivioA.textContent = 'Archivio';
-        ArchivioA.classList.add('active', 'show-arrow');
-        ArchivioLi.appendChild(ArchivioA);
-        nav.appendChild(ArchivioLi);
-        
-        Object.keys(docsTree).forEach(section => {
-            const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.href = '#';
-            a.dataset.section = section;
-            a.textContent = section;
-            li.appendChild(a);
-            nav.appendChild(li);
-        });
+  return ul;
+}
 
-        if (nav.children.length <= 2) {
-            nav.classList.add('hidden_button');
-            document.querySelector('header').classList.add('center-logo');
-        }
-    }
+/* Visible sections */
+function visibleSections(){
+  if(currentFilter==="Tutto") return Object.keys(docsTree);
+  return [currentFilter];
+}
 
-    function buildTree(items, currentPath = '') {
-        const ul = document.createElement('ul');
+/* Render section */
+function showSection(name){
+  currentSection=name;
+  container.innerHTML="";
 
-        items.forEach(item => {
-            const li = document.createElement('li');
-            const fullPath = currentPath ? `${currentPath}/${item.name}` : item.name;
+  // ✅ correct placeholder behaviour
+  searchInput.placeholder =
+    currentSection==="Archivio"
+      ? "Cerca nei documenti…"
+      : `Cerca in ${currentSection}…`;
 
-            if (item.type === 'folder') {
-                const folderToggle = document.createElement('div');
-                folderToggle.className = 'folder-toggle';
-                const label = document.createElement('span');
-                label.className = 'toggle-data';
-                label.textContent = item.name;
-                folderToggle.appendChild(label);
+  // ✅ update filter highlight
+  renderFilters();
 
-                const content = document.createElement('div');
-                content.className = 'folder-content';
+  visibleSections().forEach(sec=>{
+    const data = docsTree[sec];
+    const filtered = lastQuery ? filterTree(data,lastQuery) : data;
+    if(!filtered.length) return;
 
-                if (item.children?.length > 0) {
-                    content.appendChild(buildTree(item.children, fullPath));
-                }
+    const toggle=document.createElement("div");
+    toggle.className="folder-toggle";
+    toggle.textContent=sec;
 
-                li.append(folderToggle, content);
-            } else {
-                const p = document.createElement('p');
-                p.className = 'pdf_row';
-                const fileInfo = document.createElement('div');
-                fileInfo.className = 'file-info';
+    const content=document.createElement("div");
+    content.className="folder-content";
+    content.append(buildTree(filtered));
 
-                const link = document.createElement('a');
-                link.className = 'file-name';
-                link.href = item.path;
-                link.target = '_blank';
+    container.append(toggle,content);
+  });
 
-                const readableName = item.name;
-                const versionLabel = item.version ? ` ${item.version}` : '';
-                const dateLabel = item.date ? ` ${item.date}` : '';
-                const signedLabel = item.signed ? ' <span class="signed-badge">Firmato</span>' : '';
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.folder-toggle').forEach(e=>e.classList.remove('collapsed'));
+    document.querySelectorAll('.folder-content').forEach(e=>e.classList.remove('collapsed'));
+  });
+}
 
-                link.innerHTML = `${readableName}${dateLabel}${versionLabel}${signedLabel}`;
-                link.dataset.fullPath = fullPath;
+/* Collapse without scroll jump */
+document.body.addEventListener("click",e=>{
+  const t=e.target.closest(".folder-toggle");
+  if(!t) return;
+  const y=window.scrollY;
+  t.classList.toggle("collapsed");
+  const next=t.nextElementSibling;
+  if(next?.classList.contains("folder-content")) next.classList.toggle("collapsed");
+  requestAnimationFrame(()=>window.scrollTo(0,y));
+});
 
-                fileInfo.appendChild(link);
+/* Search input */
+searchInput.addEventListener("input",()=>{
+  lastQuery=searchInput.value;
+  showSection(currentSection);
+});
 
-                const download = document.createElement('a');
-                download.className = 'download-button';
-                download.href = item.path;
-                download.download = '';
-                download.title = 'Scarica file';
-
-                p.append(fileInfo, download);
-                li.appendChild(p);
-            }
-
-            ul.appendChild(li);
-        });
-
-        const wrapper = document.createElement('div');
-        wrapper.className = 'dynamic-content-container';
-        wrapper.appendChild(ul);
-        return wrapper;
-    }
-
-    function showSection(name, filtered = null) {
-        currentSection = name;
-        container.innerHTML = '';
-        document.querySelectorAll('.file-path').forEach(p => p.remove());
-
-        document.querySelectorAll('#nav-navigation a').forEach(a => {
-            const active = a.dataset.section === name;
-            a.classList.toggle('active', active);
-            a.classList.toggle('show-arrow', active);
-        });
-
-        searchInput.placeholder = name === 'Archivio' ? 'Cerca…' : `Cerca in ${name}…`;
-
-        if (!sectionsWrapper.contains(searchContainer)) {
-            sectionsWrapper.insertBefore(searchContainer, container);
-        }
-
-        if (name === 'Archivio') {
-            let title = sectionsWrapper.querySelector('.repo-title');
-            if (!title) {
-                title = document.createElement('h1');
-                title.className = 'repo-title';
-                title.textContent = 'Documentazione di Progetto';
-                sectionsWrapper.insertBefore(title, searchContainer);
-            }
-
-            const source = filtered || docsTree;
-            Object.keys(source).forEach(section => {
-                const sectionContainer = document.createElement('div');
-                const toggle = document.createElement('div');
-                toggle.className = 'folder-toggle';
-                const label = document.createElement('span');
-                label.className = 'toggle-data';
-                label.textContent = section;
-                toggle.appendChild(label);
-
-                const content = document.createElement('div');
-                content.className = 'folder-content';
-                content.appendChild(buildTree(source[section], section));
-
-                sectionContainer.append(toggle, content);
-                container.appendChild(sectionContainer);
-            });
-        } else {
-            const oldTitle = sectionsWrapper.querySelector('.repo-title');
-            if (oldTitle) oldTitle.remove();
-
-            const rootToggle = document.createElement('div');
-            rootToggle.className = 'folder-toggle';
-            const label = document.createElement('span');
-            label.className = 'toggle-data';
-            label.textContent = name;
-            rootToggle.appendChild(label);
-
-            const content = document.createElement('div');
-            content.className = 'folder-content';
-            const treeData = filtered ? filtered[name] : docsTree[name];
-            content.appendChild(buildTree(treeData, name));
-
-            container.append(rootToggle, content);
-        }
-    }
-
-    function filterTree(items, query) {
-        const results = [];
-        for (const item of items) {
-            if (item.type === 'file') {
-                const text = (item.search_name || item.name).toLowerCase();
-                
-                const words = query.split(/\s+/).filter(Boolean);
-                            
-                let remainingText = text;
-                let match = true;
-                            
-                for (const w of words) {
-                    const idx = remainingText.indexOf(w);
-                    if (idx === -1) {
-                        match = false;
-                        break;
-                    }
-                    remainingText =
-                        remainingText.slice(0, idx) + remainingText.slice(idx + w.length);
-                }
-                
-                if (match) results.push(item);
-
-
-
-            } else if (item.type === 'folder' && item.children?.length) {
-                const filteredChildren = filterTree(item.children, query);
-                if (filteredChildren.length > 0) {
-                    results.push({ ...item, children: filteredChildren });
-                }
-            }
-        }
-        return results;
-    }
-
-    document.body.addEventListener('click', e => {
-        const toggle = e.target.closest('.folder-toggle');
-        if (!toggle) return;
-        toggle.classList.toggle('collapsed');
-        const next = toggle.nextElementSibling;
-        if (next?.classList.contains('folder-content')) {
-            next.classList.toggle('collapsed');
-        }
-    });
-
-    nav.addEventListener('click', e => {
-        const link = e.target.closest('a[data-section]');
-        if (!link) return;
-        e.preventDefault();
-        searchInput.value = '';
-        showSection(link.dataset.section);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    searchInput.addEventListener('input', () => {
-        const query = searchInput.value.trim().toLowerCase();
-        const msgOld = container.querySelector('.no-results-message');
-        if (msgOld) msgOld.remove();
-
-        if (query === '') {
-            showSection(currentSection);
-            searchInput.focus();
-            return;
-        }
-
-        let filteredData = {};
-        let matchCount = 0;
-
-        if (currentSection === 'Archivio') {
-            Object.keys(docsTree).forEach(section => {
-                const filtered = filterTree(docsTree[section], query);
-                if (filtered.length > 0) {
-                    filteredData[section] = filtered;
-                    matchCount += filtered.length;
-                }
-            });
-        } else {
-            const filtered = filterTree(docsTree[currentSection], query);
-            if (filtered.length > 0) {
-                filteredData[currentSection] = filtered;
-                matchCount = filtered.length;
-            }
-        }
-
-        container.innerHTML = '';
-
-        if (matchCount === 0) {
-            const msg = document.createElement('p');
-            msg.className = 'no-results-message';
-            msg.textContent = 'Nessun risultato trovato.';
-            msg.style.textAlign = 'center';
-            msg.style.color = '#777';
-            msg.style.fontStyle = 'italic';
-            msg.style.marginTop = '2rem';
-            container.appendChild(msg);
-            searchInput.focus();
-            return;
-        }
-
-        showSection(currentSection, filteredData);
-        searchInput.focus();
-    });
-
-    loadDocsTree();
+loadDocsTree();
 });
