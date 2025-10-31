@@ -28,7 +28,6 @@ def normalize_text(s):
 
 def sorting(children):
     ch = [Item(i) for i in children]
-    print([c for c in ch if c.val["type"] == "folder"])
     return list(map(lambda i: i.val, sorted(ch, reverse=True)))
 
 def estrai_info(filename):
