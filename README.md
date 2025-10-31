@@ -52,8 +52,4 @@ Attenzione: tutto ció non vale per i file firmati, dovranno essere gestiti manu
 - Ambiente: Docker `ghcr.io/xu-cheng/texlive-full`
 
 
-**Website:** [https://swenightpro.github.io/Documentazione/](https://swenightpro.github.io/Documentazione/)
-
-
-
 **Website:** https://swenightpro.github.io/Documentazione/
