@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ArchivioA.classList.add('active', 'show-arrow');
         ArchivioLi.appendChild(ArchivioA);
         nav.appendChild(ArchivioLi);
-
+        
         Object.keys(docsTree).forEach(section => {
             const li = document.createElement('li');
             const a = document.createElement('a');

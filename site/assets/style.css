@@ -165,7 +165,8 @@ main {
     flex-grow: 1;
 }
 
-.repo-title {
+.repo-title,
+h2 {
     font-size: 1.8rem;
     font-weight: 600;
     color: var(--black);
@@ -330,6 +331,21 @@ main {
 .download-button:hover {
     opacity: 1;
     transform: scale(1.15);
+}
+
+#contacts a {
+    color: var(--black);
+}
+
+#contacts_list li {
+    list-style-type: none;
+    margin: 0.5em;
+}
+
+#contacts_list li img {
+    max-height: 16px;
+    border-radius: 50%;
+    margin-right: 1em;
 }
 
 footer {
