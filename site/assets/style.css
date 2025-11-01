@@ -398,3 +398,82 @@ footer {
 
 
 .hidden {display:none!important}
+
+@media (max-width: 768px) {
+  
+  nav ul {
+    gap: .6rem;
+  }
+
+  nav a {
+    padding: .4rem .8rem;
+    font-size: .9rem;
+  }
+
+  #theme-button {
+    font-size: 1.3rem;
+  }
+
+  .repo-title {
+    font-size: 1.5rem;
+    text-align: left;
+  }
+
+  #document-search {
+    font-size: 1rem;
+    padding: .8rem 1rem;
+  }
+
+  .filter-chip {
+    padding: .35rem .75rem;
+    font-size: .85rem;
+  }
+
+  .pdf_row {
+    padding: 8px 0;
+  }
+
+  #sections-wrapper {
+    width: 100%;
+  }
+
+  .folder-toggle {
+    padding: 6px 2px;
+  }
+
+  .folder-content {
+    margin-left: 10px;
+    padding-left: 10px;
+  }
+
+  .team-table,
+  .team-table thead {
+    display: none;
+  }
+
+  .team-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: .9rem;
+  }
+
+  .team-table tr {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    padding: .6rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+  }
+
+  .team-table img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .team-table td {
+    border: none;
+    padding: 0;
+  }
+}
