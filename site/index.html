@@ -5,108 +5,72 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NightPRO - Documentazione</title>
-
     <link rel="stylesheet" href="./assets/style.css" />
-    <script defer src="./assets/script.js"></script>
     <link rel="icon" href="./assets/images/piccolo_logo.jpeg" type="image/jpeg" />
+    <script defer src="./assets/script.js"></script>
 </head>
 
 <body>
-    <div class="page-wrapper">
+<div class="page-wrapper">
+<header>
+<nav>
+    <a id="header-logo">
+        <img id="site-logo" src="./assets/images/logo.png" alt="NightPRO Logo">
+    </a>
 
-        <header>
-            <nav>
-                <a href="#" id="header-logo" data-view="docs"><img src="./assets/images/logo_bianco.png"></a>
+    <ul>
+        <li><a id="docs-btn" class="active">Documenti</a></li>
+        <li><a id="about-btn">About</a></li>
 
-                <ul id="nav-navigation">
-                    <li><a class="active" data-view="docs">Documenti</a></li>
-                    <li><a data-view="contacts">Contatti</a></li>
-                </ul>
-            </nav>
-        </header>
-
-        <!-- DOCS SECTION -->
-        <main id="docs-section">
-            <div id="sections-wrapper">
-
-                <h1 class="repo-title">Documentazione di Progetto</h1>
-
-                <div id="search-container">
-                    <input id="document-search" type="search" autocomplete="off">
-                </div>
-
-                <div id="section-filters" class="section-filters"></div>
-
-                <div id="sections-container"></div>
+        <li class="theme-wrapper">
+            <button id="theme-button" aria-label="Tema">🖥️</button>
+            <div id="theme-menu" class="theme-menu hidden">
+                <div data-theme="system">Sistema 🖥️</div>
+                <div data-theme="light">Chiaro 🌞</div>
+                <div data-theme="dark">Scuro 🌙</div>
             </div>
-        </main>
+        </li>
+    </ul>
+</nav>
+</header>
 
-        <!-- CONTACT SECTION -->
-        <main id="contacts-section" class="hidden">
-            <section class="contact-info">
-
-                <div class="contact-block">
-                    <p><strong>Email:</strong> <a href="mailto:swe.nightpro@gmail.com">swe.nightpro@gmail.com</a></p>
-                    <p><strong>Repository:</strong> <a href="https://github.com/swenightpro"
-                            target="_blank">github.com/swenightpro</a></p>
-                </div>
-
-                <h2>Membri del Team</h2>
-                <table class="team-table">
-                    <thead>
-                        <tr>
-                            <th>Foto</th>
-                            <th>Nome</th>
-                            <th>GitHub</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><img src="https://github.com/biasuzzi-davide.png?size=100"></td>
-                            <td>Biasuzzi Davide</td>
-                            <td><a href="https://github.com/biasuzzi-davide">biasuzzi-davide</a></td>
-                        </tr>
-                        <tr>
-                            <td><img src="https://github.com/towsatt.png?size=100"></td>
-                            <td>Bilato Leonardo</td>
-                            <td><a href="https://github.com/towsatt">towsatt</a></td>
-                        </tr>
-                        <tr>
-                            <td><img src="https://github.com/sass0lino.png?size=100"></td>
-                            <td>Ponso Giovanni</td>
-                            <td><a href="https://github.com/sass0lino">sass0lino</a></td>
-                        </tr>
-                        <tr>
-                            <td><img src="https://github.com/frazane04.png?size=100"></td>
-                            <td>Zanella Francesco</td>
-                            <td><a href="https://github.com/frazane04">frazane04</a></td>
-                        </tr>
-                        <tr>
-                            <td><img src="https://github.com/Mihaela-Mariana.png?size=100"></td>
-                            <td>Romascu Mihaela-Mariana</td>
-                            <td><a href="https://github.com/Mihaela-Mariana">Mihaela-Mariana</a></td>
-                        </tr>
-                        <tr>
-                            <td><img src="https://github.com/samuele-perozzo.png?size=100"></td>
-                            <td>PEROZZO Samuele</td>
-                            <td><a href="https://github.com/samuele-perozzo">samuele-perozzo</a></td>
-                        </tr>
-                        <tr>
-                            <td><img src="https://github.com/Micheleogniben.png?size=100"></td>
-                            <td>Ogniben Michele</td>
-                            <td><a href="https://github.com/Micheleogniben">Micheleogniben</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-
-            </section>
-        </main>
-
-        <footer>
-            <p>&copy; 2025 NightPRO. Tutti i diritti riservati.</p>
-        </footer>
-
+<main>
+    <div id="docs-section">
+        <h1 class="repo-title">Documentazione di Progetto</h1>
+        <div class="section-filters" id="section-filters"></div>
+        <div id="search-container">
+            <input id="document-search" type="search" placeholder="Cerca nei documenti..." autocomplete="off" />
+        </div>
+        <div id="sections-wrapper">
+            <div id="sections-container"></div>
+        </div>
     </div>
-</body>
 
+    <div id="about-section" class="hidden">
+        <h3 class="about-subtitle">Contatti</h3>
+        <div class="contact-block">
+            <p><strong>Email:</strong> <a href="mailto:swe.nightpro@gmail.com">swe.nightpro@gmail.com</a></p>
+            <p><strong>Repository:</strong> <a href="https://github.com/swenightpro" target="_blank">github.com/swenightpro</a></p>
+        </div>
+
+        <h3 class="about-subtitle">Membri del gruppo</h3>
+        <table class="team-table">
+            <thead>
+                <tr>
+                    <th>Foto</th>
+                    <th>Nome</th>
+                    <th>GitHub</th>
+                </tr>
+            </thead>
+            <tbody id="team-table-body"></tbody>
+        </table>
+    </div>
+</main>
+</div>
+
+<footer>
+    <p>&copy; 2025 NightPRO — Tutti i diritti riservati</p>
+</footer>
+
+</body>
 </html>

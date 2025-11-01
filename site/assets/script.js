@@ -1,198 +1,245 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const docsBtn = document.getElementById("docs-btn");
+  const aboutBtn = document.getElementById("about-btn");
+  const docsSection = document.getElementById("docs-section");
+  const aboutSection = document.getElementById("about-section");
+  const searchInput = document.getElementById('document-search');
+  const filtersContainer = document.getElementById("section-filters");
+  const container = document.getElementById('sections-container');
+  const teamBody = document.getElementById("team-table-body");
+  const siteLogo = document.getElementById("site-logo");
 
-const navLinks = document.querySelectorAll('#nav-navigation a');
-const docsSection = document.getElementById('docs-section');
-const contactsSection = document.getElementById('contacts-section');
-const container = document.getElementById('sections-container');
-const searchInput = document.getElementById('document-search');
-const filtersBar = document.getElementById('section-filters');
+  const themeBtn = document.getElementById("theme-button");
+  const themeMenu = document.getElementById("theme-menu");
 
-let docsTree = {};
-let currentFilter = "Tutto";
-let currentSection = "Archivio";
-let lastQuery = "";
+  function setLogo() {
+    const dark = document.documentElement.classList.contains("dark-mode");
+    siteLogo.src = dark ? "./assets/images/logo_bianco.png" : "./assets/images/logo.png";
+  }
 
-/* NAV switching */
-navLinks.forEach(link => {
-  link.addEventListener("click", () => {
-    navLinks.forEach(a => a.classList.remove("active"));
-    link.classList.add("active");
-    const view = link.dataset.view;
-    docsSection.classList.toggle("hidden", view !== "docs");
-    contactsSection.classList.toggle("hidden", view !== "contacts");
+  function applyTheme() {
+    const sysDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const t = localStorage.theme;
+
+    if (t === "dark" || (!t && sysDark)) {
+      document.documentElement.classList.add("dark-mode");
+      document.documentElement.classList.remove("light-mode");
+      themeBtn.textContent = "🌙";
+    } else {
+      document.documentElement.classList.add("light-mode");
+      document.documentElement.classList.remove("dark-mode");
+      themeBtn.textContent = "🌞";
+    }
+
+    if (!t) themeBtn.textContent = "🖥️";
+    setLogo();
+  }
+
+  applyTheme();
+
+  themeBtn.onclick = () => themeMenu.classList.toggle("hidden");
+
+  themeMenu.onclick = e => {
+    const mode = e.target.dataset.theme;
+    if (!mode) return;
+
+    if (mode === "system") localStorage.removeItem("theme");
+    else localStorage.theme = mode;
+
+    themeMenu.classList.add("hidden");
+    applyTheme();
+  };
+
+  document.addEventListener("click", e => {
+    if (!e.target.closest(".theme-wrapper")) themeMenu.classList.add("hidden");
   });
-});
 
-/* Load */
-async function loadDocsTree(){
-  const res = await fetch("./docs_tree.json");
-  docsTree = await res.json();
-  renderFilters();
-  showSection("Archivio");
-}
+  window.matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", () => {
+      if (!localStorage.theme) applyTheme();
+    });
 
-/* Filters UI */
-function renderFilters(){
-  filtersBar.innerHTML="";
+  const teamMembers = [
+    {name:"Biasuzzi Davide", git:"biasuzzi-davide"},
+    {name:"Bilato Leonardo", git:"towsatt"},
+    {name:"Ponso Giovanni", git:"sass0lino"},
+    {name:"Zanella Francesco", git:"frazane04"},
+    {name:"Romascu Mihaela-Mariana", git:"Mihaela-Mariana"},
+    {name:"Perozzo Samuele", git:"samuele-perozzo"},
+    {name:"Ogniben Michele", git:"Micheleogniben"}
+  ];
 
-  const sections = Object.keys(docsTree);
+  teamMembers.forEach(m => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td><img src="https://github.com/${m.git}.png" alt="${m.name}"></td>
+      <td>${m.name}</td>
+      <td><a href="https://github.com/${m.git}" target="_blank">@${m.git}</a></td>
+    `;
+    teamBody.appendChild(row);
+  });
 
-  const makeChip = sec=>{
-    const chip=document.createElement("button");
-    chip.className="filter-chip"+(currentFilter===sec?" active":"");
-    chip.textContent=sec;
-    chip.onclick=()=>{
-      currentFilter=sec;
-      showSection(sec);
+  docsBtn.onclick = () => {
+    docsBtn.classList.add("active");
+    aboutBtn.classList.remove("active");
+    docsSection.classList.remove("hidden");
+    aboutSection.classList.add("hidden");
+  };
+  aboutBtn.onclick = () => {
+    aboutBtn.classList.add("active");
+    docsBtn.classList.remove("active");
+    aboutSection.classList.remove("hidden");
+    docsSection.classList.add("hidden");
+  };
+
+  let docsTree = {};
+  let currentSection = "Tutto";
+
+  async function loadDocsTree() {
+    const r = await fetch('./docs_tree.json');
+    docsTree = await r.json();
+    populateFilters();
+    showSection("Tutto");
+  }
+
+  function populateFilters() {
+    const keys = Object.keys(docsTree);
+    filtersContainer.innerHTML = "";
+    if (keys.length <= 1) {
+      filtersContainer.style.display = "none";
+      return;
+    }
+    filtersContainer.style.display = "flex";
+    const allChip = createChip("Tutto");
+    allChip.classList.add("active");
+    filtersContainer.appendChild(allChip);
+    keys.forEach(sec => filtersContainer.appendChild(createChip(sec)));
+  }
+
+  function createChip(name) {
+    const chip = document.createElement("div");
+    chip.textContent = name;
+    chip.className = "filter-chip";
+    chip.onclick = () => {
+      document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      currentSection = name;
+      searchInput.value = "";
+      showSection(name);
     };
     return chip;
-  };
-
-  const allChip = document.createElement("button");
-  allChip.className="filter-chip"+(currentFilter==="Tutto"?" active":"");
-  allChip.textContent="Tutto";
-  allChip.onclick=()=>{
-    currentFilter="Tutto";
-    showSection("Archivio");
-  };
-
-  filtersBar.append(allChip);
-  sections.forEach(sec=>filtersBar.append(makeChip(sec)));
-}
-
-/* Search logic */
-function filterTree(items,query){
-  if(!query) return items;
-  const q=query.toLowerCase();
-  const res=[];
-  for(const it of items){
-    if(it.type==="file"){
-      const txt=(it.search_name||it.name||"").toLowerCase();
-      if(txt.includes(q)) res.push(it);
-    } else {
-      const kids=filterTree(it.children||[],q);
-      if(kids.length) res.push({...it,children:kids});
-    }
   }
-  return res;
-}
 
-/* Tree builder */
-function buildTree(items){
-  const ul=document.createElement("ul");
-
-  items.forEach(item=>{
-    const li=document.createElement("li");
-
-    if(item.type==="folder"){
-      const t=document.createElement("div");
-      t.className="folder-toggle";
-      t.textContent=item.name;
-
-      const c=document.createElement("div");
-      c.className="folder-content";
-      if(item.children?.length) c.append(buildTree(item.children));
-      li.append(t,c);
-    } else {
-      const row=document.createElement("p");
-      row.className="pdf_row";
-
-      const link=document.createElement("a");
-      link.className="file-name";
-      link.href=item.path;
-      link.target="_blank";
-
-      const name=item.name||"";
-
-      // ✅ version logic correct (only add v if missing)
-      let version="";
-      if(item.version){
-        version = item.version.startsWith("v")
-          ? ` <span style="opacity:.7">${item.version}</span>`
-          : ` <span style="opacity:.7">v${item.version}</span>`;
+  function buildTree(items) {
+    const ul = document.createElement("ul");
+    items.forEach(item => {
+      const li = document.createElement("li");
+      if (item.type === "folder") {
+        const t = document.createElement("div");
+        t.className = "folder-toggle";
+        t.textContent = item.name;
+        const cont = document.createElement("div");
+        cont.className = "folder-content";
+        if (item.children?.length) cont.appendChild(buildTree(item.children));
+        li.append(t, cont);
+      } else {
+        const row = document.createElement("div");
+        row.className = "pdf_row";
+        const version = item.version ? ` v${item.version.replace(/^v+/, "")}` : "";
+        const date = item.date ? ` ${item.date}` : "";
+        const signed = item.signed ? `<span class="signed-badge">Firmato</span>` : "";
+        const link = document.createElement("a");
+        link.className = "file-name";
+        link.href = item.path;
+        link.target = "_blank";
+        link.innerHTML = `<img src="./assets/images/pdf.svg" class="icon-pdf"> ${item.name}${date}${version} ${signed}`;
+        const dl = document.createElement("a");
+        dl.href = item.path;
+        dl.download = "";
+        dl.className = "download-button";
+        row.append(link, dl);
+        li.appendChild(row);
       }
+      ul.appendChild(li);
+    });
+    return ul;
+  }
 
-      const date=item.date?` <span style="opacity:.7">(${item.date})</span>`:"";
-      const signed=item.signed?` <span class="signed-badge">Firmato</span>`:"";
+function showSection(name, filtered=null) {
+  container.innerHTML = "";
 
-      link.innerHTML = `
-        <img src="./assets/images/pdf.svg" class="icon-pdf">
-        ${name}${date}${version}${signed}
-      `;
+  const source = filtered || docsTree;
+  const sections = name === "Tutto" ? Object.keys(source) : [name];
 
-      const dl=document.createElement("a");
-      dl.className="download-button";
-      dl.href=item.path;
-      dl.download="";
+  sections.forEach(section => {
+    const wrapper = document.createElement("div");
 
-      row.append(link,dl);
-      li.append(row);
+    const toggle = document.createElement("div");
+    toggle.className = "folder-toggle";
+    toggle.textContent = section;
+
+    const content = document.createElement("div");
+    content.className = "folder-content";
+
+    const treeData = filtered ? source[section] : docsTree[section];
+    content.appendChild(buildTree(treeData));
+
+    wrapper.append(toggle, content);
+    container.appendChild(wrapper);
+  });
+
+  document.querySelectorAll(".folder-content").forEach(c => c.classList.remove("collapsed"));
+  document.querySelectorAll(".folder-toggle").forEach(t => t.classList.remove("collapsed"));
+
+  searchInput.placeholder = name === "Tutto" ? "Cerca nei documenti..." : `Cerca in ${name}...`;
+}
+
+
+  document.body.addEventListener("click", e => {
+    const t = e.target.closest(".folder-toggle");
+    if (!t) return;
+    t.classList.toggle("collapsed");
+    t.nextElementSibling.classList.toggle("collapsed");
+  });
+
+  function normalizeQuery(q) { return q.replace(/[-/.]/g, " ").trim(); }
+  function filterTree(items, qRaw) {
+    const words = normalizeQuery(qRaw.toLowerCase()).split(/\s+/).filter(Boolean);
+    const out = [];
+    for (const it of items) {
+      if (it.type === "file") {
+        let text = (it.search_name || it.name || "").toLowerCase();
+        if (it.date) text += " " + it.date.replace(/-/g, " ");
+        let ok = true, tmp = text;
+        for (const w of words) {
+          const i = tmp.indexOf(w);
+          if (i === -1) { ok = false; break; }
+          tmp = tmp.slice(0,i)+tmp.slice(i+w.length);
+        }
+        if (ok) out.push(it);
+      } else {
+        const kids = filterTree(it.children || [], qRaw);
+        if (kids.length) out.push({...it, children:kids});
+      }
     }
+    return out;
+  }
 
-    ul.append(li);
-  });
+  searchInput.oninput = () => {
+    const q = searchInput.value.trim();
+    if (!q) return showSection(currentSection);
+    const sections = currentSection === "Tutto" ? Object.keys(docsTree) : [currentSection];
+    let results = {}, count=0;
+    sections.forEach(sec=>{
+      const f = filterTree(docsTree[sec], q);
+      if (f.length) results[sec]=f, count+=f.length;
+    });
+    if (!count) {
+      container.innerHTML = `<p style="text-align:center;margin-top:2rem;color:#888;font-style:italic;">Nessun risultato trovato.</p>`;
+      return;
+    }
+    showSection(currentSection, results);
+  };
 
-  return ul;
-}
-
-/* Visible sections */
-function visibleSections(){
-  if(currentFilter==="Tutto") return Object.keys(docsTree);
-  return [currentFilter];
-}
-
-/* Render section */
-function showSection(name){
-  currentSection=name;
-  container.innerHTML="";
-
-  // ✅ correct placeholder behaviour
-  searchInput.placeholder =
-    currentSection==="Archivio"
-      ? "Cerca nei documenti…"
-      : `Cerca in ${currentSection}…`;
-
-  // ✅ update filter highlight
-  renderFilters();
-
-  visibleSections().forEach(sec=>{
-    const data = docsTree[sec];
-    const filtered = lastQuery ? filterTree(data,lastQuery) : data;
-    if(!filtered.length) return;
-
-    const toggle=document.createElement("div");
-    toggle.className="folder-toggle";
-    toggle.textContent=sec;
-
-    const content=document.createElement("div");
-    content.className="folder-content";
-    content.append(buildTree(filtered));
-
-    container.append(toggle,content);
-  });
-
-  requestAnimationFrame(()=>{
-    document.querySelectorAll('.folder-toggle').forEach(e=>e.classList.remove('collapsed'));
-    document.querySelectorAll('.folder-content').forEach(e=>e.classList.remove('collapsed'));
-  });
-}
-
-/* Collapse without scroll jump */
-document.body.addEventListener("click",e=>{
-  const t=e.target.closest(".folder-toggle");
-  if(!t) return;
-  const y=window.scrollY;
-  t.classList.toggle("collapsed");
-  const next=t.nextElementSibling;
-  if(next?.classList.contains("folder-content")) next.classList.toggle("collapsed");
-  requestAnimationFrame(()=>window.scrollTo(0,y));
-});
-
-/* Search input */
-searchInput.addEventListener("input",()=>{
-  lastQuery=searchInput.value;
-  showSection(currentSection);
-});
-
-loadDocsTree();
+  loadDocsTree();
 });
