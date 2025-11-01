@@ -55,7 +55,7 @@ html, body {
   max-width: 1400px;
   width: 92%;
   margin: auto;
-  padding: 0.5rem 0.5rem;
+  padding: 0.5rem 0;
 }
 #docs-section,
 #about-section {
@@ -86,7 +86,7 @@ body {
   line-height:1.55;
 }
 header {
-  padding: 1.5rem 1rem 0.5rem;
+  padding: 1.5rem 0 0.5rem;
   background-color: var(--bg-card);
   border-bottom: 1px solid var(--border);
 }
@@ -108,6 +108,8 @@ nav ul {
   list-style:none;
   display:flex;
   gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 nav a {
  text-decoration:none;
@@ -389,8 +391,7 @@ footer {
  text-align:center;
  color:var(--muted);
  font-size:.85rem;
- padding-top:1.5rem;
- padding-bottom: 1rem;
+ padding: 1.5rem 0 1rem;
 }
 
 .dark-mode #document-search {
