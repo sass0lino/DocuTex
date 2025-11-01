@@ -55,7 +55,7 @@ html, body {
   max-width: 1400px;
   width: 92%;
   margin: auto;
-  padding: 2rem 1.5rem;
+  padding: 0.5rem 0.5rem;
 }
 #docs-section,
 #about-section {
@@ -261,8 +261,8 @@ ul {list-style:none;margin:0;padding:0;}
 .folder-toggle.collapsed::before {content:"▸"}
 
 .folder-content {
- margin-left: 0.625rem;
- padding-left: 0.625rem;
+ margin-left: 0.4rem;
+ padding-left: 0.4rem;
  border-left: 1px solid var(--border);
 }
 
