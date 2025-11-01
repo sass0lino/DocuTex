@@ -52,6 +52,7 @@ html, body {
   display: flex;
   flex-direction: column;
 }
+
 .page-wrapper {
   flex: 1;
   display: flex;
@@ -60,7 +61,17 @@ html, body {
   width: 92%;
   margin: auto;
   padding: 2rem 1.5rem;
+  background: var(--header-bg-light);
 }
+
+.dark-mode .page-wrapper {
+  background: var(--header-bg-dark);
+}
+
+main {
+  background: var(--bg);
+}
+
 #docs-section,
 #about-section {
   flex: 1;
