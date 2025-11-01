@@ -121,19 +121,29 @@ nav a.active {
   position: relative;
 }
 
+/* Pulsante tema: solo emoji, senza “ovale” */
 #theme-button {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: transparent;   /* niente sfondo */
+  border: none;              /* niente bordo */
+  padding: 0;                /* niente padding che crea l’ovale */
+  border-radius: 0;          /* niente bordi arrotondati */
   font-size: 1.2rem;
-  padding: .4rem .55rem;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: var(--transition);
   line-height: 1;
+  cursor: pointer;
+  color: var(--text);        /* leggibile in light e dark */
+  transition: transform .15s ease, opacity .15s ease, color .15s ease;
 }
+
 #theme-button:hover {
-  background: var(--primary-light);
   color: var(--primary);
+  transform: translateY(-1px);
+  background: transparent;
+}
+
+#theme-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 6px; /* rettangolare, non ovale */
 }
 
 .theme-menu {
