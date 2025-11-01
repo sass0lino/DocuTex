@@ -445,35 +445,15 @@ footer {
     margin-left: 10px;
     padding-left: 10px;
   }
+  @media (max-width: 768px) {
+    .team-table td, .team-table th {
+      padding: 0.35rem 0.3rem;
+      font-size: .85rem;
+    }
 
-  .team-table,
-  .team-table thead {
-    display: none;
-  }
-
-  .team-table tbody {
-    display: flex;
-    flex-direction: column;
-    gap: .9rem;
-  }
-
-  .team-table tr {
-    display: flex;
-    align-items: center;
-    gap: .8rem;
-    padding: .6rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--bg-card);
-  }
-
-  .team-table img {
-    width: 40px;
-    height: 40px;
-  }
-
-  .team-table td {
-    border: none;
-    padding: 0;
+    .team-table img {
+      width: 32px;
+      height: 32px;
+    }
   }
 }
