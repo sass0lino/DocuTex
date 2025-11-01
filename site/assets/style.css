@@ -12,8 +12,6 @@
   --transition:.20s ease;
   --highlight-bg:rgba(155,92,255,0.22);
   --highlight-color:#1c1c1e;
-
-  /* ✅ NUOVO — colori header */
   --header-bg-light: #f4f4f6;
   --header-bg-dark: #1a1a1d;
 }
@@ -93,7 +91,6 @@ body {
   line-height:1.55;
 }
 
-/* ✅ HEADER aggiornato */
 header {
   padding:0.1rem 0 .2rem;
   background: var(--header-bg-light);
@@ -101,7 +98,6 @@ header {
   backdrop-filter: blur(8px);
 }
 
-/* ✅ HEADER dark mode */
 .dark-mode header {
   background: var(--header-bg-dark);
 }
@@ -144,7 +140,6 @@ nav a.active {
   position: relative;
 }
 
-/* Pulsante tema: solo emoji, senza “ovale” */
 #theme-button {
   background: transparent;
   border: none;
@@ -411,7 +406,6 @@ footer {
 
 .hidden {display:none!important}
 
-/* 📱 Mobile improvements */
 @media (max-width: 768px) {
   nav ul {
     gap: .6rem;
